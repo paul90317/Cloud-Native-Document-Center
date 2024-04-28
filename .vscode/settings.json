@@ -3,7 +3,9 @@
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll": "explicit",
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
   },
   "editor.formatOnSave": true,
   "eslint.validate": [
@@ -15,9 +17,11 @@
     "extensions": [
       ".html",
       ".js",
-      ".vue",
-      ".jsx"
+      ".vue"
     ]
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   },
   "javascript.validate.enable": false
 }

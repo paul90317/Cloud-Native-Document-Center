@@ -1,17 +1,38 @@
-<script>
-
+<script setup>
+import { useRouter } from 'vue-router';
+const routes = useRouter().options.routes
 </script>
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-      <router-link to="/" class="navbar-brand">Logo</router-link>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+      <router-link to="/" class="navbar-brand">
+        Document Center
+      </router-link>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon" />
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div id="navbarNav" class="collapse navbar-collapse">
         <ul class="navbar-nav">
-          <li class="nav-item" v-for="route in $router.options.routes" :key="route.path">
-            <router-link :to="route.path" class="nav-link">{{ route.name }}</router-link>
+          <li
+            v-for="route in routes"
+            :key="route.path"
+            class="nav-item"
+          >
+            <router-link
+              v-if="!route?.isHidden"
+              :to="route.path"
+              class="nav-link"
+            >
+              {{ route.name }}
+            </router-link>
           </li>
         </ul>
       </div>
@@ -19,5 +40,4 @@
   </nav>
 </template>
 
-<style>
-</style>
+<style></style>

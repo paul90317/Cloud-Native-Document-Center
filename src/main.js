@@ -4,6 +4,6 @@ import App from './App.vue'
 
 import router from './router'
 
-createApp(App)
-  .use(router)
-  .mount('#app')
+import { QuillEditor } from '@vueup/vue-quill'
+
+createApp(App).use(router).component('QuillEditor', QuillEditor).mount('#app')

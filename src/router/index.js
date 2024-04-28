@@ -8,10 +8,9 @@ function loadRoutes() {
 
   for (const path in routeFiles) {
     const routeModule = routeFiles[path].default
-    // add "{isHidden: true}" to hide routes in the Navbar
-    routes = [...routes, ...routeModule.filter(route => !('isHidden' in route))]
+    routes = [...routes, ...routeModule]
   }
-
+  console.log(routes)
   return routes
 }
 
