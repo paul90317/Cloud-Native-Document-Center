@@ -7,14 +7,20 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "commit": "cz"
+    "commit": "cz",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "prettier": "prettier --write \"./**/*.{html,vue,js,json,md}\""
   },
   "dependencies": {
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/eslint-config-standard": "^8.0.1",
     "cz-conventional-changelog": "^3.3.0",
+    "eslint-plugin-vue": "^9.25.0",
+    "prettier": "^3.2.5",
     "vite": "^5.2.0"
   },
   "config": {

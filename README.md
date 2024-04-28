@@ -11,6 +11,7 @@
   - [Feature (working on, might change in the future)](#feature-working-on-might-change-in-the-future)
   - [Project Structure](#project-structure)
   - [Framework](#framework)
+  - [Package](#package)
   - [Setup (development)](#setup-development)
   - [Conventional commit](#conventional-commit)
 
@@ -54,20 +55,20 @@
 │   └── index.html
 ├── .vscode/              // vscode setting file
 ├── index.html
-├── .gitignore
-├── package.json
-├── package-lock.json
 ├── README.md
-└── vite.config.js
+└── ...(others)
 ```
 
 </details>
 
 ## Framework
-- Vue 3
-- Vite
-- Bootstrap 5
+- Js: [Vue 3](https://vuejs.org/guide/introduction.html)
+- Build: [Vite](https://v4.vitejs.dev/)
+- UI: [Bootstrap 5](https://getbootstrap.com/docs/5.3)
 - (VueQuill: rich text editor)
+
+## Package
+- eslint + prettier: format code
 - cz-conventional-changelog: commit in conventional way
 
 ## Setup (development)
