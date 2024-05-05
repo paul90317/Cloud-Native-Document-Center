@@ -3,16 +3,8 @@ import Navbar from '@/components/Navbar.vue';
 </script>
 
 <template>
-  <div class="container">
+  <div class="container-fluid min-vh-100 min-vw-100 p-0">
     <Navbar />
     <router-view />
   </div>
 </template>
-
-<style>
-#app {
-  min-height: 100vh;
-  min-width: 100vw;
-  padding: 0;
-}
-</style>
