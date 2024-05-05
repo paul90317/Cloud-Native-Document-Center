@@ -2,7 +2,7 @@ const app = require('express')();
 const proxy = require('express-http-proxy');
 
 app.get('/', async (req, res) => {
-    var res2 = await fetch('http://auth:3000/auth', {
+    var res2 = await fetch('http://auth/auth', {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${req.query.token}`
