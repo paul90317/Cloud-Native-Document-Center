@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./api-gateway/nginx
+    ports:
+      - "80:80"
+
+  auth:
+    build: ./api-gateway/auth
+  
+  login:
+    build: ./login
