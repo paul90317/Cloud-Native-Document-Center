@@ -8,6 +8,7 @@ services:
 
   auth:
     build: ./api-gateway/auth
-  
-  login:
-    build: ./login
+
+  mysql:
+    build: ./mysql
+    

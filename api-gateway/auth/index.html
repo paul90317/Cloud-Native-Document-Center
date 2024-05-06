@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login and Register</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="submit"] {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <form id="loginForm">
+    <input type="text" id="account" name="account" placeholder="Account" required>
+    <input type="password" id="passwd" name="passwd" placeholder="Password" required>
+    <input type="submit" value="Login">
+  </form>
+
+  <form id="registerForm">
+    <input type="submit" value="Register">
+  </form>
+
+  <script>
+    const formData = {};
+
+    document.getElementById('loginForm').addEventListener('submit', async function (event) {
+      event.preventDefault(); // Prevent the form from submitting normally
+
+      formData.account = document.getElementById('account').value;
+      formData.passwd = document.getElementById('passwd').value;
+
+      try {
+        const response = await fetch('/local/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          alert('Login successful!');
+        } else {
+          alert('Login failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async function (event) {
+      event.preventDefault(); // Prevent the form from submitting normally
+
+      formData.account = document.getElementById('account').value;
+      formData.passwd = document.getElementById('passwd').value;
+
+      try {
+        const response = await fetch('/local/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          alert('Registration successful!');
+        } else {
+          alert('Registration failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    });
+  </script>
+</body>
+
+</html>
