@@ -8,11 +8,10 @@ function authJWT(req, res, next) {
         const token = req.cookies.token
         var user = jwt.verify(token, JWT_SECRET);
         req.user = user;
-        next();
     } catch (error) {
         console.log(error)
-        res.sendStatus(401);
     }
+    next();
 }
 
 const mysql = require('mysql2')

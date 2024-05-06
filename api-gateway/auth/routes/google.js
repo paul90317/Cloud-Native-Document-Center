@@ -34,6 +34,8 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/bind', authJWT, (req, res) => {
+    if(!req.user)
+        return res.redirect('/google_bind_fail');
     calling('http://localhost/google/bind/callback', res)
 });
 
@@ -57,17 +59,19 @@ router.get('/login/callback', async (req, res) => {
                 res.cookie('token', token)
                 res.redirect('/')
             } else {
-                res.redirect('/login_fail')
+                res.redirect('/google_login_fail')
             }
         })
 
     } catch (error) {
         console.log(error)
-        res.redirect('/login_fail')
+        res.redirect('/google_login_fail')
     }
 });
 
 router.get('/bind/callback', authJWT, async (req, res) => {
+    if(!req.user)
+        return res.redirect('/google_bind_fail');
     try {
         // use "code" to get the token(google access token)
         const { code } = req.query;
@@ -86,12 +90,12 @@ router.get('/bind/callback', authJWT, async (req, res) => {
                 sql_execute('update users set email = ? where account = ?', [userInfo.data.email, req.user.account])
                 res.redirect('/')
             } else {
-                res.redirect('/bind_fail')
+                res.redirect('/google_bind_fail')
             }
         })
     } catch (error) {
         console.log(error)
-        res.redirect('/bind_fail')
+        res.redirect('/google_bind_fail')
     }
 });
 

@@ -16,7 +16,7 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
     sql_execute('select account from users where account = ? and passwd = ?', [req.body.account, req.body.passwd], result => {
         if (result.length == 0)
-            return res.sendStatus(400);
+            return res.sendStatus(401);
         token = jwt.sign({ account: req.body.account }, JWT_SECRET);
         res.cookie('token', token)
         res.sendStatus(200)
