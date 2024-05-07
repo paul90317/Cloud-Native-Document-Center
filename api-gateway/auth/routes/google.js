@@ -57,45 +57,47 @@ router.get('/login/callback', async (req, res) => {
             if (result.length == 1) {
                 const token = jwt.sign(result[0], JWT_SECRET); // result[0] = { account : ... }
                 res.cookie('token', token)
-                res.redirect('/')
+                res.sendStatus(200);
             } else {
-                res.redirect('/google_login_fail')
+                res.sendStatus(401);
             }
         })
-
     } catch (error) {
         console.log(error)
-        res.redirect('/google_login_fail')
+        res.sendStatus(401);
     }
 });
 
 router.get('/bind/callback', authJWT, async (req, res) => {
-    if(!req.user)
-        return res.redirect('/google_bind_fail');
     try {
-        // use "code" to get the token(google access token)
+        if(!req.user)
+            return res.sendStatus(401);
         const { code } = req.query;
         client = get_client('http://localhost/google/bind/callback');
         const { tokens } = await client.getToken(code);
         client.setCredentials(tokens);
 
         // get the user info from Google
-        const userInfo = await client.request({
+        var userInfo = await client.request({
             url: 'https://www.googleapis.com/oauth2/v3/userinfo'
         });
-
+    }catch(error){
+        console.log(error)
+        res.sendStatus(401);
+    }
+    try{
         // save email
         sql_execute('select account from users where email = ?', [userInfo.data.email], result => {
             if (result.length == 0) {
                 sql_execute('update users set email = ? where account = ?', [userInfo.data.email, req.user.account])
-                res.redirect('/')
+                res.sendStatus(200);
             } else {
-                res.redirect('/google_bind_fail')
+                res.sendStatus(400);
             }
         })
     } catch (error) {
         console.log(error)
-        res.redirect('/google_bind_fail')
+        res.sendStatus(400);
     }
 });
 

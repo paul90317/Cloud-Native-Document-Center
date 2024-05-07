@@ -26,7 +26,7 @@
 
     input[type="text"],
     input[type="password"],
-    input[type="submit"] {
+    button {
       display: block;
       width: 100%;
       margin-bottom: 10px;
@@ -40,18 +40,17 @@
   <form id="loginForm">
     <input type="text" id="account" name="account" placeholder="Account" required>
     <input type="password" id="passwd" name="passwd" placeholder="Password" required>
-    <input type="submit" value="Login">
-  </form>
-
-  <form id="registerForm">
-    <input type="submit" value="Register">
+    <button id="loginBtn">Login</button>
+    <button id="registerBtn">Register</button>
+    <button id="BindToGmail">Bind to Gmail</button>
+    <button id="LoginWithGmail">Login with Gmail</button>
   </form>
 
   <script>
     const formData = {};
 
-    document.getElementById('loginForm').addEventListener('submit', async function (event) {
-      event.preventDefault(); // Prevent the form from submitting normally
+    document.getElementById('loginBtn').addEventListener('click', async function (event) {
+      event.preventDefault(); // 阻止按钮默认的提交行为
 
       formData.account = document.getElementById('account').value;
       formData.passwd = document.getElementById('passwd').value;
@@ -76,8 +75,8 @@
       }
     });
 
-    document.getElementById('registerForm').addEventListener('submit', async function (event) {
-      event.preventDefault(); // Prevent the form from submitting normally
+    document.getElementById('registerBtn').addEventListener('click', async function (event) {
+      event.preventDefault(); // 阻止按钮默认的提交行为
 
       formData.account = document.getElementById('account').value;
       formData.passwd = document.getElementById('passwd').value;
@@ -100,6 +99,32 @@
         console.error('Error:', error);
         alert('An error occurred. Please try again later.');
       }
+    });
+
+    document.getElementById('BindToGmail').addEventListener('click', function (event) {
+      event.preventDefault();
+      var googleBindWindow = window.open('/google/bind', '_blank', 'width=600,height=400');
+  
+      googleBindWindow.addEventListener('load', function () {
+        var url = new URL(googleBindWindow.location.href);
+        if (url.pathname === '/google/bind/callback') {
+          googleBindWindow.close();
+          alert(`Bind to Gmail: ${googleBindWindow.document.body.textContent}`);
+        }
+      });
+    });
+
+    document.getElementById('LoginWithGmail').addEventListener('click', function (event) {
+      event.preventDefault();
+      var googleLoginWindow = window.open('/google/login', '_blank', 'width=600,height=400');
+  
+      googleLoginWindow.addEventListener('load', function () {
+        var url = new URL(googleLoginWindow.location.href);
+        if (url.pathname === '/google/login/callback') {
+          googleLoginWindow.close();
+          alert(`Login With Gmail: ${googleLoginWindow.document.body.textContent}`);
+        }
+      });
     });
   </script>
 </body>
