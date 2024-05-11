@@ -1,6 +1,12 @@
 version: '3.8'
 
 services:
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "3000:3000"
+
   nginx:
     build: ./api-gateway/nginx
     ports:
@@ -11,4 +17,3 @@ services:
 
   mysql:
     build: ./mysql
-    

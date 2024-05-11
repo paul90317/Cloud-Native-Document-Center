@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar.vue';
 
 <template>
   <div class="container-fluid min-vh-100 min-vw-100 p-0">
-    <Navbar />
+    <Navbar class="sticky-top mb-4" />
     <router-view />
   </div>
 </template>
