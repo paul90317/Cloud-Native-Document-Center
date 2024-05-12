@@ -14,6 +14,7 @@
     - [Setup (development)](#setup-development)
     - [Conventional commit](#conventional-commit)
   - [Before Building](#before-building)
+  - [Build up project](#build-up-project)
   - [Api GateWay](#api-gateway)
   - [Image Service](#image-service)
   - [Documents Service](#documents-service)
@@ -97,6 +98,14 @@ frontend/
 
 ## Before Building
 * [auth service](api-gateway/auth/)
+* install `Docker Desktop` in local
+
+## Build up project
+1. `docker compose up --build -d`
+  - `--build`: re-build project
+  - `-d`: run in background, rather than terminal
+- frontend: `http://localhost:3000`
+- api-gatway: `http://localhost:80`
 
 ## Api GateWay
 
