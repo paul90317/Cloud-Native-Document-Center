@@ -1,4 +1,7 @@
 <script setup>
+import { ref } from 'vue';
+
+const count = ref(6)
 </script>
 <template>
   <div class="container text-center">
@@ -8,7 +11,11 @@
     <div class="row">
       <div class="col-8 mx-auto">
         <div class="list-group text-start">
-          <label class="list-group-item d-flex justify-content-between align-items-center">
+          <label
+            v-for="item in count"
+            :key="item"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
             <span>
               <input
                 class="form-check-input me-1"
@@ -16,50 +23,6 @@
                 value=""
               >
               First checkbox
-            </span>
-            <span class="badge bg-danger rounded-pill">admin</span>
-          </label>
-          <label class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-              <input
-                class="form-check-input me-1"
-                type="checkbox"
-                value=""
-              >
-              Second checkbox
-            </span>
-            <span class="badge bg-primary rounded-pill">user</span>
-          </label>
-          <label class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-              <input
-                class="form-check-input me-1"
-                type="checkbox"
-                value=""
-              >
-              Third checkbox
-            </span>
-            <span class="badge bg-primary rounded-pill">user</span>
-          </label>
-          <label class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-              <input
-                class="form-check-input me-1"
-                type="checkbox"
-                value=""
-              >
-              Fourth checkbox
-            </span>
-            <span class="badge bg-danger rounded-pill">admin</span>
-          </label>
-          <label class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-              <input
-                class="form-check-input me-1"
-                type="checkbox"
-                value=""
-              >
-              Fifth checkbox
             </span>
             <span class="badge bg-danger rounded-pill">admin</span>
           </label>

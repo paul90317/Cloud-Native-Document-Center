@@ -2,7 +2,9 @@
   <div class="w-100">
     <div class="d-flex justify-content-between align-items-center mt-0 mb-2">
       <span>Content : </span>
-      <div class="me-5 text-secondary">TextLength：{{ TextLength }}</div>
+      <div class="me-5 text-secondary">
+        TextLength：{{ TextLength }}
+      </div>
       <!--清空按鈕-->
       <el-popconfirm
         title="Are you sure to clear content？"
@@ -11,16 +13,22 @@
         @confirm="clearContent"
       >
         <template #reference>
-          <el-button size="medium" type="danger" style="border-radius: 50px; background-color: #1890ff; color: #fff; height: 40px; line-height: 40px; padding: 0 20px;">clear</el-button>
+          <el-button
+            size="medium"
+            type="danger"
+            style="border-radius: 50px; background-color: #1890ff; color: #fff; height: 40px; line-height: 40px; padding: 0 20px;"
+          >
+            clear
+          </el-button>
         </template>
       </el-popconfirm>
     </div>
     
     <QuillEditor
-      theme="snow" 
+      ref="myQuillEditor" 
+      theme="snow"
       class="mx-auto"
-      contentType="html"
-      ref="myQuillEditor"
+      content-type="html"
       placeholder="write something down..."
       :toolbar="toolbarOptions"
       :modules="[uploadModule, BlotFormatterModule]"

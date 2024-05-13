@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar.vue';
 </script>
 
 <template>
-  <div class="container-fluid min-vh-100 min-vw-100 p-0">
+  <div class="container-fluid min-vh-100">
     <Navbar class="sticky-top mb-4" />
     <router-view />
   </div>
