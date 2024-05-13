@@ -31,7 +31,7 @@ const routes = useRouter().options.routes
               :to="route.path"
               class="nav-link"
             >
-              {{ route.name }}
+              {{ route.title }}
             </router-link>
           </li>
         </ul>
