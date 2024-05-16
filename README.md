@@ -7,7 +7,6 @@
 - [Document Center](#document-center)
   - [Table of Content](#table-of-content)
   - [Frontend](#frontend)
-    - [Feature (working on, might change in the future)](#feature-working-on-might-change-in-the-future)
     - [Project Structure (frontend)](#project-structure-frontend)
     - [Framework](#framework)
     - [Package](#package)
@@ -27,25 +26,6 @@
 <details>
 <summary>點擊展開前端文件</summary>
 
-### Feature (working on, might change in the future)
-- Preset different user permissions, each of which plays a different role during the review process:
-  - user `(default)`
-      - document can view:
-          - all passed documents
-          - self-created documents
-          - others' documents only if assigned to review their documents
-              - can not only view, but review (select Pass, or Reject and filling reject reason)
-  - manager
-      - can manage all documents, including status, edit time, and review history
-      - can arrange document's reviewer and re-review on passed documents
-      - (can manage all users and managers)
-- Provide different phase in review process
-  - editing
-  - reviewing
-  - pass
-- Can send review notification to those who are assigned to review
-- Supports third-party login
-
 ### Project Structure (frontend)
 <details>
 <summary>Click to show project structure</summary>
@@ -55,6 +35,8 @@ frontend/
 ├── src/
 │   ├── apis/             // api provided by backend
 │   ├── assets/           // static assets (img, icon, etc.)
+│   ├── enums/            // const enum
+│   ├── mocks/            // generate fake api data for development
 │   ├── components/       // global components
 │   ├── router/           // mapping routes and page
 │   ├── utils/            // global functions, helpers
@@ -76,7 +58,8 @@ frontend/
 - Js: [Vue 3](https://vuejs.org/guide/introduction.html)
 - Build: [Vite](https://v4.vitejs.dev/)
 - UI: [Bootstrap 5](https://getbootstrap.com/docs/5.3)
-- VueQuill: rich text editor
+- Rich text editor: VueQuill
+- Mock: MSW + Faker.js
 
 ### Package
 - eslint + prettier: format code
@@ -86,9 +69,12 @@ frontend/
 - install VSCode with following extensions
   - ESLint
   - Vue - Official
+- [再次確認路徑位於./frontend，而非根目錄]
 
 1. `npm install`
-2. `npm run dev`
+2. `npm run mock`   // generate mock data (omitable when link to backend)
+3. `npm run dev`
+- 執行後 console 若出現 `[MSW] Mocking enabled.` 代表啟用 mock server 成功
 
 ### Conventional commit
 - You can run `npm run commit` after `git add .`

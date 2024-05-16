@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="container text-center">
+  <div class="container text-center pt-4">
     <div class="row">
       <h2>審核文件</h2>
       <div class="col-8 mx-auto">

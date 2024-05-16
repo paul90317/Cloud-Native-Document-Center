@@ -19,8 +19,8 @@ const routes = useRouter().options.routes
       >
         <span class="navbar-toggler-icon" />
       </button>
-      <div id="navbarNav" class="collapse navbar-collapse">
-        <ul class="navbar-nav text-end">
+      <div id="navbarNav" class="collapse navbar-collapse justify-content-between text-end">
+        <ul class="navbar-nav">
           <template
             v-for="route in routes.filter(route => !route?.isHidden)"
             :key="route.path"
@@ -36,14 +36,14 @@ const routes = useRouter().options.routes
               >
                 {{ route.title }}
               </a>
-              <ul class="dropdown-menu" :aria-labelledby="route.title">
+              <ul class="dropdown-menu ms-auto w-50" :aria-labelledby="route.title">
                 <li
                   v-for="child in route.children"
                   :key="child.path"
                 >
                   <router-link
                     :to="child.path"
-                    class="dropdown-item"
+                    class="dropdown-item text-start"
                   >
                     {{ child.title }}
                   </router-link>
@@ -59,6 +59,26 @@ const routes = useRouter().options.routes
               </router-link>
             </li>
           </template>
+        </ul>
+        <ul class="navbar-nav">
+          <li>
+            <router-link v-slot="{href, navigate, }" to="/login">
+              <a
+                :href="href"
+                class="btn btn-outline-primary my-1"
+                @click="navigate"
+              >Login</a>
+            </router-link>
+          </li>
+          <li>
+            <router-link v-slot="{href, navigate, }" to="/register">
+              <a
+                :href="href"
+                class="btn btn-outline-secondary my-1 ms-2"
+                @click="navigate"
+              >Register</a>
+            </router-link>
+          </li>
         </ul>
       </div>
     </div>

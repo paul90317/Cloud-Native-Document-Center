@@ -1,7 +1,7 @@
 <script setup>
 </script>
 <template>
-  <div class="container text-center">
+  <div class="container text-center pt-4">
     <h2>
       編輯文件權限
     </h2>

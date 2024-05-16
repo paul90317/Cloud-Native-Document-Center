@@ -40,12 +40,12 @@
 
 
 <script setup>
+import { QuillEditor } from '@vueup/vue-quill';
 import { ElPopconfirm } from 'element-plus';
+import BlotFormatter from 'quill-blot-formatter';
 import ImageUploader from 'quill-image-uploader';
-import BlotFormatter from 'quill-blot-formatter'
-import { QuillEditor } from '@vueup/vue-quill'
-import { ref, watch, toRaw, onMounted } from 'vue'
-import { uploadImage } from '@/apis/document';
+import { onMounted, ref, toRaw, watch } from 'vue';
+// import { uploadImage } from '@/apis/image';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const TextLength = ref(0)

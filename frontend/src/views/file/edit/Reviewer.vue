@@ -4,7 +4,7 @@ import { ref } from 'vue';
 const count = ref(6)
 </script>
 <template>
-  <div class="container text-center">
+  <div class="container text-center pt-4">
     <h2>
       編輯文件審核者
     </h2>

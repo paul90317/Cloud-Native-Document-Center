@@ -1,6 +1,6 @@
-import { defineConfig, loadEnv } from 'vite'
-import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
+import { fileURLToPath } from 'node:url'
+import { defineConfig, loadEnv } from 'vite'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -21,7 +21,11 @@ export default ({ mode }) => {
         '/api': {
           target: process.env.VITE_API_HOST,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          followRedirects: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          cookieDomainRewrite: {
+            '*': ''
+          }
         }
       }
     }

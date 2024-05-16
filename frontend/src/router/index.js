@@ -10,7 +10,6 @@ function loadRoutes() {
     const routeModule = routeFiles[path].default
     routes = [...routes, ...routeModule]
   }
-  console.log(routes)
   return routes
 }
 

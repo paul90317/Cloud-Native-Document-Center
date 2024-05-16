@@ -5,7 +5,7 @@ const count = ref(6)
 </script>
 
 <template>
-  <div class="container text-center">
+  <div class="container text-center pt-4">
     <div class="row mb-4">
       <div class="col">
         <h3>通知列表</h3>
