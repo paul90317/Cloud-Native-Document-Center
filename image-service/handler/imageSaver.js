@@ -1,6 +1,8 @@
 const multer = require('multer');
 const fs = require('fs');
 
+const randomGenerator = require('../util/randomGenerator');
+
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -11,7 +13,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    cb(null, randomGenerator(10) + '.' + file.originalname.split('.').pop());
   }
 });
 
