@@ -1,4 +1,4 @@
-# Auth Service
+# Image Service
 Image service. Providing CRUD method of images.
 
 ## Usage

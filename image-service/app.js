@@ -4,6 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// dotenv
+require('dotenv').config()
+
 var authenticator = require('./handler/authenticator');
 
 var indexRouter = require('./routes/index');
@@ -21,10 +24,42 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(authenticator.basicAuth);
-
-app.use('/', indexRouter);
+// app.use('/', indexRouter);
 app.use('/image', imageRouter);
+
+// swagger
+var swaggerjsdoc = require('swagger-jsdoc')
+const swaggerOptions = {
+  swaggerDefinition: {
+      openapi: '3.0.0',
+      info: {
+          title: 'Image service API',
+      },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      security: [{
+        bearerAuth: [],
+      }],
+      servers: [
+          {
+              url: "http://localhost:8082/image"
+          }
+      ],
+  },
+  apis: ['./routes/*.js']
+}
+
+const swaggerDocs = swaggerjsdoc(swaggerOptions)
+const swaggerUi = require('swagger-ui-express')
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

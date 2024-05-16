@@ -7,6 +7,9 @@ WORKDIR /usr/src/app
 COPY . .
 RUN npm install
 
+# generate swagger api documentation
+RUN npm run swagger-autogen
+
 EXPOSE 8082
 
 ENV DEBUG=myapp:*
