@@ -31,27 +31,27 @@ app.use('/image', imageRouter);
 var swaggerjsdoc = require('swagger-jsdoc')
 const swaggerOptions = {
   swaggerDefinition: {
-      openapi: '3.0.0',
-      info: {
-          title: 'Image service API',
-      },
-      components: {
-        securitySchemes: {
-          bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
-          },
+    openapi: '3.0.0',
+    info: {
+      title: 'Image service API',
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
         },
       },
-      security: [{
-        bearerAuth: [],
-      }],
-      servers: [
-          {
-              url: "http://localhost:8082/image"
-          }
-      ],
+    },
+    security: [{
+      bearerAuth: [],
+    }],
+    servers: [
+      {
+        url: "http://localhost:8082/image"
+      }
+    ],
   },
   apis: ['./routes/*.js']
 }
@@ -62,12 +62,12 @@ const swaggerUi = require('swagger-ui-express')
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

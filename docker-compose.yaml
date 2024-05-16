@@ -20,3 +20,7 @@ services:
   mysql:
     container_name: mysql
     build: ./mysql
+
+  image-service:
+    container_name: image-service
+    build: ./image-service
