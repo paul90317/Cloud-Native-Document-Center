@@ -1,0 +1,16 @@
+FROM node:lts-alpine3.19
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Install app dependencies
+COPY . .
+RUN npm install
+
+# generate swagger api documentation
+RUN npm run swagger-autogen
+
+EXPOSE 8081
+
+ENV DEBUG=myapp:*
+CMD [ "npm", "start" ]
