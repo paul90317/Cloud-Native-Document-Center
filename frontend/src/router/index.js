@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import authRouter from './routes/auth'
+import fileRouter from './routes/file'
+import notificationRouter from './routes/notification'
+import staticRouter from './routes/static'
 
 const history = createWebHistory()
 
 function loadRoutes() {
-  const routeFiles = import.meta.glob('@/router/routes/*.js', { eager: true })
-  var routes = []
-
-  for (const path in routeFiles) {
-    const routeModule = routeFiles[path].default
-    routes = [...routes, ...routeModule]
-  }
-  console.log(routes)
+  const routes = [
+    ...authRouter,
+    ...fileRouter,
+    ...notificationRouter,
+    ...staticRouter
+  ]
   return routes
 }
 
