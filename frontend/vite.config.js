@@ -27,7 +27,8 @@ export default ({ mode }) => {
             '*': ''
           }
         }
-      }
+      },
+      port: 3000,
     }
   })
 }

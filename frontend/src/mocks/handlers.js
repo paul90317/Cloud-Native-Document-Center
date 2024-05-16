@@ -1,14 +1,14 @@
-function loadRoutes() {
-  let apiFiles = import.meta.glob('@/mocks/apis/*.js', { eager: true })
-  var apis = []
+import authHandlers from './apis/auth'
+import fileHandlers from './apis/file'
+import imageHandlers from './apis/image'
+import reviewHandlers from './apis/review'
 
-  for (const path in apiFiles) {
-    const routeModule = apiFiles[path].default
-    apis = [...apis, ...routeModule]
-  }
-  return apis
-}
 
-const handlers = loadRoutes()
+const handlers = [
+  ...authHandlers,
+  ...fileHandlers,
+  ...imageHandlers,
+  ...reviewHandlers,
+]
 
 export default handlers

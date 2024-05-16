@@ -72,9 +72,13 @@ frontend/
 - [再次確認路徑位於./frontend，而非根目錄]
 
 1. `npm install`
-2. `npm run mock`   // generate mock data (omitable when link to backend)
-3. `npm run dev`
-- 執行後 console 若出現 `[MSW] Mocking enabled.` 代表啟用 mock server 成功
+2. `npm run dev`
+
+- 若想啟用 mock server
+  - 首次執行 `npm run mock`，增加 `./frontend/public/mockServiceWorker.js`
+- `npm run dev` 後 console 若出現 `[MSW] Mocking enabled.` 代表啟用 mock server 成功
+- 若想使用 dev server 但不使用 mock
+  - 手動註解 `./frontend/src/main.js` 的 worker 相關程式碼
 
 ### Conventional commit
 - You can run `npm run commit` after `git add .`
@@ -92,6 +96,9 @@ frontend/
   - `-d`: run in background, rather than terminal
 - frontend: `http://localhost:3000`
 - api-gatway: `http://localhost:80`
+- api-docs:
+  - `http://localhost:8082/api-docs/`
+  - `http://localhost:8081/api-docs/`
 
 ## Api GateWay
 

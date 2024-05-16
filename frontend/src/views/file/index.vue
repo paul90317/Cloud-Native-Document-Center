@@ -1,7 +1,14 @@
 <script setup>
-import { ref } from 'vue';
+import { getAllUserInfo } from '@/apis/auth.js';
+import { onMounted, ref } from 'vue';
 
 const count = ref(6)
+
+onMounted(async() => {
+  console.log('mounted')
+  const response = await getAllUserInfo()
+  console.log(response.data)
+})
 </script>
 
 <template>

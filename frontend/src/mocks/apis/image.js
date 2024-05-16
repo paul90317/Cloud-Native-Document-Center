@@ -1,3 +1,3 @@
-const imageHandler = []
+const imageHandlers = []
 
-export default imageHandler
+export default imageHandlers

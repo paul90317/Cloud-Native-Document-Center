@@ -1,77 +1,70 @@
-import { faker } from '@faker-js/faker/locale/zh_TW';
-import { http } from 'msw';
+import { fakerZH_TW as faker } from '@faker-js/faker';
+import { http, HttpResponse } from 'msw';
+import { api } from '../apiUrl';
 
 const authHandlers = [
   // localLogin(data: object)
-  http.post('/local/login', (req, res, ctx) => {
-    console.log(req.body)
-    return res(
-      ctx.cookie('token', faker.random.alphaNumeric(64))
-    )
+  http.post(api('/local/login'), ({ params, request, cookies }) => {
+    console.log('body:', request.body)
+    return new HttpResponse(null, {
+      headers: {
+        'Set-Cookie': 'token=abc-123; Max-age=86400',
+      },
+    })
   }),
   // localLogout()
-  http.post('/local/logout', (req, res, ctx) => {
-    return res(
-      ctx.cookie('token', '', { maxAge: 0 })
-    )
+  http.post(api('/local/logout'), ({ params, request, cookies }) => {
+    return new HttpResponse(null, {
+      headers: {
+        'Set-Cookie': 'token=; Max-Age=0;',
+      },
+    })
   }),
   // logalRegister(data: object)
-  http.post('/local/register', (req, res, ctx) => {
-    console.log(req.body)
-    return res(
-      ctx.status(200)
-    )
+  http.post(api('/local/register'), ({ params, request, cookies }) => {
+    console.log('body:', request.body)
+    return HttpResponse.status(200)
   }),
   // getInfo()
-  http.get('/info', (req, res, ctx) => {
-    return res(
-      ctx.json(
-        {
-          account: faker.internet.userName(),
-          email: faker.internet.email(),
-          name: faker.name.findName(),
-          phone: faker.phone.phoneNumber(),
-          profile: faker.lorem.paragraph(),
-          manager: faker.datatype.boolean()
-        }
-      )
+  http.get(api('/info'), ({ params, request, cookies }) => {
+    return HttpResponse.json(
+      {
+        account: faker.internet.userName(),
+        email: faker.internet.email(),
+        name: faker.internet.userName(),
+        phone: faker.phone.number(),
+        profile: faker.lorem.paragraph(),
+        manager: faker.datatype.boolean()
+      }
     )
   }),
   // patchInfo(data: object)
-  http.patch('/info', (req, res, ctx) => {
-    console.log(req.body)
-    return res(
-      ctx.status(200)
-    )
+  http.patch(api('/info'), ({ params, request, cookies }) => {
+    console.log('body:', request.body)
+    return HttpResponse.status(200)
   }),
   // resetPassword(data: object)
-  http.patch('/password', (req, res, ctx) => {
-    console.log(req.body)
-    return res(
-      ctx.status(200)
-    )
+  http.patch(api('/password'), ({ params, request, cookies }) => {
+    console.log('body:', request.body)
+    return HttpResponse.status(200)
   }),
   // setManager(data: object)
-  http.patch('/manager/:account', (req, res, ctx) => {
-    console.log(req.params)
-    console.log(req.body)
-    return res(
-      ctx.status(200)
-    )
+  http.patch(api('/manager/:account'), ({ params, request, cookies }) => {
+    console.log('body:', request.body)
+    console.log('account:', params.account)
+    return HttpResponse.status(200)
   }),
   // getAllUserInfo()
-  http.get('/users', (req, res, ctx) => {
-    return res(
-      ctx.json(
-        Array.from({ length: 10 }, () => ({
-          account: faker.internet.userName(),
-          email: faker.internet.email(),
-          name: faker.name.findName(),
-          phone: faker.phone.phoneNumber(),
-          profile: faker.lorem.paragraph(),
-          manager: faker.datatype.boolean()
-        }))
-      )
+  http.get(api('/users'), ({ params, request, cookies }) => {
+    return HttpResponse.json(
+      Array.from({ length: 10 }, () => ({
+        account: faker.internet.userName(),
+        email: faker.internet.email(),
+        name: faker.internet.userName(),
+        phone: faker.phone.number(),
+        profile: faker.lorem.paragraph(),
+        manager: faker.datatype.boolean()
+      }))
     )
   }),
 ]

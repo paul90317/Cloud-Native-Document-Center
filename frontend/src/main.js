@@ -8,7 +8,7 @@ import { QuillEditor } from '@vueup/vue-quill'
 
 if (import.meta.env.MODE === 'development') {
   const { worker } = await import('./mocks/browser')
-  worker.start()
+  worker.start({ onUnhandledRequest: 'bypass' })
 }
 
 createApp(App).use(router).component('QuillEditor', QuillEditor).mount('#app')
