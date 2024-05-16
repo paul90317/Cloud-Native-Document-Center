@@ -5,6 +5,6 @@ Document service. Providing CRUD method of docs.
 
 ### docker
 ```
-docker build -t doc-service .
-docker run -p 8081:8081 --name doc-service doc-service
+docker build -t document-service .
+docker run -p 8081:8081 --name document-service document-service
 ```
