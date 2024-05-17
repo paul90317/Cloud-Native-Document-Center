@@ -1,9 +1,8 @@
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
+const { verifyCookie, sql_file, signJWT } = require('../utils')
 require('dotenv').config();
-const { GOOGLE_CLIENT_ID, GOOGLE_SECRET_KEY, JWT_SECRET } = process.env;
-const { authJWT, sql_execute } = require('../utils')
+const { GOOGLE_CLIENT_ID, GOOGLE_SECRET_KEY } = process.env;
 
 function get_client(callback_url) {
   return new OAuth2Client({
@@ -33,9 +32,9 @@ router.get('/login', (req, res) => {
   calling('http://localhost/google/login/callback', res)
 });
 
-router.get('/bind', authJWT, (req, res) => {
+router.get('/bind', verifyCookie, (req, res) => {
   if (!req.user)
-    return res.redirect('/google_bind_fail');
+    return res.sendStatus(401);
   calling('http://localhost/google/bind/callback', res)
 });
 
@@ -48,27 +47,30 @@ router.get('/login/callback', async (req, res) => {
     client.setCredentials(tokens);
 
     // get the user info from Google
-    const userInfo = await client.request({
+    var userInfo = await client.request({
       url: 'https://www.googleapis.com/oauth2/v3/userinfo'
-    })
-
-    // get login information
-    sql_execute('select account from users where email = ?', [userInfo.data.email], result => {
-      if (result.length == 1) {
-        const token = jwt.sign(result[0], JWT_SECRET); // result[0] = { account : ... }
-        res.cookie('token', token)
-        res.sendStatus(200);
-      } else {
-        res.sendStatus(401);
-      }
     })
   } catch (error) {
     console.log(error)
-    res.sendStatus(401);
+    return res.sendStatus(401);
   }
+
+  // get login information
+  sql_file('sql/google/login.sql', [userInfo.data.email], result => {
+    if (!result)
+      return res.sendStatus(500);
+    console.log(result);
+    if (result.length) {
+      const token = signJWT(result[0]).split(' ')[1]; // result[0] = { account : ... }
+      res.cookie('token', token)
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(404);
+    }
+  })
 });
 
-router.get('/bind/callback', authJWT, async (req, res) => {
+router.get('/bind/callback', verifyCookie, async (req, res) => {
   try {
     if (!req.user)
       return res.sendStatus(401);
@@ -85,20 +87,12 @@ router.get('/bind/callback', authJWT, async (req, res) => {
     console.log(error)
     res.sendStatus(401);
   }
-  try {
-    // save email
-    sql_execute('select account from users where email = ?', [userInfo.data.email], result => {
-      if (result.length == 0) {
-        sql_execute('update users set email = ? where account = ?', [userInfo.data.email, req.user.account])
-        res.sendStatus(200);
-      } else {
-        res.sendStatus(400);
-      }
-    })
-  } catch (error) {
-    console.log(error)
-    res.sendStatus(400);
-  }
+
+  sql_file('sql/google/bind.sql', [req.user.account, userInfo.data.email], result => {
+    if (!result)
+      return res.sendStatus(500);
+    res.sendStatus(result[0].status_code)
+  })
 });
 
 module.exports = router;
