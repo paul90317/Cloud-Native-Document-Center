@@ -26,4 +26,4 @@ app.get('/info', verifyJWT, async (req, res) => {
   })
 })
 
-app.listen(80);
+module.exports = app
