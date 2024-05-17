@@ -3,8 +3,15 @@ Document service. Providing CRUD method of docs.
 
 ## Usage
 
-### docker
+### setup
+```sh
+cp .env.sample .env
+
+// edit the .env file if needed
 ```
+
+### docker
+```sh
 docker build -t document-service .
 docker run -p 8081:8081 --name document-service document-service
 ```
