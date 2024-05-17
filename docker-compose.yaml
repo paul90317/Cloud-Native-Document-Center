@@ -20,6 +20,8 @@ services:
   mysql:
     container_name: mysql
     build: ./mysql
+    ports:
+      - "3306:3306"
 
   image-service:
     container_name: image-service

@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "root",
+    "password": "root",
+    "database": "doc_center",
+    "host": "mysql",
+    "dialect": "mysql"
+  }
+}

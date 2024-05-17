@@ -3,9 +3,13 @@ var router = express.Router();
 
 const fs = require('fs');
 
+// handlers modules
 const authenticator = require('../handler/authenticator');
 const imageSaver = require('../handler/imageSaver');
 const fileManager = require('../handler/fileManager');
+
+// database modules
+const db = require('../models');
 
 /**
  * @swagger
@@ -33,7 +37,17 @@ const fileManager = require('../handler/fileManager');
  *         description: User not found
  */
 router.get('/ids', authenticator.getUserInfo, (req, res) => {
-  console.log(req.email);
+  const db = require('../models');
+
+  // TODO: get all image ids of the user from the database
+
+  // db.sequelize.sync().then(() => {
+  //   db.images.findAll().then(image => {
+  //     console.log("All image:", image);
+  //     res.send(image);
+  //   });
+  // });
+
   const files = fileManager.listFiles(req.email)
   res.send(files);
 });
@@ -73,13 +87,17 @@ router.get('/ids', authenticator.getUserInfo, (req, res) => {
  *         description: User not found
  */
 router.get('/:id', authenticator.getUserInfo, (req, res) => {
+  // find the corresponding document of the image
+
+  // check if the user is the document owner
+
   const filePath = 'static/' + req.email + '/' + req.params.id;
   console.log(filePath);
-  if(!fs.existsSync(filePath)) {
+  if (!fs.existsSync(filePath)) {
     res.status(404).send('File not found');
   }
   else {
-    res.download(filePath);
+    res.sendFile(filePath, { root: './' });
   }
 });
 
@@ -100,6 +118,8 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
  *               file:
  *                 type: string
  *                 format: binary
+ *               doc-id:
+ *                 type: integer
  *     security:
  *       - bearerAuth: []
  * 
@@ -124,10 +144,40 @@ router.post('/', authenticator.getUserInfo, imageSaver.single('file'), (req, res
   const mimetype = fileManager.getMimeType(req.file.path);
   const validMimetype = ['image/png', 'image/jpeg'];
 
-  if(!validMimetype.includes(mimetype)) {
+  // check if the uploaded file is an image
+
+  // check if the user is the document owner
+
+  // create document if it does not exist
+  db.sequelize.sync().then(() => {
+    db.documents.findOrCreate({
+      where: {
+        id: req.body['doc-id']
+      },
+      defaults: {
+        id: req.body['doc-id'],
+        creator: req.email,
+        description: '',
+        title: 'title',
+        changed_time: new Date(),
+        created_time: new Date()
+      }
+    });
+  });
+
+  // save the metadata to the database
+  db.sequelize.sync().then(() => {
+    db.images.create({
+      id: req.file.filename,
+      document: req.body['doc-id'],
+      created_time: new Date()
+    })
+  });
+
+  if (!validMimetype.includes(mimetype)) {
     res.status(415).send('Unsupported media type');
   } else {
-    res.status(200).send({id: req.file.filename});
+    res.status(200).send({ id: req.file.filename });
   }
 });
 
