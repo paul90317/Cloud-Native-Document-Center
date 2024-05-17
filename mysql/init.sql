@@ -5,56 +5,48 @@ CREATE DATABASE IF NOT EXISTS doc_center;
 USE doc_center;
 
 CREATE TABLE `users` (
-  `account` varchar(255) PRIMARY KEY,
-  `passwd` varchar(255),
+  `account` varchar(255) PRIMARY KEY NOT NULL,
+  `passwd` varchar(255) NOT NULL,
+  `manager` bool NOT NULL DEFAULT false,
+  `email` varchar(255) UNIQUE,
   `name` varchar(255),
-  `email` varchar(255),
   `phone` varchar(255),
-  `profile` text,
-  `manager` bool,
-  `created_time` timestamp
+  `profile` text
 );
 
 CREATE TABLE `documents` (
-  `id` varchar(255) PRIMARY KEY,
-  `creator` varchar(255),
-  `description` text,
-  `title` varchar(255),
-  `changed_time` timestamp,
-  `created_time` timestamp
+  `id` int PRIMARY KEY NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `creator` varchar(255) NOT NULL,
+  `reviewer` varchar(255) NOT NULL,
+  `status` int NOT NULL DEFAULT 0,
+  `message` text
 );
 
-CREATE TABLE `user_role` (
-  `document` varchar(255),
-  `user` varchar(255),
-  `role` integer,
-  `status` integer,
-  `created_time` timestamp,
+CREATE TABLE `roles` (
+  `document` int NOT NULL,
+  `user` varchar(255) NOT NULL,
+  `role` int NOT NULL,
   PRIMARY KEY (`document`, `user`)
 );
 
-CREATE TABLE `images` (
-  `id` varchar(255) PRIMARY KEY,
-  `document` varchar(255),
-  `created_time` timestamp
-);
-
 CREATE TABLE `logs` (
-  `id` integer PRIMARY KEY,
-  `document` varchar(255),
-  `user` varchar(255),
-  `type` integer,
-  `title` varchar(255),
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `document` int NOT NULL,
+  `user` varchar(255) NOT NULL,
+  `type` int NOT NULL,
   `message` text,
-  `created_time` timestamp
+  `time` timestamp
 );
 
-ALTER TABLE `user_role` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
+ALTER TABLE users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE roles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE documents CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE logs CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-ALTER TABLE `user_role` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
-
-ALTER TABLE `images` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
-
+ALTER TABLE `roles` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
+ALTER TABLE `roles` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
 ALTER TABLE `logs` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
-
 ALTER TABLE `logs` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
+ALTER TABLE `documents` ADD FOREIGN KEY (`creator`) REFERENCES `users` (`account`);
+ALTER TABLE `documents` ADD FOREIGN KEY (`reviewer`) REFERENCES `users` (`account`);
