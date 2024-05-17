@@ -15,3 +15,6 @@ cp .env.sample .env
 docker build -t document-service .
 docker run -p 8081:8081 --name document-service document-service
 ```
+
+### API document
+http://localhost:8081/api-docs/

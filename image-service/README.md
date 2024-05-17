@@ -15,3 +15,6 @@ cp .env.sample .env
 docker build -t image-service .
 docker run -p 8082:8082 --name image-service image-service
 ```
+
+### API document
+http://localhost:8082/api-docs/
