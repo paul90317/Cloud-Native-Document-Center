@@ -6,99 +6,99 @@ const { GOOGLE_CLIENT_ID, GOOGLE_SECRET_KEY, JWT_SECRET } = process.env;
 const { authJWT, sql_execute } = require('../utils')
 
 function get_client(callback_url) {
-    return new OAuth2Client({
-        clientId: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_SECRET_KEY,
-        redirectUri: callback_url
-    });
+  return new OAuth2Client({
+    clientId: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_SECRET_KEY,
+    redirectUri: callback_url
+  });
 }
 
 
 function calling(callback_url, res) {
-    // generate Google authorization page URL, and define the type of indo in "scope"
-    // ref：https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
-    const client = get_client(callback_url)
-    const authorizeUrl = client.generateAuthUrl({
-        access_type: 'offline',
-        scope: [
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email',
-        ],
-    });
+  // generate Google authorization page URL, and define the type of indo in "scope"
+  // ref：https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
+  const client = get_client(callback_url)
+  const authorizeUrl = client.generateAuthUrl({
+    access_type: 'offline',
+    scope: [
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+    ],
+  });
 
-    res.redirect(authorizeUrl);
+  res.redirect(authorizeUrl);
 }
 
 router.get('/login', (req, res) => {
-    calling('http://localhost/google/login/callback', res)
+  calling('http://localhost/google/login/callback', res)
 });
 
 router.get('/bind', authJWT, (req, res) => {
-    if(!req.user)
-        return res.redirect('/google_bind_fail');
-    calling('http://localhost/google/bind/callback', res)
+  if (!req.user)
+    return res.redirect('/google_bind_fail');
+  calling('http://localhost/google/bind/callback', res)
 });
 
 router.get('/login/callback', async (req, res) => {
-    try {
-        // use "code" to get the token(google access token)
-        const { code } = req.query;
-        client = get_client('http://localhost/google/login/callback');
-        const { tokens } = await client.getToken(code);
-        client.setCredentials(tokens);
+  try {
+    // use "code" to get the token(google access token)
+    const { code } = req.query;
+    client = get_client('http://localhost/google/login/callback');
+    const { tokens } = await client.getToken(code);
+    client.setCredentials(tokens);
 
-        // get the user info from Google
-        const userInfo = await client.request({
-            url: 'https://www.googleapis.com/oauth2/v3/userinfo'
-        })
+    // get the user info from Google
+    const userInfo = await client.request({
+      url: 'https://www.googleapis.com/oauth2/v3/userinfo'
+    })
 
-        // get login information
-        sql_execute('select account from users where email = ?', [userInfo.data.email], result => {
-            if (result.length == 1) {
-                const token = jwt.sign(result[0], JWT_SECRET); // result[0] = { account : ... }
-                res.cookie('token', token)
-                res.sendStatus(200);
-            } else {
-                res.sendStatus(401);
-            }
-        })
-    } catch (error) {
-        console.log(error)
+    // get login information
+    sql_execute('select account from users where email = ?', [userInfo.data.email], result => {
+      if (result.length == 1) {
+        const token = jwt.sign(result[0], JWT_SECRET); // result[0] = { account : ... }
+        res.cookie('token', token)
+        res.sendStatus(200);
+      } else {
         res.sendStatus(401);
-    }
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(401);
+  }
 });
 
 router.get('/bind/callback', authJWT, async (req, res) => {
-    try {
-        if(!req.user)
-            return res.sendStatus(401);
-        const { code } = req.query;
-        client = get_client('http://localhost/google/bind/callback');
-        const { tokens } = await client.getToken(code);
-        client.setCredentials(tokens);
+  try {
+    if (!req.user)
+      return res.sendStatus(401);
+    const { code } = req.query;
+    client = get_client('http://localhost/google/bind/callback');
+    const { tokens } = await client.getToken(code);
+    client.setCredentials(tokens);
 
-        // get the user info from Google
-        var userInfo = await client.request({
-            url: 'https://www.googleapis.com/oauth2/v3/userinfo'
-        });
-    }catch(error){
-        console.log(error)
-        res.sendStatus(401);
-    }
-    try{
-        // save email
-        sql_execute('select account from users where email = ?', [userInfo.data.email], result => {
-            if (result.length == 0) {
-                sql_execute('update users set email = ? where account = ?', [userInfo.data.email, req.user.account])
-                res.sendStatus(200);
-            } else {
-                res.sendStatus(400);
-            }
-        })
-    } catch (error) {
-        console.log(error)
+    // get the user info from Google
+    var userInfo = await client.request({
+      url: 'https://www.googleapis.com/oauth2/v3/userinfo'
+    });
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(401);
+  }
+  try {
+    // save email
+    sql_execute('select account from users where email = ?', [userInfo.data.email], result => {
+      if (result.length == 0) {
+        sql_execute('update users set email = ? where account = ?', [userInfo.data.email, req.user.account])
+        res.sendStatus(200);
+      } else {
         res.sendStatus(400);
-    }
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(400);
+  }
 });
 
 module.exports = router;
