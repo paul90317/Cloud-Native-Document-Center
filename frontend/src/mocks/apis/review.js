@@ -31,7 +31,7 @@ const reviewHandlers = [
   http.delete(api('/file/:file_id/reviewer/:account'), () => {
     return HttpResponse.status(204)
   }),
-  // reviewFile(file_id: int, data: object)
+  // createReviewOnFile(file_id: int, data: object)
   http.post(api('/file/:file_id/review'), () => {
     return HttpResponse.status(204)
   }),
