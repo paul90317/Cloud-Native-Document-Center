@@ -40,6 +40,8 @@ router.get('/bind', verifyCookie, (req, res) => {
 
 router.get('/login/callback', async (req, res) => {
   try {
+    if (!req.query || !req.query.code)
+      return res.sendStatus(400)
     // use "code" to get the token(google access token)
     const { code } = req.query;
     client = get_client('http://localhost/google/login/callback');
@@ -72,6 +74,8 @@ router.get('/login/callback', async (req, res) => {
 
 router.get('/bind/callback', verifyCookie, async (req, res) => {
   try {
+    if (!req.query || !req.query.code)
+      return res.sendStatus(400)
     if (!req.user)
       return res.sendStatus(401);
     const { code } = req.query;

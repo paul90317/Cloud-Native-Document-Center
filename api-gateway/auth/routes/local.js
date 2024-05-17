@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const { signJWT, sql_file } = require('../utils')
 router.post('/register', (req, res) => {
+  if (!req.body || !req.body.account || !req.body.passwd)
+    return res.sendStatus(400);
   sql_file('sql/local/register.sql', [req.body.account, req.body.passwd], result => {
     if (!result)
       return res.sendStatus(500);
@@ -9,6 +11,8 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
+  if (!req.body || !req.body.account || !req.body.passwd)
+    return res.sendStatus(400);
   sql_file('sql/local/login.sql', [req.body.account, req.body.passwd], result => {
     if (!result)
       return res.sendStatus(500);

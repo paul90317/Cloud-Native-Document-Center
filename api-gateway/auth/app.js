@@ -21,6 +21,7 @@ app.get('/info', verifyJWT, async (req, res) => {
       return res.sendStatus(500);
     user = result[0];
     delete user.passwd;
+    res.status(200);
     res.json(user);
   })
 })
