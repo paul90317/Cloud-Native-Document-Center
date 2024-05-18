@@ -16,18 +16,23 @@ export default ({ mode }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
+    build: {
+      minify: true,
+      brotliSize: false,
+      outDir: 'dist'
+    },
     server: {
-      proxy: {
-        '/api': {
-          target: process.env.VITE_API_HOST,
-          changeOrigin: true,
-          followRedirects: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-          cookieDomainRewrite: {
-            '*': ''
-          }
-        }
-      },
+      // proxy: {
+      //   '/api/auth': {
+      //     target: process.env.VITE_AUTH_HOST,
+      //     changeOrigin: true,
+      //     followRedirects: true,
+      //     rewrite: (path) => path.replace(/^\/api\/auth/, ''),
+      //     cookieDomainRewrite: {
+      //       '*': ''
+      //     }
+      //   },
+      // },
       port: 3000,
     }
   })

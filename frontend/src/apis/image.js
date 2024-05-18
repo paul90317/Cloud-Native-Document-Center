@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/request/image'
 
 /**
  * Get ids of all images uploaded by the user.

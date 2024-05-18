@@ -1,12 +1,6 @@
 version: '3.8'
 
 services:
-  frontend:
-    container_name: frontend
-    build: ./frontend
-    ports:
-      - "3000:3000"
-
   nginx:
     container_name: nginx
     build: ./api-gateway/nginx
@@ -34,3 +28,13 @@ services:
     build: ./document-service
     ports:
       - "8081:8081"
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth
+      - image-service
+      - document-service

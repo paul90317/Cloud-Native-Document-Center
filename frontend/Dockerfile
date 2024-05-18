@@ -7,7 +7,12 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY src/ /app/src/
+COPY .env.production /app/
+COPY public/ /app/public/
+COPY index.html /app/
+COPY 50x.html /app/
+COPY vite.config.js /app/
 
 RUN npm run build
 
@@ -20,5 +25,5 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # 新增 nginx 配置
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 3000
 CMD ["nginx", "-g", "daemon off;"]

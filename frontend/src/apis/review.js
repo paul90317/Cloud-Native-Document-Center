@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/request/review'
 
 /**
  * 當 JWT 擁有者是目標帳號或管理者時，回傳目標帳號須審核的檔案，包含已經審核和未經審核。

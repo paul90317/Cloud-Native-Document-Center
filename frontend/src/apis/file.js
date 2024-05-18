@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/request/file'
 
 /**
  * Get filenames & ids of all docs uploaded by the user.

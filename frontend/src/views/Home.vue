@@ -1,3 +1,22 @@
+<script setup>
+// import { localLogin, logalRegister } from '@/apis/auth';
+import { onMounted } from 'vue';
+
+onMounted(async () => {
+  // const registerResponse = await logalRegister({
+  //   account: 'test1',
+  //   passwd: 'test1',
+  // })
+  // console.log(registerResponse)
+
+  // const loginResponse = await localLogin({
+  //   account: 'test1',
+  //   passwd: 'test1',
+  // })
+  // console.log(loginResponse);
+});
+</script>
+
 <template>
   <div class="m-4 p-5 bg-light rounded-3">
     <div class="container py-4">
@@ -26,7 +45,5 @@
     </div>
   </div>
 </template>
-
-<script></script>
 
 <style scoped></style>

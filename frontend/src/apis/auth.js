@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/request/auth'
 
 /**
  * 用來第三方登入用的，會希望可以透過反向代理直接和瀏覽器互動。
