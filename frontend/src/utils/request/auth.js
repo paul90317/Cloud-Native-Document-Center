@@ -8,6 +8,10 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   (config) => {
+    // check / getToken from useUserStore(pinia store)
+    // if (hasToken) {
+    //   config.headers['Authorization'] = 'Bearer ' + getAccessToken()
+    // }
     return config
   },
   (error) => {

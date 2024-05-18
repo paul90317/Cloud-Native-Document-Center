@@ -59,6 +59,7 @@ frontend/
 - Build: [Vite](https://v4.vitejs.dev/)
 - UI: [Bootstrap 5](https://getbootstrap.com/docs/5.3)
 - Rich text editor: VueQuill
+- State management: Pinia
 - Mock: MSW + Faker.js
 
 ### Package
