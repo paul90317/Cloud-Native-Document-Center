@@ -5,14 +5,12 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     passwd: DataTypes.STRING,
+    manager: DataTypes.BOOLEAN,
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     phone: DataTypes.STRING,
     profile: DataTypes.TEXT,
-    manager: DataTypes.BOOLEAN,
-    created_time: DataTypes.DATE,
   }, {
-    timestamps: false,
     tableName: 'users'
   });
 

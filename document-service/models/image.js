@@ -4,11 +4,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       primaryKey: true
     },
-    document: DataTypes.STRING,
-    created_time: DataTypes.TIME
+    document: DataTypes.INTEGER,
   }, {
-    tableName: 'images',
-    timestamps: false
+    tableName: 'images'
   });
 
   return images;

@@ -30,6 +30,11 @@ CREATE TABLE `roles` (
   PRIMARY KEY (`document`, `user`)
 );
 
+CREATE TABLE `images` (
+  `id` varchar(255) PRIMARY KEY NOT NULL,
+  `document` int NOT NULL,
+);
+
 CREATE TABLE `logs` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `document` int NOT NULL,
@@ -46,6 +51,7 @@ ALTER TABLE logs CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 ALTER TABLE `roles` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
 ALTER TABLE `roles` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
+ALTER TABLE `images` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
 ALTER TABLE `logs` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
 ALTER TABLE `logs` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
 ALTER TABLE `documents` ADD FOREIGN KEY (`creator`) REFERENCES `users` (`account`);
