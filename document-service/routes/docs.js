@@ -3,7 +3,12 @@ var router = express.Router();
 
 const fs = require('fs');
 
+// handlers modules
 const authenticator = require('../handler/authenticator');
+const documentSaver = require('../handler/documentSaver');
+
+// database modules
+const db = require('../models');
 
 /**
  * @swagger
@@ -85,8 +90,32 @@ router.get('/all', authenticator.getUserInfo, (req, res) => {
  *       '415':
  *         description: Unsupported media type
  */
-router.post('/', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
+router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, res) => {
+  // check if the creator is the same as the user
+  if (req.email !== req.body.creator) {
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  // check if the file is uploaded
+  if (!req.file) {
+    res.status(415).send('Unsupported media type');
+    return;
+  }
+
+  // create a new doc
+  db.sequelize.models.documents.create({
+    id: req.body.filename,
+    creator: req.email,
+    description: '',
+    title: req.body.filename,
+    created_time: new Date(),
+    changed_time: new Date()
+  }).then(doc => {
+    res.send(doc.id);
+  }).catch(err => {
+    res.status(500).send(err);
+  });
 });
 
 
