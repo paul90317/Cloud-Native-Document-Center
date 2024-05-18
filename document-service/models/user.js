@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     phone: DataTypes.STRING,
     profile: DataTypes.TEXT,
   }, {
+    timestamps: true,
     tableName: 'users'
   });
 

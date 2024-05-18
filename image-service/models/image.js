@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     document: DataTypes.INTEGER,
   }, {
+    timestamps: true,
     tableName: 'images'
   });
 

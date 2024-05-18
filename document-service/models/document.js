@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.INTEGER,
     message: DataTypes.TEXT,
   }, {
+    timestamps: true,
     tableName: 'documents'
   });
 

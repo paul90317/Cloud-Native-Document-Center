@@ -91,6 +91,7 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
 
   // check if the user is the document owner
 
+  // return the image file
   const filePath = 'static/' + req.email + '/' + req.params.id;
   console.log(filePath);
   if (!fs.existsSync(filePath)) {
@@ -148,37 +149,33 @@ router.post('/', authenticator.getUserInfo, imageSaver.single('file'), (req, res
 
   // check if the user is the document owner
 
-  // create document if it does not exist
+  // check if the document exists
   db.sequelize.sync().then(() => {
-    db.documents.findOrCreate({
+    db.documents.findOne({
       where: {
         id: req.body['doc-id']
-      },
-      defaults: {
-        id: req.body['doc-id'],
-        creator: req.email,
-        description: '',
-        title: 'title',
-        changed_time: new Date(),
-        created_time: new Date()
+      }
+    }).then(document => {
+      if (document === null) {
+        res.status(404).send('Document not found');
+        return;
+      }
+
+      // save the metadata to the database
+      db.sequelize.sync().then(() => {
+        db.images.create({
+          id: req.file.filename,
+          document: req.body['doc-id'],
+        })
+      });
+
+      if (!validMimetype.includes(mimetype)) {
+        res.status(415).send('Unsupported media type');
+      } else {
+        res.status(200).send({ id: req.file.filename });
       }
     });
   });
-
-  // save the metadata to the database
-  db.sequelize.sync().then(() => {
-    db.images.create({
-      id: req.file.filename,
-      document: req.body['doc-id'],
-      created_time: new Date()
-    })
-  });
-
-  if (!validMimetype.includes(mimetype)) {
-    res.status(415).send('Unsupported media type');
-  } else {
-    res.status(200).send({ id: req.file.filename });
-  }
 });
 
 module.exports = router;

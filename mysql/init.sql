@@ -11,28 +11,36 @@ CREATE TABLE `users` (
   `email` varchar(255) UNIQUE,
   `name` varchar(255),
   `phone` varchar(255),
-  `profile` text
+  `profile` text,
+  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `documents` (
-  `id` int PRIMARY KEY NOT NULL,
+  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `creator` varchar(255) NOT NULL,
   `reviewer` varchar(255) NOT NULL,
   `status` int NOT NULL DEFAULT 0,
-  `message` text
+  `message` text,
+  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `roles` (
   `document` int NOT NULL,
   `user` varchar(255) NOT NULL,
   `role` int NOT NULL,
+  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`document`, `user`)
 );
 
 CREATE TABLE `images` (
   `id` varchar(255) PRIMARY KEY NOT NULL,
   `document` int NOT NULL,
+  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `logs` (
@@ -41,7 +49,8 @@ CREATE TABLE `logs` (
   `user` varchar(255) NOT NULL,
   `type` int NOT NULL,
   `message` text,
-  `time` timestamp
+  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 ALTER TABLE users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -56,3 +65,8 @@ ALTER TABLE `logs` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
 ALTER TABLE `logs` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
 ALTER TABLE `documents` ADD FOREIGN KEY (`creator`) REFERENCES `users` (`account`);
 ALTER TABLE `documents` ADD FOREIGN KEY (`reviewer`) REFERENCES `users` (`account`);
+
+-- Insert the default admin account
+INSERT INTO `users` (`account`, `passwd`, `manager`, `email`, `name`, `phone`, `profile`) VALUES ('admin', 'admin', true, 'lewis.luo.nycu@gmail.com', 'Admin', '0912345678', 'Admin of this system.');
+-- Insert the default document for testing
+-- INSERT INTO `documents` (`name`, `creator`, `reviewer`, `status`, `message`) VALUES ('Test Document', 'admin', 'admin', 0, 'This is a test document.');

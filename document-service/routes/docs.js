@@ -45,7 +45,35 @@ const db = require('../models');
  *         description: User not found
  */
 router.get('/all', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
+  // find the account of the user
+  db.sequelize.models.users.findOne({
+    where: {
+      email: req.email
+    }
+  }).then(user => {
+    if (user) {
+      // find all docs of the user
+      db.sequelize.models.documents.findAll({
+        where: {
+          creator: user.account
+        }
+      }).then(docs => {
+        // return the filename & id & status of all docs
+        docs = docs.map(doc => {
+          return {
+            filename: doc.name,
+            id: doc.id,
+            status: doc.status
+          }
+        });
+        res.send(docs);
+      }).catch(err => {
+        res.status(500).send(err);
+      });
+    } else {
+      res.status(404).send('User not found');
+    }
+  })
 });
 
 
@@ -67,6 +95,7 @@ router.get('/all', authenticator.getUserInfo, (req, res) => {
  *                 type: string
  *               creator:
  *                 type: string
+ *                 description: Account of the creator of the document
  *               file:
  *                 type: string
  *                 format: binary
@@ -76,43 +105,38 @@ router.get('/all', authenticator.getUserInfo, (req, res) => {
  *     responses:
  *       '200':
  *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
+ *          text/plain:
+ *           schema:
+ *            type: string
  *         description: A successful response
- * 
+ *
  *       '404':
  *         description: User not found
  * 
+ *       '409':
+ *         description: Document is already exist
+ *
  *       '415':
  *         description: Unsupported media type
  */
 router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, res) => {
-  // check if the creator is the same as the user
-  if (req.email !== req.body.creator) {
-    res.status(401).send('Unauthorized');
-    return;
-  }
+  // check if the creator is the same as the account of the user
+
 
   // check if the file is uploaded
-  if (!req.file) {
-    res.status(415).send('Unsupported media type');
-    return;
+  if (req.fileExists) {
+    return res.status(409).send('File already exists');
   }
 
   // create a new doc
   db.sequelize.models.documents.create({
-    id: req.body.filename,
-    creator: req.email,
-    description: '',
-    title: req.body.filename,
-    created_time: new Date(),
-    changed_time: new Date()
+    name: req.body.filename,
+    creator: req.body.creator,
+    reviewer: req.body.creator,
+    status: 0,
+    message: ''
   }).then(doc => {
-    res.send(doc.id);
+    res.send("Document created");
   }).catch(err => {
     res.status(500).send(err);
   });
@@ -170,7 +194,38 @@ router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, 
  *         description: User not found
  */
 router.get('/:id', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
+  // check if the user is the document owner
+
+  // return the doc
+  db.sequelize.models.users.findOne({
+    where: {
+      email: req.email
+    }
+  }).then(user => {
+    if (user) {
+      // find the document name by id
+      db.sequelize.models.documents.findOne({
+        where: {
+          id: req.params.id
+        }
+      }).then(doc => {
+        if (doc) {
+          const filePath = 'static/' + user.account + '/' + doc.name;
+          if (!fs.existsSync(filePath)) {
+            res.status(404).send('File not found');
+          } else {
+            res.sendFile(filePath, { root: './' });
+          }
+        } else {
+          res.status(404).send('Document not found');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      });
+    } else {
+      res.status(404).send('User not found');
+    }
+  })
 });
 
 
