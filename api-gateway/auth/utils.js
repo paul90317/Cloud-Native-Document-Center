@@ -7,7 +7,12 @@ JWT_SECRET = Math.random().toString(36).substr(2, 9)
 // express callback function
 function verifyJWT(req, res, next) {
   try {
-    const token = req.headers.authorization.split(' ')[1]
+    if (!req.headers.authorization)
+      return next();
+    let auths = req.headers.authorization.split(' ')
+    if (auths.length != 2)
+      return next();
+    const token = auths[1]
     var user = jwt.verify(token, JWT_SECRET);
     req.user = user;
   } catch (error) {
@@ -18,6 +23,8 @@ function verifyJWT(req, res, next) {
 
 function verifyCookie(req, res, next) {
   try {
+    if (!req.cookies || !req.cookies.token)
+      return next()
     const token = req.cookies.token
     var user = jwt.verify(token, JWT_SECRET);
     req.user = user;
