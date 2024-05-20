@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 const count = ref(6)
+
 </script>
 
 <template>
@@ -46,12 +47,42 @@ const count = ref(6)
             <h5 class="card-title">
               檔名
             </h5>
-            <p class="card-text">
-              其他資訊
-            </p>
+            <div
+                class="btn-group"
+                role="group"
+                aria-label="First group"
+              >
+                <button class="btn btn-outline-success" @click="showDocumentProfile"><i class="bi bi-info-square" /></button>
+                <document-profile v-if="showModal" ref="documentProfile" @close="hideDocumentProfile" />
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  
 </template>
+
+<script>
+import DocumentProfile from '@/components/document_info.vue';
+
+export default {
+  data() {
+    return {
+      showModal: false
+    };
+  },
+  components: {
+    DocumentProfile
+  },
+  methods: {
+    showDocumentProfile() {
+      this.showModal = !this.showModal;
+    },
+    hideDocumentProfile() {
+      this.showModal = false;
+    }
+  }
+  
+};
+</script>
