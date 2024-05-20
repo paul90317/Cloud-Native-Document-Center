@@ -1,96 +1,41 @@
 <template>
-  <el-card :size="20" class="container mt-3 mx-auto mt-4">
-    <el-form
-      ref="newsFormRef"
-      status-icon
-      label-width="120px"
-      label-position="top"
-      :model="newsForm"
-      :rules="newsFormRules"
-    >
-      <!-- Title -->
-      <el-form-item label="">
-        <div style="display: flex; justify-content: center align-items: center;">
-          <span>Title&nbsp;:&nbsp;</span>
-          <el-input v-model="newsForm.title" />
+  <div class="card mt-3 mx-auto mt-4">
+    <div class="card-body">
+      <form @submit.prevent="submitForm">
+        <!-- Title -->
+        <div class="form-group mb-3">
+          <label for="title">Title : </label>
+          <input type="text" class="form-control" id="title" v-model="newsForm.title">
         </div>
-      </el-form-item>
-      <!-- Content -->
-      <el-form-item label="Content">
-        <Editor
-          :submit-and-clear-editor="submitAndClearEditor"
-          @emit-on-editor-change="handleEditorChange"
-          @emit-on-submit-and-editor-clear="handleSubmitAndEditorClear"
-        />
-      </el-form-item>
-      <!-- ...省略 Category 和 cover-->
-      <!-- 送審按鈕 儲存按鈕 回復按鈕-->
-      <el-form-item>
-        <el-popconfirm
-          title="Are you sure to submit to Inspector？"
-          cancel-button-text="no"
-          confirm-button-text="yes"
-          @confirm="submitForm(newsFormRef)"
-        >
-          <template #reference>
-            <el-button
-              size="medium"
-              class="custom-button"
-              type="primary"
-            >
-              submit
-            </el-button>
-          </template>
-        </el-popconfirm>
-        <span style="margin: 0 30px;" />
-        <el-popconfirm
-          title="Are you sure to save content to DB？"
-          cancel-button-text="no"
-          confirm-button-text="yes"
-          @confirm="saveForm(newsFormRef)"
-        >
-          <template #reference>
-            <el-button
-              size="medium"
-              class="custom-button"
-              type="primary"
-            >
-              save
-            </el-button>
-          </template>
-        </el-popconfirm>
-        <span style="margin: 0 30px;" />
-                
-        <el-popconfirm
-          title="Are you sure to retrieve content from DB？"
-          cancel-button-text="no"
-          confirm-button-text="yes"
-          @confirm="retrieveForm(newsFormRef)"
-        >
-          <template #reference>
-            <el-button
-              size="medium"
-              class="custom-button"
-              type="primary"
-            >
-              retrieve
-            </el-button>
-          </template>
-        </el-popconfirm>
-      </el-form-item>
-    </el-form>
-  </el-card>
+        <!-- Content -->
+        <div class="form-group mb-3">
+          <Editor
+            :submit-and-clear-editor="submitAndClearEditor"
+            @emit-on-editor-change="handleEditorChange"
+            @emit-on-submit-and-editor-clear="handleSubmitAndEditorClear"
+          />
+        </div>
+        <div class="form-group d-flex justify-content-between">
+          <!-- Submit Button -->
+          <button type="button" class="btn btn-outline-primary" @click="submitForm"><i class="bi bi-check-circle"></i> Submit</button>
+          <!-- Save Button -->
+          <button type="button" class="btn btn-outline-success" @click="saveForm"><i class="bi bi-save"></i> Save</button>
+          <!-- Retrieve Button -->
+          <button type="button" class="btn btn-outline-info" @click="retrieveForm"><i class="bi bi-upload"></i> Retrieve</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ElInput } from 'element-plus';
 import Editor from '@/components/Editor.vue'
 import { ref, reactive } from 'vue'
-import { ElPopconfirm } from 'element-plus';
 
 const submitAndClearEditor = ref(false)
 
 const newsForm = reactive({
+    title: '',
     content: '',
 })
 
@@ -98,25 +43,25 @@ const handleEditorChange = async (content) => {
     newsForm.content = await content
 }
 
-const saveForm = async (newsFormRef) => {
+const submitForm = async () => {
+    if (window.confirm("Are you sure you want to submit the form?")) {
+        // Submit form logic here
+    }
 }
 
-const submitForm = async (newsFormRef) => {
+const saveForm = async () => {
+    if (window.confirm("Are you sure you want to save the form?")) {
+        // Save form logic here
+    }
 }
-const retrieveForm = async (newsFormRef) => {
+
+const retrieveForm = async () => {
+    if (window.confirm("Are you sure you want to retrieve the form?")) {
+        // Retrieve form logic here
+    }
 }
 
 const handleSubmitAndEditorClear = async (value) => {
     submitAndClearEditor.value = await value
 }
 </script>
-<style>
-.custom-button {
-    border-radius: 50px;
-    background-color: #1890ff;
-    color: #fff;
-    height: 40px;
-    line-height: 40px;
-    padding: 0 20px;
-}
-</style>

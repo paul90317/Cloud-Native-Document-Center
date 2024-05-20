@@ -5,25 +5,11 @@
       <div class="me-5 text-secondary">
         TextLength：{{ TextLength }}
       </div>
-      <!--清空按鈕-->
-      <el-popconfirm
-        title="Are you sure to clear content？"
-        cancel-button-text="no"
-        confirm-button-text="yes"
-        @confirm="clearContent"
-      >
-        <template #reference>
-          <el-button
-            size="medium"
-            type="danger"
-            style="border-radius: 50px; background-color: #1890ff; color: #fff; height: 40px; line-height: 40px; padding: 0 20px;"
-          >
-            clear
-          </el-button>
-        </template>
-      </el-popconfirm>
+      <!-- Clear Button Triggering Modal -->
+      <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#clearModal">
+        <i class="bi bi-trash"></i> Clear
+      </button>
     </div>
-    
     <QuillEditor
       ref="myQuillEditor" 
       theme="snow"
@@ -35,13 +21,30 @@
       @update:content="onEditorChange($event)"
     />
   </div>
+  <!-- Clear Modal -->
+  <div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="clearModalLabel">Confirmation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure to clear content?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" @click="clearContent" data-bs-dismiss="modal">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 
 
 <script setup>
 import { QuillEditor } from '@vueup/vue-quill';
-import { ElPopconfirm } from 'element-plus';
 import BlotFormatter from 'quill-blot-formatter';
 import ImageUploader from 'quill-image-uploader';
 import { onMounted, ref, toRaw, watch } from 'vue';
