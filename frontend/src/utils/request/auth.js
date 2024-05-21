@@ -1,5 +1,5 @@
-import axios from 'axios'
-import {useUserStore} from "../../stores/user.js";
+import axios from 'axios';
+import { useUserStore } from "../../stores/user.js";
 
 export const baseURL = import.meta.env.DEV ? "/api" : "/api/auth"
 
@@ -15,7 +15,7 @@ service.interceptors.request.use(
     // check / getToken from useUserStore(pinia store)
     const store = useUserStore()
     if (store.hasToken) {
-      config.headers['Authorization'] = 'Bearer ' + store.getAccessToken()
+      config.headers['Authorization'] = 'Bearer ' + store.getAccessToken
     }
     return config
   },
