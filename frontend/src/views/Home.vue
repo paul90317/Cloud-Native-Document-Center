@@ -1,19 +1,19 @@
 <script setup>
-// import { localLogin, logalRegister } from '@/apis/auth';
+import { localLogin, logalRegister } from '@/apis/auth';
 import { onMounted } from 'vue';
 
 onMounted(async () => {
-  // const registerResponse = await logalRegister({
-  //   account: 'test1',
-  //   passwd: 'test1',
-  // })
-  // console.log(registerResponse)
+  const registerResponse = await logalRegister({
+    account: 'test1',
+    passwd: 'test1',
+  })
+  console.log(registerResponse)
 
-  // const loginResponse = await localLogin({
-  //   account: 'test1',
-  //   passwd: 'test1',
-  // })
-  // console.log(loginResponse);
+  const loginResponse = await localLogin({
+    account: 'test1',
+    passwd: 'test1',
+  })
+  console.log(loginResponse);
 });
 </script>
 

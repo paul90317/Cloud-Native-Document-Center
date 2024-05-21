@@ -95,8 +95,8 @@ frontend/
 1. `docker compose up --build -d`
   - `--build`: re-build project
   - `-d`: run in background, rather than terminal
-- frontend: `http://localhost:3000`
-- api-gatway: `http://localhost:80`
+- frontend: `http://localhost:80`
+- api-gatway: `http://localhost`
 - api-docs:
   - `http://localhost:8082/api-docs/`
   - `http://localhost:8081/api-docs/`

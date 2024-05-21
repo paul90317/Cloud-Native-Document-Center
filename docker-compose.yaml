@@ -1,15 +1,17 @@
 version: '3.8'
 
 services:
-  nginx:
-    container_name: nginx
-    build: ./api-gateway/nginx
-    ports:
-      - "80:80"
+  # nginx:
+  #   container_name: nginx
+  #   build: ./api-gateway/nginx
+  #   ports:
+  #     - "80:80"
 
   auth:
     container_name: auth
     build: ./api-gateway/auth
+    ports:
+      - "8083:8083"
 
   mysql:
     container_name: mysql
@@ -33,7 +35,7 @@ services:
     container_name: frontend
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - auth
       - image-service
