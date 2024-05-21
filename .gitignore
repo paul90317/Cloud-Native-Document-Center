@@ -1,0 +1,11 @@
+.env
+node_modules
+package-lock.json
+google.oauth.json
+static/*
+
+__MACOSX
+.DS_Store
+.idea
+
+/image-service/static/**

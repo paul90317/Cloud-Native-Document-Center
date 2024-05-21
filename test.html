@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Page</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    .btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<button class="btn" onclick="openGitHub()">Open GitHub</button>
+
+<script>
+var githubWindow;
+
+function openGitHub() {
+    // GitHub 的网址
+    var githubUrl = "https://github.com/";
+
+    // 打开一个新的浏览器窗口
+    githubWindow = window.open(githubUrl, "_blank", "width=800,height=600");
+
+    // 监听新窗口加载事件
+    githubWindow.addEventListener('load', function() {
+        // 检查页面加载状态
+        if (githubWindow.document.readyState === 'complete') {
+            // 页面加载完成
+            checkFor404();
+        }
+    });
+}
+
+function checkFor404() {
+    // 检查是否发生 404 错误
+    if (githubWindow.document.status = 404) {
+        // 页面显示 404 错误，弹出新窗口显示 "Hello, world!"
+        var helloWindow = window.open("", "_blank", "width=400,height=200");
+        helloWindow.document.write("<h1>Hello, world!</h1>");
+    }
+}
+</script>
+
+</body>
+</html>

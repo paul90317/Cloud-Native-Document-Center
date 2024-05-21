@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login and Register</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <form id="loginForm">
+    <input type="text" id="account" name="account" placeholder="Account" required>
+    <input type="password" id="passwd" name="passwd" placeholder="Password" required>
+    <button id="loginBtn">Login</button>
+    <button id="registerBtn">Register</button>
+    <button id="BindToGmail">Bind to Gmail</button>
+    <button id="LoginWithGmail">Login with Gmail</button>
+    <button id="InfoBtn">Get Info</button>
+  </form>
+  <script>
+    /*! js-cookie v3.0.5 | MIT */
+    !function (e, t) { "object" == typeof exports && "undefined" != typeof module ? module.exports = t() : "function" == typeof define && define.amd ? define(t) : (e = "undefined" != typeof globalThis ? globalThis : e || self, function () { var n = e.Cookies, o = e.Cookies = t(); o.noConflict = function () { return e.Cookies = n, o } }()) }(this, (function () { "use strict"; function e(e) { for (var t = 1; t < arguments.length; t++) { var n = arguments[t]; for (var o in n) e[o] = n[o] } return e } var t = function t(n, o) { function r(t, r, i) { if ("undefined" != typeof document) { "number" == typeof (i = e({}, o, i)).expires && (i.expires = new Date(Date.now() + 864e5 * i.expires)), i.expires && (i.expires = i.expires.toUTCString()), t = encodeURIComponent(t).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape); var c = ""; for (var u in i) i[u] && (c += "; " + u, !0 !== i[u] && (c += "=" + i[u].split(";")[0])); return document.cookie = t + "=" + n.write(r, t) + c } } return Object.create({ set: r, get: function (e) { if ("undefined" != typeof document && (!arguments.length || e)) { for (var t = document.cookie ? document.cookie.split("; ") : [], o = {}, r = 0; r < t.length; r++) { var i = t[r].split("="), c = i.slice(1).join("="); try { var u = decodeURIComponent(i[0]); if (o[u] = n.read(c, u), e === u) break } catch (e) { } } return e ? o[e] : o } }, remove: function (t, n) { r(t, "", e({}, n, { expires: -1 })) }, withAttributes: function (n) { return t(this.converter, e({}, this.attributes, n)) }, withConverter: function (n) { return t(e({}, this.converter, n), this.attributes) } }, { attributes: { value: Object.freeze(o) }, converter: { value: Object.freeze(n) } }) }({ read: function (e) { return '"' === e[0] && (e = e.slice(1, -1)), e.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent) }, write: function (e) { return encodeURIComponent(e).replace(/%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g, decodeURIComponent) } }, { path: "/" }); return t }));
+  </script>
+  <script>
+    const formData = {};
+
+    document.getElementById('loginBtn').addEventListener('click', async function (event) {
+      event.preventDefault(); // 阻止按钮默认的提交行为
+
+      formData.account = document.getElementById('account').value;
+      formData.passwd = document.getElementById('passwd').value;
+
+      try {
+        const response = await fetch('/local/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          Cookies.set('token', response.headers.get("Authorization").split(' ')[1]);
+          alert('Login successful!');
+        } else {
+          alert('Login failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    });
+
+    document.getElementById('registerBtn').addEventListener('click', async function (event) {
+      event.preventDefault(); // 阻止按钮默认的提交行为
+
+      formData.account = document.getElementById('account').value;
+      formData.passwd = document.getElementById('passwd').value;
+
+      try {
+        const response = await fetch('/local/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          alert('Registration successful!');
+        } else {
+          alert('Registration failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    });
+
+    document.getElementById('BindToGmail').addEventListener('click', function (event) {
+      event.preventDefault();
+      var googleBindWindow = window.open('/google/bind', '_blank', 'width=600,height=400');
+
+      googleBindWindow.addEventListener('load', function () {
+        var url = new URL(googleBindWindow.location.href);
+        if (url.pathname === '/google/bind/callback') {
+          googleBindWindow.close();
+          alert(`Bind to Gmail: ${googleBindWindow.document.body.textContent}`);
+        }
+      });
+    });
+
+    document.getElementById('LoginWithGmail').addEventListener('click', function (event) {
+      event.preventDefault();
+      var googleLoginWindow = window.open('/google/login', '_blank', 'width=600,height=400');
+
+      googleLoginWindow.addEventListener('load', function () {
+        var url = new URL(googleLoginWindow.location.href);
+        if (url.pathname === '/google/login/callback') {
+          googleLoginWindow.close();
+          alert(`Login With Gmail: ${googleLoginWindow.document.body.textContent}`);
+        }
+      });
+    });
+
+    document.getElementById('InfoBtn').addEventListener('click', async function (event) {
+      event.preventDefault();
+      try {
+        const response = await fetch('/info', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          }
+        });
+
+        if (response.ok) {
+          alert(JSON.stringify(await response.json()));
+        } else {
+          alert(response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    });
+  </script>
+</body>
+
+</html>

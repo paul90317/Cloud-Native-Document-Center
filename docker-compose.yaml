@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  nginx:
+    container_name: nginx
+    build: ./api-gateway/nginx
+    ports:
+      - "80:80"
+
+  auth:
+    container_name: auth
+    build: ./api-gateway/auth
+
+  mysql:
+    container_name: mysql
+    build: ./mysql
+    ports:
+      - "3306:3306"
+
+  image-service:
+    container_name: image-service
+    build: ./image-service
+    ports:
+      - "8082:8082"
+
+  document-service:
+    container_name: document-service
+    build: ./document-service
+    ports:
+      - "8081:8081"
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth
+      - image-service
+      - document-service
