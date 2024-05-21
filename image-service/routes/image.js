@@ -93,7 +93,6 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
 
   // return the image file
   const filePath = 'static/' + req.email + '/' + req.params.id;
-  console.log(filePath);
   if (!fs.existsSync(filePath)) {
     res.status(404).send('File not found');
   }

@@ -6,6 +6,7 @@ const fs = require('fs');
 // handlers modules
 const authenticator = require('../handler/authenticator');
 const documentSaver = require('../handler/documentSaver');
+const documentUpdator = require('../handler/documentUpdator');
 
 // database modules
 const db = require('../models');
@@ -14,9 +15,9 @@ const db = require('../models');
  * @swagger
  * /all:
  *   get:
- *     summary: Get filenames & ids of all docs uploaded by the user.
+ *     summary: Get docnames & ids of all docs uploaded by the user.
  * 
- *     description: Get filenames & ids of all docs uploaded by the user.
+ *     description: Get docnames & ids of all docs uploaded by the user.
  * 
  *     security:
  *      - bearerAuth: []
@@ -30,7 +31,7 @@ const db = require('../models');
  *               items:
  *                 type: object
  *                 properties:
- *                   filename:
+ *                   docname:
  *                     type: string
  *                   id:
  *                     type: string
@@ -58,10 +59,10 @@ router.get('/all', authenticator.getUserInfo, (req, res) => {
           creator: user.account
         }
       }).then(docs => {
-        // return the filename & id & status of all docs
+        // return the docname & id & status of all docs
         docs = docs.map(doc => {
           return {
-            filename: doc.name,
+            docname: doc.name,
             id: doc.id,
             status: doc.status
           }
@@ -91,7 +92,7 @@ router.get('/all', authenticator.getUserInfo, (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               filename:
+ *               docname:
  *                 type: string
  *               creator:
  *                 type: string
@@ -130,7 +131,7 @@ router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, 
 
   // create a new doc
   db.sequelize.models.documents.create({
-    name: req.body.filename,
+    name: req.body.docname,
     creator: req.body.creator,
     reviewer: req.body.creator,
     status: 0,
@@ -145,7 +146,7 @@ router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, 
 
 /**
  * @swagger
- * /:id:
+ * /{id}:
  *   get:
  *     summary: This route is used to get the doc that the user has uploaded.
  * 
@@ -175,7 +176,7 @@ router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, 
  *               properties:
  *                 review-id:
  *                   type: string
- *                 filename:
+ *                 docname:
  *                   type: string
  *                 doc-id:
  *                   type: string
@@ -231,7 +232,7 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
 
 /**
  * @swagger
- * /:id:
+ * /{id}:
  *   put:
  *     summary: This route is used to update the doc with the given id.
  * 
@@ -251,16 +252,13 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
  *           schema:
  *             type: object
  *             properties:
+*                docname:
+*                  type: string
+*                  description: Name of the new file
  *               newFile:
  *                 type: string
  *                 format: binary
  *                 description: Binary data of the new file
- *               metadata:
- *                 type: object
- *                 properties:
- *                   filename:
- *                     type: string
- *                     description: Name of the new file
  * 
  *     security:
  *       - bearerAuth: []
@@ -280,14 +278,41 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
  *       '404':
  *         description: User not found
  */
-router.put('/:id', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
+router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'), (req, res) => {
+  if (req.fileExists == false) {
+    return res.status(404).send('File not found');
+  }
+
+  db.sequelize.models.users.findOne({
+    where: {
+      email: req.email
+    }
+  }).then(user => {
+    if (user) {
+      // find the document name by id
+      db.sequelize.models.documents.findOne({
+        where: {
+          id: req.params.id
+        }
+      }).then(doc => {
+        if (doc) {
+          res.send('File updated');
+        } else {
+          res.status(404).send('Document not found');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      });
+    } else {
+      res.status(404).send('User not found');
+    }
+  })
 });
 
 
 /**
  * @swagger
- * /:id:
+ * /{id}:
  *   delete:
  *     summary: This route is used to delete the doc with the given id.
  * 
@@ -320,215 +345,40 @@ router.put('/:id', authenticator.getUserInfo, (req, res) => {
  *         description: User not found
  */
 router.delete('/:id', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
+  db.sequelize.models.users.findOne({
+    where: {
+      email: req.email
+    }
+  }).then(user => {
+    if (user) {
+      // find the document name by id
+      db.sequelize.models.documents.findOne({
+        where: {
+          id: req.params.id
+        }
+      }).then(doc => {
+        if (doc) {
+          // delete the file in the file system
+          const filePath = 'static/' + user.account + '/' + doc.name;
+          if (!fs.existsSync(filePath)) {
+            res.status(404).send('File not found');
+          } else {
+            fs.unlinkSync(filePath);
+            res.send('File deleted');
+          }
+
+          // delete the document in the database
+          doc.destroy();
+        } else {
+          res.status(404).send('Document not found');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      });
+    } else {
+      res.status(404).send('User not found');
+    }
+  })
 });
-
-
-/**
- * @swagger
- * /review:
- *   post:
- *     summary: This route is used to create a new review.
- * 
- *     description: Will create a new review.
- * 
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               doc-id:
- *                 type: string
- *               reviewer:
- *                 type: string
- * 
- *     security:
- *       - bearerAuth: []
- * 
- *     responses:
- *       '200':
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   review-id:
- *                     type: string
- *                   filename:
- *                     type: string
- *                   doc-id:
- *                     type: string
- *                   creator:
- *                     type: string
- *                   reviewer:
- *                     type: string
- *                   status:
- *                     type: string
- *                     description: The approval status of the document. 
- *                     enum: [draft, pending, approved, rejected]
- *         description: A successful response
- *         
- *       '401':
- *         description: Unauthorized
- * 
- *       '404':
- *         description: User not found
- */
-router.post('/review', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
-});
-
-
-/**
- * @swagger
- * /review:
- *   get:
- *     summary: This route is used to get a review with the given id.
- * 
- *     description: Will response the review with the given id.
- * 
- *     security:
- *       - bearerAuth: []
- * 
- *     responses:
- *       '200':
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   filename:
- *                     type: string
- *                   doc-id:
- *                     type: string
- *                   creator:
- *                     type: string
- *                   reviewer:
- *                     type: string
- *                   status:
- *                     type: string
- *                     description: The approval status of the document. 
- *                     enum: [draft, pending, approved, rejected]
- *         description: A successful response
- *         
- *       '401':
- *         description: Unauthorized
- * 
- *       '404':
- *         description: User not found
- */
-router.get('/review/:id', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
-});
-
-
-/**
- * @swagger
- * /review:
- *   put:
- *     summary: This route is used to update a review with the given id.
- * 
- *     description: Will update a review with the given id
- * 
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *                 description: The approval status of the document. 
- *                 enum: [draft, pending, approved, rejected]
- * 
- *     security:
- *       - bearerAuth: []
- * 
- *     responses:
- *       '200':
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   filename:
- *                     type: string
- *                   doc-id:
- *                     type: string
- *                   creator:
- *                     type: string
- *                   reviewer:
- *                     type: string
- *                   status:
- *                     type: string
- *                     description: The approval status of the document. 
- *                     enum: [draft, pending, approved, rejected]
- *         description: A successful response
- *         
- *       '401':
- *         description: Unauthorized
- * 
- *       '404':
- *         description: User not found
- */
-router.put('/review/:id', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
-});
-
-/**
- * @swagger
- * /review/notification:
- *   get:
- *     summary: This route is used to get all reviews that the reviewer has to review.
- * 
- *     description: Will response all reviews that the reviewer has to review.
- * 
- *     security:
- *       - bearerAuth: []
- * 
- *     responses:
- *       '200':
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   filename:
- *                     type: string
- *                   creator:
- *                     type: string
- *                   reviewer:
- *                     type: string
- *                   doc-id:
- *                     type: string  
- *                   review-id:
- *                     type: string
- *                   status:
- *                     type: string
- *                     description: The approval status of the document. 
- *                     enum: [draft, pending, approved, rejected]
- *         description: A successful response
- *         
- *       '401':
- *         description: Unauthorized
- * 
- *       '404':
- *         description: User not found
- */
-router.get('/review/notification', authenticator.getUserInfo, (req, res) => {
-  res.send(req.email)
-});
-
 
 module.exports = router;

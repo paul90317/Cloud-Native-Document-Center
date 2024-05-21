@@ -14,13 +14,14 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, req.body.filename);
+    cb(null, req.body.docname);
   }
 });
 
 const filter = (req, file, cb) => {
   uploadDir = 'static/' + req.body.creator + '/';
-  const filePath = path.join(uploadDir, req.body.filename);
+  const filePath = path.join(uploadDir, req.body.docname);
+
   if (fs.existsSync(filePath)) {
     req.fileExists = true;
     cb(null, false); // Reject the file
