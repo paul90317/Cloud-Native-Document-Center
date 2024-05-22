@@ -83,4 +83,10 @@ app.get('/users', verifyJWT, (req, res) => {
   })
 })
 
+app.get('/auth', verifyJWT, (req, res) => {
+  if (!req.user)
+    return res.sendStatus(401)
+  res.json(req.user);
+})
+
 module.exports = app
