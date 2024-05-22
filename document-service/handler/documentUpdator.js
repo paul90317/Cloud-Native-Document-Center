@@ -2,45 +2,80 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
+// utils modules
 const dbHelper = require('../util/dbHelper');
-const db = require('../models');
 
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    uploadDir = 'static/' + req.account + '/';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
-    }
-    cb(null, uploadDir);
+    cb(null, req.uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, req.body.docname);
+    cb(null, req.filename);
   }
 });
 
 const filter = async (req, file, cb) => {
-  const user = await dbHelper.findUserByEmail(req.email);
-  req.account = user.account;
+  try {
+    // check if the requestor is the same as the account of the user
+    req.isAuthorized = true;
+    const user = await dbHelper.findUserByEmail(req.email);
+    if (user.email !== req.email) {
+      req.isAuthorized = false;
+      return cb(null, false);
+    }
 
-  uploadDir = 'static/' + req.account + '/';
-  const filePath = path.join(uploadDir, req.body.docname);
+    // generate the file paths
+    req.uploadDir = 'static/' + user.account + '/';
+    req.filename = req.body.docname;
+    req.filePath = path.join(req.uploadDir, req.filename);
 
-  const originalDoc = await dbHelper.findDocumentById(req.params.id);
-  if (originalDoc === null) {
-    req.fileExists = false;
-    cb(null, false);
-    return;
+    // mkdir if the directory does not exist
+    if (!fs.existsSync(req.uploadDir)) {
+      fs.mkdirSync(req.uploadDir);
+    }
+
+    // find the original document
+    const originalDoc = await dbHelper.findDocumentById(req.params.id);
+
+    // reject the request if the original document does not exist
+    req.fileExists = true;
+    if (originalDoc === null) {
+      req.fileExists = false;
+      return cb(null, false);
+    }
+
+    // remove the original document in file system
+    const originalFilePath = path.join(req.uploadDir, originalDoc.name);
+    fs.unlinkSync(originalFilePath);
+
+    return cb(null, true);
   }
+  catch (err) {
+    console.error(err);
+    return cb(err);
+  }
+  // const user = await dbHelper.findUserByEmail(req.email);
+  // req.account = user.account;
 
-  const originalFilePath = path.join(uploadDir, originalDoc.name);
-  fs.unlinkSync(originalFilePath);
-  req.fileExists = true;
+  // uploadDir = 'static/' + req.account + '/';
+  // const filePath = path.join(uploadDir, req.body.docname);
 
-  // write back the new document name to database
-  dbHelper.updateDocumentName(req.params.id, req.body.docname);
+  // const originalDoc = await dbHelper.findDocumentById(req.params.id);
+  // if (originalDoc === null) {
+  //   req.fileExists = false;
+  //   cb(null, false);
+  //   return;
+  // }
 
-  cb(null, true);
+  // const originalFilePath = path.join(uploadDir, originalDoc.name);
+  // fs.unlinkSync(originalFilePath);
+  // req.fileExists = true;
+
+  // // write back the new document name to database
+  // dbHelper.updateDocumentName(req.params.id, req.body.docname);
+
+  // cb(null, true);
 };
 
 // Create the multer instance

@@ -8,6 +8,9 @@ const authenticator = require('../handler/authenticator');
 const documentSaver = require('../handler/documentSaver');
 const documentUpdator = require('../handler/documentUpdator');
 
+// utils modules
+const dbHelper = require('../util/dbHelper');
+
 // database modules
 const db = require('../models');
 
@@ -45,36 +48,31 @@ const db = require('../models');
  *       '404':
  *         description: User not found
  */
-router.get('/all', authenticator.getUserInfo, (req, res) => {
-  // find the account of the user
-  db.sequelize.models.users.findOne({
-    where: {
-      email: req.email
-    }
-  }).then(user => {
-    if (user) {
-      // find all docs of the user
-      db.sequelize.models.documents.findAll({
-        where: {
-          creator: user.account
-        }
-      }).then(docs => {
-        // return the docname & id & status of all docs
-        docs = docs.map(doc => {
-          return {
-            docname: doc.name,
-            id: doc.id,
-            status: doc.status
-          }
-        });
-        res.send(docs);
-      }).catch(err => {
-        res.status(500).send(err);
-      });
-    } else {
-      res.status(404).send('User not found');
-    }
-  })
+router.get('/all', authenticator.getUserInfo, async (req, res) => {
+  try {
+    // find the user by email
+    const user = await dbHelper.findUserByEmail(req.email);
+    if (!user) return res.status(404).send('User not found');
+
+    console.log(user.account);
+
+    // find all docs of the user
+    const docs = await dbHelper.findDocumentsByUser(user.account);
+    if (!docs) return res.status(404).send('Document not found');
+
+    // return the docname & id & status of all docs
+    res.send(docs.map(doc => {
+      return {
+        docname: doc.name,
+        id: doc.id,
+        status: doc.status
+      }
+    }));
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send({ error: 'Internal Server Error!' });
+  }
 });
 
 
@@ -120,27 +118,27 @@ router.get('/all', authenticator.getUserInfo, (req, res) => {
  *       '415':
  *         description: Unsupported media type
  */
-router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, res) => {
-  // check if the creator is the same as the account of the user
+router.post('/', authenticator.getUserInfo, documentSaver.single('file'), async (req, res) => {
+  try {
+    // check authorization
+    if (!req.isAuthorized) {
+      return res.status(401).send('Unauthorized');
+    }
 
+    // check if the file is uploaded
+    if (req.fileExists) {
+      return res.status(409).send('File already exists');
+    }
 
-  // check if the file is uploaded
-  if (req.fileExists) {
-    return res.status(409).send('File already exists');
+    // create a new doc in the database
+    await dbHelper.createDocument(req.body.docname, req.body.creator, 0);
+
+    return res.send("Document created");
   }
-
-  // create a new doc
-  db.sequelize.models.documents.create({
-    name: req.body.docname,
-    creator: req.body.creator,
-    reviewer: req.body.creator,
-    status: 0,
-    message: ''
-  }).then(doc => {
-    res.send("Document created");
-  }).catch(err => {
-    res.status(500).send(err);
-  });
+  catch (err) {
+    console.log(err);
+    return res.status(500).send({ error: 'Internal Server Error!' });
+  }
 });
 
 
@@ -194,39 +192,29 @@ router.post('/', authenticator.getUserInfo, documentSaver.single('file'), (req, 
  *       '404':
  *         description: User not found
  */
-router.get('/:id', authenticator.getUserInfo, (req, res) => {
-  // check if the user is the document owner
+router.get('/:id', authenticator.getUserInfo, async (req, res) => {
+  try {
+    // check authorization
+    const user = await dbHelper.findUserByEmail(req.email);
+    const document = await dbHelper.findDocumentById(req.params.id);
+    if (!user) return res.status(404).send('User not found');
+    if (!document) return res.status(404).send('Document not found');
 
-  // return the doc
-  db.sequelize.models.users.findOne({
-    where: {
-      email: req.email
+    // TODO: there are still other 5 roles (admin, editor, owner, viewer, reviewer) can access the document
+    // check if the user is the document owner
+    if (user.account !== document.creator) {
+      return res.status(401).send('Unauthorized');
     }
-  }).then(user => {
-    if (user) {
-      // find the document name by id
-      db.sequelize.models.documents.findOne({
-        where: {
-          id: req.params.id
-        }
-      }).then(doc => {
-        if (doc) {
-          const filePath = 'static/' + user.account + '/' + doc.name;
-          if (!fs.existsSync(filePath)) {
-            res.status(404).send('File not found');
-          } else {
-            res.sendFile(filePath, { root: './' });
-          }
-        } else {
-          res.status(404).send('Document not found');
-        }
-      }).catch(err => {
-        res.status(500).send(err);
-      });
-    } else {
-      res.status(404).send('User not found');
-    }
-  })
+
+    // return the document
+    const filePath = 'static/' + user.account + '/' + document.name;
+    if (!fs.existsSync(filePath)) return res.status(404).send('File not found');
+    res.sendFile(filePath, { root: './' });
+  }
+  catch (err) {
+    console.log(err);
+    return res.status(500).send({ error: 'Internal Server Error!' });
+  }
 });
 
 
@@ -252,9 +240,9 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
  *           schema:
  *             type: object
  *             properties:
-*                docname:
-*                  type: string
-*                  description: Name of the new file
+ *               docname:
+ *                 type: string
+ *                 description: Name of the new file
  *               newFile:
  *                 type: string
  *                 format: binary
@@ -278,35 +266,56 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
  *       '404':
  *         description: User not found
  */
-router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'), (req, res) => {
-  if (req.fileExists == false) {
-    return res.status(404).send('File not found');
+router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'), async (req, res) => {
+  try {
+    // check authorization
+    if (!req.isAuthorized) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    // check if the file is uploaded
+    if (!req.fileExists) {
+      return res.status(404).send('File not found');
+    }
+
+    // update document in database
+    await dbHelper.updateDocumentName(req.params.id, req.body.docname);
+
+    return res.send('File updated');
+  }
+  catch (err) {
+    console.log(err);
+    return res.status(500).send({ error: 'Internal Server Error!' });
   }
 
-  db.sequelize.models.users.findOne({
-    where: {
-      email: req.email
-    }
-  }).then(user => {
-    if (user) {
-      // find the document name by id
-      db.sequelize.models.documents.findOne({
-        where: {
-          id: req.params.id
-        }
-      }).then(doc => {
-        if (doc) {
-          res.send('File updated');
-        } else {
-          res.status(404).send('Document not found');
-        }
-      }).catch(err => {
-        res.status(500).send(err);
-      });
-    } else {
-      res.status(404).send('User not found');
-    }
-  })
+  // if (req.fileExists == false) {
+  //   return res.status(404).send('File not found');
+  // }
+
+  // db.sequelize.models.users.findOne({
+  //   where: {
+  //     email: req.email
+  //   }
+  // }).then(user => {
+  //   if (user) {
+  //     // find the document name by id
+  //     db.sequelize.models.documents.findOne({
+  //       where: {
+  //         id: req.params.id
+  //       }
+  //     }).then(doc => {
+  //       if (doc) {
+  //         res.send('File updated');
+  //       } else {
+  //         res.status(404).send('Document not found');
+  //       }
+  //     }).catch(err => {
+  //       res.status(500).send(err);
+  //     });
+  //   } else {
+  //     res.status(404).send('User not found');
+  //   }
+  // })
 });
 
 
@@ -344,41 +353,33 @@ router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'),
  *       '404':
  *         description: User not found
  */
-router.delete('/:id', authenticator.getUserInfo, (req, res) => {
-  db.sequelize.models.users.findOne({
-    where: {
-      email: req.email
-    }
-  }).then(user => {
-    if (user) {
-      // find the document name by id
-      db.sequelize.models.documents.findOne({
-        where: {
-          id: req.params.id
-        }
-      }).then(doc => {
-        if (doc) {
-          // delete the file in the file system
-          const filePath = 'static/' + user.account + '/' + doc.name;
-          if (!fs.existsSync(filePath)) {
-            res.status(404).send('File not found');
-          } else {
-            fs.unlinkSync(filePath);
-            res.send('File deleted');
-          }
+router.delete('/:id', authenticator.getUserInfo, async (req, res) => {
+  try {
+    // check authorization
+    const user = await dbHelper.findUserByEmail(req.email);
+    const document = await dbHelper.findDocumentById(req.params.id);
+    if (!user) return res.status(404).send('User not found');
+    if (!document) return res.status(404).send('Document not found');
 
-          // delete the document in the database
-          doc.destroy();
-        } else {
-          res.status(404).send('Document not found');
-        }
-      }).catch(err => {
-        res.status(500).send(err);
-      });
-    } else {
-      res.status(404).send('User not found');
+    // TODO: admin also can delete the document
+    // only the owner can delete the document
+    if (user.account !== document.creator) {
+      return res.status(401).send('Unauthorized');
     }
-  })
+
+    // delete the file in the file system
+    const filePath = 'static/' + user.account + '/' + document.name;
+    if (!fs.existsSync(filePath)) return res.status(404).send('File not found');
+    fs.unlinkSync(filePath);
+
+    // delete the document in the database
+    await dbHelper.deleteDocument(req.params.id);
+    return res.send('File deleted');
+  }
+  catch (err) {
+    console.log(err);
+    return res.status(500).send({ error: 'Internal Server Error!' });
+  }
 });
 
 module.exports = router;
