@@ -13,7 +13,7 @@ const db = require('../models');
 
 /**
  * @swagger
- * /ids:
+ * /image/ids:
  *   get:
  *     summary: Get ids of all images uploaded by the user.
  *     description: Get ids of all images uploaded by the user.
@@ -54,7 +54,7 @@ router.get('/ids', authenticator.getUserInfo, (req, res) => {
 
 /**
  * @swagger
- * /{id}:
+ * /image/{id}:
  *   get:
  *     summary: This route is used to download the image that the user has uploaded.
  *     description: Will download the image with the given id.
@@ -103,7 +103,7 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
 
 /**
  * @swagger
- * /:
+ * /image/:
  *   post:
  *     summary: This route is used to upload an image.
  * 

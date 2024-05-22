@@ -9,7 +9,8 @@ require('dotenv').config()
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var docsRouter = require('./routes/docs');
+var docRouter = require('./routes/doc');
+var roleRouter = require('./routes/role');
 
 var app = express();
 
@@ -25,7 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/doc', docsRouter);
+app.use('/doc', docRouter);
+app.use('/role', roleRouter);
 
 // swagger
 var swaggerjsdoc = require('swagger-jsdoc')
@@ -49,7 +51,7 @@ const swaggerOptions = {
     }],
     servers: [
       {
-        url: "http://localhost:8081/docs"
+        url: "http://localhost:8081"
       }
     ],
   },

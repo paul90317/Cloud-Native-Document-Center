@@ -59,6 +59,10 @@ async function findRoleByDocument(document) {
   return db.sequelize.models.roles.findAll({ where: { document: document } });
 }
 
+async function findRoleByUser(user) {
+  return db.sequelize.models.roles.findAll({ where: { user: user } });
+}
+
 module.exports = {
   findUserByEmail,
   findUserByAccount,
@@ -71,5 +75,6 @@ module.exports = {
   createRole,
   deleteRole,
   findRole,
-  findRoleByDocument
+  findRoleByDocument,
+  findRoleByUser
 };

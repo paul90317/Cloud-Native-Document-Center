@@ -49,7 +49,7 @@ const swaggerOptions = {
     }],
     servers: [
       {
-        url: "http://localhost:8082/image"
+        url: "http://localhost:8082"
       }
     ],
   },

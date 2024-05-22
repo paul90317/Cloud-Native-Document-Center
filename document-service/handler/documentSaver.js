@@ -20,13 +20,14 @@ const filter = async (req, file, cb) => {
     // check if the creator is the same as the account of the user
     req.isAuthorized = true;
     const user = await dbHelper.findUserByEmail(req.email);
-    if (!user || user.account !== req.body.creator) {
+    if (!user) {
       req.isAuthorized = false;
       return cb(null, false);
     }
+    req.user = user;
 
     // generate the file paths
-    req.uploadDir = 'static/' + req.body.creator + '/';
+    req.uploadDir = 'static/' + user.account + '/';
     req.filename = req.body.docname;
     req.filePath = path.join(req.uploadDir, req.filename);
 
