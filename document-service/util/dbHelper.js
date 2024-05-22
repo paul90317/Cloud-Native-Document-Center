@@ -5,12 +5,20 @@ async function findUserByEmail(email) {
   return db.sequelize.models.users.findOne({ where: { email: email } });
 };
 
+async function findUserByAccount(account) {
+  return db.sequelize.models.users.findOne({ where: { account: account } });
+}
+
 async function findDocumentById(id) {
   return db.sequelize.models.documents.findOne({ where: { id: id } });
 }
 
-async function findDocumentsByUser(account) {
+async function findDocumentByUser(account) {
   return db.sequelize.models.documents.findAll({ where: { creator: account } });
+}
+
+async function findDocumentByName(name) {
+  return db.sequelize.models.documents.findOne({ where: { name: name } });
 }
 
 async function createDocument(name, creator, status) {
@@ -31,11 +39,37 @@ async function updateDocumentName(id, name) {
   return db.sequelize.models.documents.update({ name: name }, { where: { id: id } });
 }
 
+async function createRole(document, user, role) {
+  return db.sequelize.models.roles.create({
+    document: document,
+    user: user,
+    role: role
+  });
+}
+
+async function deleteRole(document, user) {
+  return db.sequelize.models.roles.destroy({ where: { document: document, user: user } });
+}
+
+async function findRole(document, user) {
+  return db.sequelize.models.roles.findOne({ where: { document: document, user: user } });
+}
+
+async function findRoleByDocument(document) {
+  return db.sequelize.models.roles.findAll({ where: { document: document } });
+}
+
 module.exports = {
   findUserByEmail,
+  findUserByAccount,
   findDocumentById,
-  findDocumentsByUser,
+  findDocumentByUser,
+  findDocumentByName,
   createDocument,
   deleteDocument,
-  updateDocumentName
+  updateDocumentName,
+  createRole,
+  deleteRole,
+  findRole,
+  findRoleByDocument
 };

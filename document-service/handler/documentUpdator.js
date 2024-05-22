@@ -55,27 +55,6 @@ const filter = async (req, file, cb) => {
     console.error(err);
     return cb(err);
   }
-  // const user = await dbHelper.findUserByEmail(req.email);
-  // req.account = user.account;
-
-  // uploadDir = 'static/' + req.account + '/';
-  // const filePath = path.join(uploadDir, req.body.docname);
-
-  // const originalDoc = await dbHelper.findDocumentById(req.params.id);
-  // if (originalDoc === null) {
-  //   req.fileExists = false;
-  //   cb(null, false);
-  //   return;
-  // }
-
-  // const originalFilePath = path.join(uploadDir, originalDoc.name);
-  // fs.unlinkSync(originalFilePath);
-  // req.fileExists = true;
-
-  // // write back the new document name to database
-  // dbHelper.updateDocumentName(req.params.id, req.body.docname);
-
-  // cb(null, true);
 };
 
 // Create the multer instance

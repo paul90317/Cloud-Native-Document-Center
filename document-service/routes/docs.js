@@ -57,7 +57,7 @@ router.get('/all', authenticator.getUserInfo, async (req, res) => {
     console.log(user.account);
 
     // find all docs of the user
-    const docs = await dbHelper.findDocumentsByUser(user.account);
+    const docs = await dbHelper.findDocumentByUser(user.account);
     if (!docs) return res.status(404).send('Document not found');
 
     // return the docname & id & status of all docs
@@ -132,6 +132,10 @@ router.post('/', authenticator.getUserInfo, documentSaver.single('file'), async 
 
     // create a new doc in the database
     await dbHelper.createDocument(req.body.docname, req.body.creator, 0);
+
+    // add the role between the creator and the document
+    const doc = await dbHelper.findDocumentByName(req.body.docname);
+    await dbHelper.createRole(doc.id, req.body.creator, 0);
 
     return res.send("Document created");
   }
@@ -288,34 +292,6 @@ router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'),
     return res.status(500).send({ error: 'Internal Server Error!' });
   }
 
-  // if (req.fileExists == false) {
-  //   return res.status(404).send('File not found');
-  // }
-
-  // db.sequelize.models.users.findOne({
-  //   where: {
-  //     email: req.email
-  //   }
-  // }).then(user => {
-  //   if (user) {
-  //     // find the document name by id
-  //     db.sequelize.models.documents.findOne({
-  //       where: {
-  //         id: req.params.id
-  //       }
-  //     }).then(doc => {
-  //       if (doc) {
-  //         res.send('File updated');
-  //       } else {
-  //         res.status(404).send('Document not found');
-  //       }
-  //     }).catch(err => {
-  //       res.status(500).send(err);
-  //     });
-  //   } else {
-  //     res.status(404).send('User not found');
-  //   }
-  // })
 });
 
 
@@ -372,9 +348,159 @@ router.delete('/:id', authenticator.getUserInfo, async (req, res) => {
     if (!fs.existsSync(filePath)) return res.status(404).send('File not found');
     fs.unlinkSync(filePath);
 
+    // delete the all related roles in the database
+    const roles = await dbHelper.findRoleByDocument(req.params.id);
+    for (const role of roles) {
+      await dbHelper.deleteRole(role.document, role.user);
+    }
+
     // delete the document in the database
     await dbHelper.deleteDocument(req.params.id);
     return res.send('File deleted');
+  }
+  catch (err) {
+    console.log(err);
+    return res.status(500).send({ error: 'Internal Server Error!' });
+  }
+});
+
+
+/**
+ * @swagger
+ * /role:
+ *   post:
+ *     summary: Create a new role for the doc.
+ * 
+ *     description: This route is used to create a new role for the doc.
+ * 
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *           properties:
+ *             doc-id:
+ *               type: integer
+ *             account:
+ *               type: string
+ *               description: account of the user to be assigned the role
+ *             role:
+ *               type: integer
+ *               description: value of the role: 0 - owner, 1 - admin, 2 - viewer, 3 - editor, 4 - reviewer
+ * 
+ *     security:
+ *       - bearerAuth: []
+ * 
+ *     responses:
+ *       '200':
+ *         content:
+ *          text/plain:
+ *           schema:
+ *            type: string
+ *         description: A successful response
+ *
+ *       '401':
+ *         description: Unauthorized
+ * 
+ *       '404':
+ *         description: User not found or Document not found
+ */
+router.post('/role', authenticator.getUserInfo, async (req, res) => {
+  try {
+    // check authorization
+    const userOwner = await dbHelper.findUserByEmail(req.email);
+    const user = await dbHelper.findUserByAccount(req.body.account);
+    const document = await dbHelper.findDocumentById(req.body['doc-id']);
+    if (!userOwner) return res.status(404).send('User not found');
+    if (!user) return res.status(404).send('User not found');
+    if (!document) return res.status(404).send('Document not found');
+
+    // only the owner can assign the role
+    if (userOwner.account !== document.creator) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    // only the admin can assign others as admin
+    if (req.body.role === 1 && userOwner.role !== 1) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    // check if the role is already exist
+    const role = await dbHelper.findRole(req.body['doc-id'], user.account);
+    if (role) return res.status(409).send('Role already exists');
+
+    // create a new role in the database
+    await dbHelper.createRole(req.body['doc-id'], user.account, req.body.role);
+
+    return res.send("Role created");
+  }
+  catch (err) {
+    console.log(err);
+    return res.status(500).send({ error: 'Internal Server Error!' });
+  }
+});
+
+
+/**
+ * @swagger
+ * /role:
+ *   delete:
+ *     summary: Delete a role for the doc.
+ * 
+ *     description: This route is used to delete a role for the doc.
+ * 
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: object
+ *           properties:
+ *             doc-id:
+ *               type: integer
+ *             account:
+ *               type: string
+ *               description: account of the user to be assigned the rol
+ * 
+ *     security:
+ *       - bearerAuth: []
+ * 
+ *     responses:
+ *       '200':
+ *         content:
+ *          text/plain:
+ *           schema:
+ *            type: string
+ *         description: A successful response
+ *
+ *       '401':
+ *         description: Unauthorized
+ * 
+ *       '404':
+ *         description: User not found or Document not found
+ */
+router.delete('/role', authenticator.getUserInfo, async (req, res) => {
+  try {
+    // check authorization
+    const userOwner = await dbHelper.findUserByEmail(req.email);
+    const user = await dbHelper.findUserByAccount(req.body.account);
+    const document = await dbHelper.findDocumentById(req.body['doc-id']);
+    if (!userOwner) return res.status(404).send('User not found');
+    if (!user) return res.status(404).send('User not found');
+    if (!document) return res.status(404).send('Document not found');
+
+    // only the owner or admin can delete the role
+    if (userOwner.account !== document.creator) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    // check if the role is already exist
+    const role = await dbHelper.findRole(req.body['doc-id'], user.account);
+    if (!role) return res.status(409).send('Role not found');
+
+    // delete the role in the database
+    await dbHelper.deleteRole(req.body['doc-id'], user.account);
+
+    return res.send("Role deleted");
   }
   catch (err) {
     console.log(err);

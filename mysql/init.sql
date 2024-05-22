@@ -67,6 +67,7 @@ ALTER TABLE `documents` ADD FOREIGN KEY (`creator`) REFERENCES `users` (`account
 ALTER TABLE `documents` ADD FOREIGN KEY (`reviewer`) REFERENCES `users` (`account`);
 
 -- Insert the default admin account
-INSERT INTO `users` (`account`, `passwd`, `manager`, `email`, `name`, `phone`, `profile`) VALUES ('admin', 'admin', true, 'lewis.luo.nycu@gmail.com', 'Admin', '0912345678', 'Admin of this system.');
--- Insert the default document for testing
--- INSERT INTO `documents` (`name`, `creator`, `reviewer`, `status`, `message`) VALUES ('Test Document', 'admin', 'admin', 0, 'This is a test document.');
+INSERT INTO `users` (`account`, `passwd`, `manager`, `email`, `name`, `phone`, `profile`) VALUES ('admin', 'admin', true, 'lewis.luo.nycu@gmail.com', 'Admin', '0912345678', 'Admin.');
+
+-- Insert the default reviewer account
+INSERT INTO `users` (`account`, `passwd`, `manager`, `email`, `name`, `phone`, `profile`) VALUES ('lewis', 'reviewer', false, 'lewis.cs12@nycu.edu.tw', 'Reviewer', '0912345678', 'Test reviewer.');
