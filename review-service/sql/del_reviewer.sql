@@ -10,7 +10,8 @@ into @manager;
 
 select
   CASE
-    when @creator is null then 404
+    when not exists(select 1 from documents where id = @document) then 404
+    when not exists(select 1 from documents where id = @document and status != 0) then 409
     WHEN @account = @creator THEN 200
     when @manager = 1 then 200
     ELSE 403

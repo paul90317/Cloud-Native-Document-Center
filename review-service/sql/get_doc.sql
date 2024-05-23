@@ -1,17 +1,15 @@
-SET @account = ?, @document = ?, @reviewer;
+SET @account = ?, @document = ?;
 
 select
-  creator from documents where id = @document
-into @creator;
-
-select
-  manager from users where account = @account
-into @manager;
+  creator, reviewer from documents where id = @document
+into @creator, @reviewer;
 
 select
   CASE
+    when exists(select * from roles where user = @account and document = @account) then 200
     WHEN @account = @creator THEN 200
-    when @manager = 1 then 200
+    when @account = @reviewer then 200
+    when (select manager from users where account = @account) = 1 then 200
     ELSE 403
   END
 into @status_code;
