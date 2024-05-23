@@ -1,6 +1,7 @@
 const app = require('express')();
 const path = require('path')
-const { verifyJWT, sql_file, sql_query, verifyCookie } = require('./utils')
+const { verifyJWT, verifyCookie } = require('./utils/auth')
+const { sql_file, sql_query } = require('./utils/mysql')
 
 app.use(require('body-parser').json())
 app.use(require('cookie-parser')())
@@ -16,14 +17,17 @@ app.get('/info', verifyJWT, async (req, res) => {
   if (!req.user)
     return res.sendStatus(401);
 
-  sql_file('sql/info.sql', [req.user.account], result => {
-    if (!result)
-      return res.sendStatus(500);
-    user = result[0];
-    delete user.passwd;
-    res.status(200);
-    res.json(user);
-  })
+  sql_file('sql/info.sql', [req.user.account])
+    .then(result => {
+      user = result[0];
+      delete user.passwd;
+      res.status(200);
+      res.json(user);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.sendStatus(500)
+    })
 })
 
 app.patch('/info', verifyJWT, (req, res) => {
@@ -35,18 +39,22 @@ app.patch('/info', verifyJWT, (req, res) => {
   let format = ''
 
   for (let k in req.body) {
-    if (k != 'name' || k != 'phone' || k != 'profile')
+    if (k != 'name' && k != 'phone' && k != 'profile')
       return res.sendStatus(400);
-    paras.push(k)
     paras.push(req.body[k])
-    format += '? = ?, '
+    format += `${k} = ?, `
   }
   if (format.length)
     format = format.substring(0, format.length - 2)
   paras.push(req.user.account)
-  sql_query(`update users set ${format} where account = ?`, paras, result => {
-    res.sendStatus(200);
-  })
+  sql_query(`update users set ${format} where account = ?`, paras)
+    .then(result => {
+      res.sendStatus(200);
+    })
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(500)
+    })
 })
 
 app.put('/passwd', verifyJWT, (req, res) => {
@@ -54,9 +62,14 @@ app.put('/passwd', verifyJWT, (req, res) => {
     return res.sendStatus(401)
   if (!req.body || !req.body.passwd)
     return res.sendStatus(400)
-  sql_query(`update users set passwd = ? where account = ?`, [req.user.account, res.body.passwd], result => {
-    res.sendStatus(200);
-  })
+  sql_query(`update users set passwd = ? where account = ?`, [req.body.passwd, req.user.account])
+    .then(result => {
+      res.sendStatus(200);
+    })
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(500);
+    })
 })
 
 app.put('/manager/:account', verifyJWT, (req, res) => {
@@ -65,22 +78,28 @@ app.put('/manager/:account', verifyJWT, (req, res) => {
   if (!req.params || !req.params.account)
     return res.sendStatus(400)
   const { account } = req.params;
-  sql_file('sql/manager.sql', [req.user.account, account], result => {
-    if (!result)
-      return res.sendStatus(500);
-    let status_code = result[0].status_code;
-    res.sendStatus(status_code)
-  })
+  sql_file('sql/manager.sql', [req.user.account, account])
+    .then(result => {
+      let status_code = result[0].status_code;
+      res.sendStatus(status_code)
+    })
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(500)
+    })
 })
 
 app.get('/users', verifyJWT, (req, res) => {
   if (!req.user)
     return res.sendStatus(401)
-  sql_query('select account, email, name, phone, profile manager from users', [req.user.account], result => {
-    if (!result)
-      return res.sendStatus(500);
-    res.json(result)
-  })
+  sql_query('select account, email, name, phone, profile, manager from users', [req.user.account])
+    .then(result => {
+      res.json(result)
+    })
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(500)
+    })
 })
 
 app.get('/auth', verifyJWT, (req, res) => {

@@ -1,6 +1,10 @@
 const router = require('express').Router();
+
+const { verifyCookie, signJWT } = require('../utils/auth')
+const { sql_file } = require('../utils/mysql')
+
 const { OAuth2Client } = require('google-auth-library');
-const { verifyCookie, sql_file, signJWT } = require('../utils')
+
 require('dotenv').config();
 const { GOOGLE_CLIENT_ID, GOOGLE_SECRET_KEY } = process.env;
 
@@ -58,18 +62,21 @@ router.get('/login/callback', async (req, res) => {
   }
 
   // get login information
-  sql_file('sql/google/login.sql', [userInfo.data.email], result => {
-    if (!result)
-      return res.sendStatus(500);
-    console.log(result);
-    if (result.length) {
-      const token = signJWT(result[0]).split(' ')[1]; // result[0] = { account : ... }
-      res.cookie('token', token)
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(404);
-    }
-  })
+  sql_file('sql/google/login.sql', [userInfo.data.email])
+    .then(result => {
+      console.log(result);
+      if (result.length) {
+        const token = signJWT(result[0]).split(' ')[1]; // result[0] = { account : ... }
+        res.cookie('token', token)
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    })
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(500)
+    })
 });
 
 router.get('/bind/callback', verifyCookie, async (req, res) => {
@@ -92,11 +99,16 @@ router.get('/bind/callback', verifyCookie, async (req, res) => {
     res.sendStatus(401);
   }
 
-  sql_file('sql/google/bind.sql', [req.user.account, userInfo.data.email], result => {
-    if (!result)
-      return res.sendStatus(500);
-    res.sendStatus(result[0].status_code)
-  })
+  sql_file('sql/google/bind.sql', [req.user.account, userInfo.data.email])
+    .then(result => {
+      if (!result)
+        return;
+      res.sendStatus(result[0].status_code)
+    })
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(500)
+    })
 });
 
 module.exports = router;
