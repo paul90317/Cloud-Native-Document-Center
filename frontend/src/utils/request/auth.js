@@ -1,7 +1,11 @@
-import axios from 'axios'
+import axios from 'axios';
+import { useUserStore } from "../../stores/user.js";
+
+export const baseURL = import.meta.env.DEV ? "/api" : "/api/auth"
+
 
 const service = axios.create({
-  baseURL: import.meta.env.DEV ? "/api" : "/api/auth",
+  baseURL,
   timeout: 50000
 })
 
@@ -9,9 +13,10 @@ const service = axios.create({
 service.interceptors.request.use(
   (config) => {
     // check / getToken from useUserStore(pinia store)
-    // if (hasToken) {
-    //   config.headers['Authorization'] = 'Bearer ' + getAccessToken()
-    // }
+    const store = useUserStore()
+    if (store.hasToken) {
+      config.headers['Authorization'] = 'Bearer ' + store.getAccessToken
+    }
     return config
   },
   (error) => {

@@ -4,13 +4,20 @@ export default [
     name: 'Register',
     title: 'Register',
     isHidden: true,
-    component: () => import('@/views/RegisterView.vue')
+    component: () => import('@/views/user/Register.vue')
   },
   {
     path: '/login',
     name: 'Login',
     title: 'Login',
     isHidden: true,
-    component: () => import('@/views/LoginView.vue')
+    component: () => import('@/views/user/Login.vue')
+  },
+  {
+    path: '/signup',
+    name: 'SignUp',
+    title: 'SignUp',
+    isHidden: true,
+    component: () => import('@/views/user/SignUp.vue')
   }
 ]

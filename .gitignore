@@ -6,5 +6,6 @@ static/*
 
 __MACOSX
 .DS_Store
+.idea
 
 /image-service/static/**

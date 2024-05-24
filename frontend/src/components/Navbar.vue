@@ -19,7 +19,7 @@ const routes = useRouter().options.routes
       >
         <span class="navbar-toggler-icon" />
       </button>
-      <div id="navbarNav" class="collapse navbar-collapse justify-content-between text-end">
+      <div id="navbarNav" class="navbar-collapse justify-content-between text-end">
         <ul class="navbar-nav">
           <template
             v-for="route in routes.filter(route => !route?.isHidden)"
