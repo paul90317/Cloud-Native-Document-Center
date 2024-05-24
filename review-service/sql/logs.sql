@@ -1,4 +1,4 @@
-SET @caller = ?, @docuemnt = ?, @user = ?, @type = ?;
+SET @caller = ?, @document = ?, @user = ?, @type = ?;
 
 select * from logs
 where 
@@ -7,6 +7,6 @@ where
   (@type is null or type = @type) and 
   (
     (select manager from users where account = @caller) = 1 or 
-    (select 1 from documents where id = logs.document and reviewer = @caller) or 
+    (select 1 from documents where id = logs.document and (reviewer = @caller or creator = @caller)) or 
     exists(select 1 from roles where document = logs.document and user = @caller)
   );

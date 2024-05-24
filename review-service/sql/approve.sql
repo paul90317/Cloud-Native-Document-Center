@@ -6,7 +6,7 @@ into @reviewer, @status;
 
 select
   CASE
-    when @reviewer is null then 404
+    when not exists(select 1 from documents where id = @document) then 404
     when @status = 0 then 4091
     when @status = 2 or @status = 3 then 4092
     WHEN @account = @reviewer THEN 200
@@ -14,6 +14,9 @@ select
   END
 into @status_code;
 
-update documents set status = 3, message = '' where id = @document and @status_code = 200;
+update documents set status = 3, message = null where id = @document and @status_code = 200;
+
+insert into logs (user, document, type)
+  select @reviewer, @document, 3 where @status_code = 200;
 
 SELECT @status_code AS status_code;

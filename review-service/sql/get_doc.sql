@@ -6,7 +6,7 @@ into @creator, @reviewer;
 
 select
   CASE
-    when exists(select * from roles where user = @account and document = @account) then 200
+    when exists(select 1 from roles where user = @account and document = @account) then 200
     WHEN @account = @creator THEN 200
     when @account = @reviewer then 200
     when (select manager from users where account = @account) = 1 then 200

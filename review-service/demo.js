@@ -100,45 +100,61 @@ setTimeout(async () => {
     }
   })).headers.get('authorization').replace('Bearer', 'another')
 
-  await review_svc.post('doc/1/reviewer/paul90317', {
+  await review_svc.post('submit/1', {
     headers: {
       authorization: paul90317
+    },
+    body: {
+      reviewer: 'paul90317',
+      message: 'initial submit'
     }
   })
 
-  await review_svc.post('doc/1/reviewer/reviewer0', {
+  await review_svc.post('submit/1', {
     headers: {
       authorization: paul90317
+    },
+    body: {
+      reviewer: 'reviewer0',
+      message: 'initial submit'
     }
   })
 
-  await review_svc.delete('doc/1/reviewer', {
+  await review_svc.delete('submit/1', {
     headers: {
       authorization: reviewer0
     }
   })
 
-  await review_svc.delete('doc/1/reviewer', {
+  await review_svc.delete('submit/1', {
     headers: {
       authorization: admin
     }
   })
 
-  await review_svc.post('doc/1/reviewer/reviewer0', {
+  await review_svc.post('submit/1', {
+    headers: {
+      authorization: paul90317
+    },
+    body: {
+      reviewer: 'reviewer0',
+      message: 'initial submit'
+    }
+  })
+
+  await review_svc.delete('submit/1', {
     headers: {
       authorization: paul90317
     }
   })
 
-  await review_svc.delete('doc/1/reviewer', {
-    headers: {
-      authorization: paul90317
-    }
-  })
-
-  await review_svc.post('doc/1/reviewer/reviewer0', {
+  await review_svc.post('submit/1', {
     headers: {
       authorization: admin
+    },
+    body: {
+      reviewer: 'reviewer0',
+      message: 'initial submit'
     }
   })
 
@@ -224,15 +240,19 @@ setTimeout(async () => {
     }
   })
 
-  await review_svc.delete('doc/1/reviewer', {
+  await review_svc.delete('submit/1', {
     headers: {
       authorization: admin
     }
   })
 
-  await review_svc.post('doc/1/reviewer/reviewer0', {
+  await review_svc.post('submit/1', {
     headers: {
       authorization: admin
+    },
+    body: {
+      reviewer: 'reviewer0',
+      message: 'initial submit'
     }
   })
 
@@ -255,4 +275,71 @@ setTimeout(async () => {
     }
   })
 
+  res = await review_svc.get('logs', {
+    headers: {
+      authorization: admin
+    }
+  })
+  console.log(await res.json())
+
+  res = await review_svc.get('logs', {
+    headers: {
+      authorization: another
+    }
+  })
+  console.log(await res.json())
+
+  res = await review_svc.get('logs', {
+    headers: {
+      authorization: paul90317
+    }
+  })
+  console.log(await res.json())
+
+  res = await review_svc.get('logs', {
+    headers: {
+      authorization: reviewer0
+    }
+  })
+  console.log(await res.json())
+
+  res = await review_svc.get('logs?user=reviewer0', {
+    headers: {
+      authorization: paul90317
+    }
+  })
+  console.log(await res.json())
+
+  res = await review_svc.get('logs?user=paul90317', {
+    headers: {
+      authorization: paul90317
+    }
+  })
+  console.log(await res.json())
+
+  res = await review_svc.get('logs?user=admin', {
+    headers: {
+      authorization: paul90317
+    }
+  })
+  console.log(await res.json())
+
+  res = await review_svc.get('logs?document=2', {
+    headers: {
+      authorization: paul90317
+    }
+  })
+
+  res = await review_svc.get('logs?document=xxx', {
+    headers: {
+      authorization: paul90317
+    }
+  })
+
+  res = await review_svc.get('logs?document=1', {
+    headers: {
+      authorization: paul90317
+    }
+  })
+  console.log(await res.json())
 }, 0)

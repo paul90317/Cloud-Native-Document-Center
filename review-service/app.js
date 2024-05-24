@@ -34,9 +34,14 @@ app.get('/reviewer/:account/docs', verifyJWT, async (req, res) => {
 app.get('/doc/:id', verifyJWT, async (req, res) => {
   if (!req.user)
     return res.sendStatus(401);
-  const { id } = req.params
+  let { id } = req.params
   if (!id)
     return res.sendStatus(400);
+
+  id = Number.parseInt(id)
+  if (Number.isNaN(id))
+    return res.sendStatus(400)
+
   sql_file('./sql/get_doc.sql', [req.user.account, id])
     .then(result => {
       if (!result.length)
@@ -54,14 +59,18 @@ app.get('/doc/:id', verifyJWT, async (req, res) => {
     })
 })
 
-app.post('/doc/:id/reviewer/:account', verifyJWT, (req, res) => {
+app.post('/submit/:id', verifyJWT, (req, res) => {
   if (!req.user)
     return res.sendStatus(401);
-  const { id, account } = req.params;
-  if (!id || !account)
+  let { id } = req.params;
+  if (!id || !req.body || !req.body.reviewer || !req.body.message)
     return res.sendStatus(400);
 
-  sql_file('./sql/post_reviewer.sql', [req.user.account, id, account])
+  id = Number.parseInt(id)
+  if (Number.isNaN(id))
+    return res.sendStatus(400)
+
+  sql_file('./sql/post_submit.sql', [req.user.account, id, req.body.reviewer, req.body.message])
     .then(result => {
       let status_code = result[0].status_code
       switch (status_code) {
@@ -87,13 +96,18 @@ app.post('/doc/:id/reviewer/:account', verifyJWT, (req, res) => {
     })
 })
 
-app.delete('/doc/:id/reviewer', verifyJWT, (req, res) => {
+app.delete('/submit/:id', verifyJWT, (req, res) => {
   if (!req.user)
     return res.sendStatus(401);
-  const { id } = req.params;
+  let { id } = req.params;
   if (!id)
     return res.sendStatus(400);
-  sql_file('./sql/del_reviewer.sql', [req.user.account, id])
+
+  id = Number.parseInt(id)
+  if (Number.isNaN(id))
+    return res.sendStatus(400)
+
+  sql_file('./sql/del_submit.sql', [req.user.account, id])
     .then(result => {
       let status_code = result[0].status_code
       res.sendStatus(status_code);
@@ -107,17 +121,20 @@ app.delete('/doc/:id/reviewer', verifyJWT, (req, res) => {
 app.post('/review/:id', verifyJWT, (req, res) => {
   if (!req.user)
     return res.sendStatus(401);
-  const { id } = req.params
+  let { id } = req.params
   if (!req.body || !id)
     return res.sendStatus(400);
+
+  id = Number.parseInt(id)
+  if (Number.isNaN(id))
+    return res.sendStatus(400)
+
   let status = req.body.status
   let message = req.body.message
   if ((status != 2 && status != 3) || (status == 2 && !message) || (status == 3 && message))
     return res.sendStatus(400);
 
   let result_handler = result => {
-    if (!result)
-      return res.sendStatus(500);
     let status_code = result[0].status_code;
     switch (status_code) {
       case 4091:
@@ -152,11 +169,22 @@ app.get('/logs', verifyJWT, (req, res) => {
   if (!req.user)
     return res.sendStatus(401);
 
-  let { document, user, type } = req.params;
-  document = document ? document : null;
+  let { document, user, type } = req.query;
+  if (!document) {
+    document = null;
+  } else {
+    document = Number.parseInt(document);
+    if (Number.isNaN(document))
+      return res.sendStatus(400);
+  }
+  if (!type) {
+    type = null;
+  } else {
+    type = Number.parseInt(type);
+    if (Number.isNaN(type))
+      return res.sendStatus(400);
+  }
   user = user ? user : null;
-  type = type ? type : null;
-
   sql_file('./sql/logs.sql', [req.user.account, document, user, type])
     .then(result => {
       res.json(result)
