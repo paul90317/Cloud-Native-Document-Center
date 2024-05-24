@@ -2,7 +2,7 @@ SET @account = ?, @passwd = ?;
 
 select
   CASE 
-    WHEN EXISTS (SELECT * FROM users WHERE account = @account) THEN 409
+    WHEN EXISTS (SELECT 1 FROM users WHERE account = @account) THEN 409
     ELSE 200
   END
 into @status_code;
