@@ -71,7 +71,7 @@ const routes = useRouter().options.routes
             </router-link>
           </li>
           <li>
-            <router-link v-slot="{href, navigate, }" to="/register">
+            <router-link v-slot="{href, navigate, }" to="/SignUp">
               <a
                 :href="href"
                 class="btn btn-outline-secondary my-1 ms-2"

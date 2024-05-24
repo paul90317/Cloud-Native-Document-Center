@@ -1,41 +1,31 @@
 <template>
   <div class="container">
-    <div class="row pt-3 justify-content-center">
-      <div class="col-3 my-auto text-center">
-        <form id="form" @submit.prevent="submitForm">
-          <h1 class="mb-4 text-center" style="white-space: nowrap;">
-            登入頁面
-          </h1>
-          <div class="text-center" style="white-space: nowrap;">
-            帳號
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h1 class="text-center">Document Center</h1>
+            <form @submit.prevent="loginFun">
+              <div class="form-group">
+                <label for="account">帳號</label>
+                <input id="account" type="text" class="form-control" v-model="account" required>
+              </div>
+              <div class="form-group mb-3">
+                <label for="passWord">密碼</label>
+                <input id="passWord" type="password" class="form-control" v-model="passwd" required>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block mb-3">登入</button>
+              </div>
+              <div class="form-group">
+                <button type="button" class="btn btn-secondary btn-block" @click="SignInWithGoogle">使用Google登入</button>
+              </div>
+              <div class="text-center mt-3">
+                <RouterLink to="/signup" class="btn btn-link">註冊</RouterLink>
+              </div>
+            </form>
           </div>
-          <input
-            type="text"
-            placeholder="請輸入帳號名稱"
-            class="mb-3 px-3 pe-4 py-2"
-            v-model="account"
-          >
-          <div class="text-center" style="white-space: nowrap;">
-            密碼
-          </div>
-          <input
-            type="password"
-            placeholder="請輸入密碼"
-            class="mb-4 px-3 pe-4 py-2"
-            v-model="passwd"
-          >
-          <button class="mb-4 text-center btn btn-lg btn-primary w-100" type="submit">
-            登入
-          </button>
-          <RouterLink to="/signup">
-            註冊
-          </RouterLink>
-          <div class="text-end login-buttom">
-            <RouterLink to="/register">
-              第三方登入
-            </RouterLink>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
@@ -53,18 +43,28 @@ const router = useRouter()
 const account = ref('');
 const passwd = ref('');
 
-async function submitForm() {
-  const resp = await localLogin({
-    account: account.value,
-    passwd:passwd.value
-  });
+const loginFun = async () => {
+  try {
+    const resp = await localLogin({
+      account: account.value,
+      passwd: passwd.value
+    });
 
-  console.log(resp)
-  if (resp.status === 200) {
-    const token = resp.headers.authorization.split('Bearer ')[1];
-    setToken(token);
-    setLocalToken(token);
-    router.replace('/file')
+    console.log(resp)
+    if (resp.status === 200) {
+      const token = resp.headers.authorization.split('Bearer ')[1];
+      setToken(token);
+      setLocalToken(token);
+      router.replace('/file')
+    }
+  } catch (error) {
+    console.error('登入失敗，錯誤訊息：' + error.message);
+    alert('登入失敗，錯誤訊息：' + error.message);
   }
-}
+};
+
+const SignInWithGoogle = () => {
+  // 你的 Google 登入邏輯
+};
+
 </script>

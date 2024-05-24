@@ -17,6 +17,7 @@
       content-type="html"
       placeholder="write something down..."
       :toolbar="toolbarOptions"
+      :modules="modules"
       @update:content="onEditorChange($event)"
     />
   </div>
@@ -43,8 +44,10 @@
 
 
 <script setup>
-import { QuillEditor } from '@vueup/vue-quill';
+import { QuillEditor , Quill} from '@vueup/vue-quill';
 import { onMounted, ref, toRaw, watch } from 'vue';
+import BlotFormatter from "quill-blot-formatter/dist/BlotFormatter";
+import ImageUploader from 'quill-image-uploader';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const TextLength = ref(0)
@@ -89,4 +92,37 @@ const toolbarOptions = [
     ['clean'],
     ['link', 'image'],
 ]
+// Quill: Modules
+const modules = ref([
+  {
+    name: "blotFormatter",
+    module: BlotFormatter,
+    options: {
+      /* options */
+    }
+  },
+  {
+    name: 'imageUploader',
+    module: ImageUploader,
+    options: {
+      upload: file => {
+        return new Promise((resolve, reject) => {
+          const formData = new FormData()
+          formData.append("file", file)
+          adminApi.news.postContentImg(formData)
+            .then(res => {
+              resolve(res.data.imgUrl)
+            })
+            .catch(err => {
+              reject("Upload failed")
+              console.error("Error:", err)
+            })
+        })
+      }
+    }
+  }
+]);
+
+Quill.register("modules/blotFormatter", BlotFormatter);
+Quill.register("modules/imageUploader", ImageUploader);
 </script>

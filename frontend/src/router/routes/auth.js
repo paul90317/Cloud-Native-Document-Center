@@ -1,12 +1,5 @@
 export default [
   {
-    path: '/register',
-    name: 'Register',
-    title: 'Register',
-    isHidden: true,
-    component: () => import('@/views/user/Register.vue')
-  },
-  {
     path: '/login',
     name: 'Login',
     title: 'Login',
