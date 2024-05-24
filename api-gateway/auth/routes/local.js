@@ -4,9 +4,9 @@ const { signJWT } = require('../utils/auth')
 const { sql_file } = require('../utils/mysql')
 
 router.post('/register', (req, res) => {
-  if (!req.body || !req.body.account || !req.body.passwd)
+  if (!req.body || !req.body.account || !req.body.passwd || !req.body.email || !req.body.name || !req.body.phone || !req.body.profile)
     return res.sendStatus(400);
-  sql_file('sql/local/register.sql', [req.body.account, req.body.passwd])
+  sql_file('sql/local/register.sql', [req.body.account, req.body.passwd, req.body.email, req.body.name, req.body.phone, req.body.profile])
     .then(result => {
       res.sendStatus(result[0].status_code);
     })
