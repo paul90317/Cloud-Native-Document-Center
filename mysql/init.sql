@@ -72,3 +72,14 @@ INSERT INTO `users` (`account`, `passwd`, `manager`, `email`, `name`, `phone`, `
 
 -- Insert the default reviewer account
 INSERT INTO `users` (`account`, `passwd`, `manager`, `email`, `name`, `phone`, `profile`) VALUES ('lewis', 'reviewer', false, 'lewis.cs12@nycu.edu.tw', 'Reviewer', '0912345678', 'Test reviewer.');
+
+-- Insert the test user account
+INSERT INTO `users` (`account`, `passwd`, `manager`, `email`, `name`, `phone`, `profile`) VALUES ('test', 'test', false, 'test@test.com', 'Test', '0912345678', 'Test user.');
+
+-- Insert the test documents
+INSERT INTO `documents` (`name`, `content`, `creator`, `reviewer`, `status`) VALUES ('Test Document', 'This is a test document.', 'test', 'lewis', 0);
+INSERT INTO `documents` (`name`, `content`, `creator`, `reviewer`, `status`) VALUES ('Test Document 2', 'This is another test document.', 'test', 'lewis', 0);
+
+-- Insert the test roles
+INSERT INTO `roles` (`document`, `user`, `role`) VALUES (1, 'test', 0);
+INSERT INTO `roles` (`document`, `user`, `role`) VALUES (2, 'test', 0);
