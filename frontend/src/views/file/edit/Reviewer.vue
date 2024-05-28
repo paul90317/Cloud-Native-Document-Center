@@ -1,44 +1,129 @@
-<script setup>
-import { ref } from 'vue';
-
-const count = ref(6)
-</script>
 <template>
-  <div class="container text-center pt-4">
-    <h2>
-      編輯文件審核者
-    </h2>
+  <hr>
+  <div id="selectstudent" class="container">
     <div class="row">
-      <div class="col-8 mx-auto">
-        <div class="list-group text-start">
-          <label
-            v-for="item in count"
-            :key="item"
-            class="list-group-item d-flex justify-content-between align-items-center"
-          >
-            <span>
-              <input
-                class="form-check-input me-1"
-                type="checkbox"
-                value=""
-              >
-              First checkbox
-            </span>
-            <span class="badge bg-danger rounded-pill">admin</span>
-          </label>
+      <div class="col-sm-12 col-md-6">
+        <div class="row">
+          <div class="col-sm-12">
+            <label for="pageSize">每頁顯示筆數：</label>
+            <select v-model="pageSize" @change="fetchData">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+        <table id="table_add" class="display" style="width:100%">
+          <thead>
+            <tr>
+              <th><input type="checkbox" name="select_all" value="1" id="addselect_all" @click="addselectall"></th>
+              <th>name</th>
+              <th>priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users.data" :key="user.id">
+              <td><input type="checkbox" v-model="user.checked" :value="user.id"></td>
+              <td>{{ user.name }}</td>
+              <td>
+                <select v-model="user.priority">
+                  <option value="viewer">viewer</option>
+                  <option value="editor">editor</option>
+                  <option value="reviewer">reviewer</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        <div class="row justify-content-center">
+          <div class="col-sm-12 col-md-4">
+            <button type="button" class="btn btn-success" @click="addtable">新增</button>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-sm-12 col-md-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <button class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">back</button>
+              <span>頁數：{{ currentPage }}</span>
+              <button class="btn btn-outline-primary" @click="nextPage" :disabled="currentPage === totalPages">next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6">
+        <table id="table_delete" class="display" style="width:100%">
+          <thead>
+            <tr>
+              <th><input type="checkbox" name="select_all" value="1" id="select_all" @click="deleteselectall"></th>
+              <th>name</th>
+              <th>priority</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <hr>
+        <div class="row" style="text-align:center">
+          <div class="col-sm col-md-4"></div>
+          <div class="col-sm col-md-4">
+            <button type="button" class="btn btn-danger" @click="deletetable">刪除</button>
+          </div>
         </div>
       </div>
     </div>
-    <div
-      class="btn-group mt-4"
-      role="group"
-    >
-      <button type="button" class="btn btn-success">
-        送出
-      </button>
-      <button type="button" class="btn btn-outline-primary">
-        返回
-      </button>
-    </div>
   </div>
 </template>
+
+<script setup>
+
+import {reactive,computed,ref, onMounted}  from 'vue'; 
+import {getAllUserInfo} from "../../../apis/auth.js";
+import {useUserStore} from "../../../stores/user.js";
+import {useRouter} from "vue-router";
+import {setLocalToken} from "../../../utils/storage.js";
+
+const pageSize = ref(10); 
+const currentPage = ref(1); 
+const totalPages = ref(0); 
+const allData = ref([]); 
+
+const displayedData = computed(() => { 
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return allData.value.slice(start, end);
+});
+const { setToken } = useUserStore();
+const router = useRouter();
+const users = reactive({ data: [] });
+onMounted(fetchData); 
+async function fetchData() {
+  const token = setToken.value; // get the token
+  try {
+    const usersData = await getAllUserInfo(token);
+    allData.value = usersData.data; // assign the user data to allData
+    totalPages.value = Math.ceil(allData.value.length / pageSize.value); 
+    users.data = displayedData.value; // assign displayed data to users.data
+    console.log('User data fetched successfully:', usersData.data); 
+  } catch (error) {
+    console.error('Error fetching user data:', error); // print the error message
+  }
+}
+const addselectall = () => {
+  const areAllSelected = users.data.every(user => user.checked);
+  users.data.forEach(user => user.checked = !areAllSelected);
+};
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    users.data = displayedData.value; // update users.data when page changes
+  }
+}
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    users.data = displayedData.value; // update users.data when page changes
+  }
+}
+</script>
