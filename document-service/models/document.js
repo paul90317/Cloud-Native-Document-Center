@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     name: DataTypes.STRING,
+    content: DataTypes.TEXT,
     creator: DataTypes.STRING,
     reviewer: DataTypes.STRING,
     status: DataTypes.INTEGER,

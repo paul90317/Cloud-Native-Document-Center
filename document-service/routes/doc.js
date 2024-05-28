@@ -100,15 +100,17 @@ router.get('/all', authenticator.getUserInfo, async (req, res) => {
  * 
  *     requestBody:
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               docname:
- *                 type: string
- *               file:
- *                 type: string
- *                 format: binary
+ *            type: object
+ *            properties:
+ *              docname:
+ *                type: integer
+ *                description: Name of the new doc
+ *              content:
+ *                type: string
+ *                description: content of the new doc
+ * 
  *     security:
  *       - bearerAuth: []
  * 
@@ -129,24 +131,24 @@ router.get('/all', authenticator.getUserInfo, async (req, res) => {
  *       '415':
  *         description: Unsupported media type
  */
-router.post('/', authenticator.getUserInfo, documentSaver.single('file'), async (req, res) => {
+router.post('/', authenticator.getUserInfo, async (req, res) => {
   try {
-    // check authorization
-    if (!req.isAuthorized) {
-      return res.status(401).send('Unauthorized');
-    }
+    // check if the user is exist
+    const user = await dbHelper.findUserByEmail(req.email);
+    if (!user) return res.status(404).send('User not found');
 
-    // check if the file is uploaded
-    if (req.fileExists) {
-      return res.status(409).send('File already exists');
-    }
+    console.log(req.body);
+
+    // check if the document is already exist
+    const checkDoc = await dbHelper.findDocumentByName(req.body.docname);
+    if (checkDoc) return res.status(409).send('Document is already exist');
 
     // create a new doc in the database
-    await dbHelper.createDocument(req.body.docname, req.user.account, 0);
+    await dbHelper.createDocument(req.body.docname, req.body.content, user.account, 0);
 
     // add the role between the creator and the document
     const doc = await dbHelper.findDocumentByName(req.body.docname);
-    await dbHelper.createRole(doc.id, req.user.account, 0);
+    await dbHelper.createRole(doc.id, user.account, 0);
 
     return res.send("Document created");
   }
@@ -179,17 +181,15 @@ router.post('/', authenticator.getUserInfo, documentSaver.single('file'), async 
  *     responses:
  *       '200':
  *         content:
- *           application/octet-stream:
- *             schema:
- *               type: string
- *               format: binary
- *           multipart/form-data:
+ *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 review-id:
  *                   type: string
  *                 docname:
+ *                   type: string
+ *                 content:
  *                   type: string
  *                 doc-id:
  *                   type: string
@@ -222,9 +222,14 @@ router.get('/:id', authenticator.getUserInfo, async (req, res) => {
     }
 
     // return the document
-    const filePath = 'static/' + user.account + '/' + document.name;
-    if (!fs.existsSync(filePath)) return res.status(404).send('File not found');
-    res.sendFile(filePath, { root: './' });
+    return res.send({
+      'review-id': role.id,
+      'docname': document.name,
+      'content': document.content,
+      'doc-id': document.id,
+      'creator': document.creator,
+      'status': document.status
+    });
   }
   catch (err) {
     console.log(err);
@@ -249,31 +254,24 @@ router.get('/:id', authenticator.getUserInfo, async (req, res) => {
  *         schema:
  *           type: string
  *     requestBody:
- *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               docname:
- *                 type: string
- *                 description: Name of the new file
- *               newFile:
- *                 type: string
- *                 format: binary
- *                 description: Binary data of the new file
+ *            type: object
+ *            properties:
+ *              docname:
+ *                type: integer
+ *                description: New name of the doc
+ *              content:
+ *                type: string
+ *                description: New content of the doc
  * 
  *     security:
  *       - bearerAuth: []
  * 
  *     responses:
  *       '200':
- *         content:
- *           application/octet-stream:
- *             schema:
- *               type: string
- *               format: binary
- *         description: A successful response
+ *         description: File updated
  *         
  *       '401':
  *         description: Unauthorized
@@ -283,18 +281,22 @@ router.get('/:id', authenticator.getUserInfo, async (req, res) => {
  */
 router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'), async (req, res) => {
   try {
-    // check authorization
-    if (!req.isAuthorized) {
+    const user = await dbHelper.findUserByEmail(req.email);
+    const document = await dbHelper.findDocumentById(req.params.id);
+
+    // check if the user is exist
+    if (!user) return res.status(404).send('User not found');
+
+    // check if the document is exist
+    if (!document) return res.status(404).send('Document not found');
+
+    // only the owner can update the document
+    if (document.creator !== user.account) {
       return res.status(401).send('Unauthorized');
     }
 
-    // check if the file is uploaded
-    if (!req.fileExists) {
-      return res.status(404).send('File not found');
-    }
-
     // update document in database
-    await dbHelper.updateDocumentName(req.params.id, req.body.docname);
+    await dbHelper.updateDocument(req.params.id, req.body.content, req.body.docname);
 
     return res.send('File updated');
   }
@@ -327,12 +329,7 @@ router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'),
  * 
  *     responses:
  *       '200':
- *         content:
- *           application/octet-stream:
- *             schema:
- *               type: string
- *               format: binary
- *         description: A successful response
+ *         description: Document deleted
  *         
  *       '401':
  *         description: Unauthorized
@@ -352,11 +349,6 @@ router.delete('/:id', authenticator.getUserInfo, async (req, res) => {
     if (user.account !== document.creator && user.manager !== 1) {
       return res.status(401).send('Unauthorized');
     }
-
-    // delete the file in the file system
-    const filePath = 'static/' + user.account + '/' + document.name;
-    if (!fs.existsSync(filePath)) return res.status(404).send('File not found');
-    fs.unlinkSync(filePath);
 
     // delete the all related roles in the database
     const roles = await dbHelper.findRoleByDocument(req.params.id);

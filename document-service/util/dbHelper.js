@@ -25,14 +25,19 @@ async function findAllDocuments() {
   return db.sequelize.models.documents.findAll();
 }
 
-async function createDocument(name, creator, status) {
+async function createDocument(name, content, creator, status) {
   return db.sequelize.models.documents.create({
     name: name,
+    content: content,
     creator: creator,
     reviewer: creator,
     status: status,
     message: ''
   });
+}
+
+async function updateDocument(id, content, name) {
+  return db.sequelize.models.documents.update({ content: content, name: name }, { where: { id: id } });
 }
 
 async function deleteDocument(id) {
@@ -75,6 +80,7 @@ module.exports = {
   findDocumentByName,
   findAllDocuments,
   createDocument,
+  updateDocument,
   deleteDocument,
   updateDocumentName,
   createRole,

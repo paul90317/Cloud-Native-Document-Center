@@ -19,6 +19,7 @@ CREATE TABLE `users` (
 CREATE TABLE `documents` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `content` text NOT NULL,
   `creator` varchar(255) NOT NULL,
   `reviewer` varchar(255) NOT NULL,
   `status` int NOT NULL DEFAULT 0,
