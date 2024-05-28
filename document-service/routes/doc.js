@@ -105,7 +105,7 @@ router.get('/all', authenticator.getUserInfo, async (req, res) => {
  *            type: object
  *            properties:
  *              docname:
- *                type: integer
+ *                type: string
  *                description: Name of the new doc
  *              content:
  *                type: string
@@ -260,7 +260,7 @@ router.get('/:id', authenticator.getUserInfo, async (req, res) => {
  *            type: object
  *            properties:
  *              docname:
- *                type: integer
+ *                type: string
  *                description: New name of the doc
  *              content:
  *                type: string
@@ -359,6 +359,77 @@ router.delete('/:id', authenticator.getUserInfo, async (req, res) => {
     // delete the document in the database
     await dbHelper.deleteDocument(req.params.id);
     return res.send('File deleted');
+  }
+  catch (err) {
+    console.log(err);
+    return res.status(500).send({ error: 'Internal Server Error!' });
+  }
+});
+
+
+/**
+ * @swagger
+ * /doc/auth/{id}:
+ *   get:
+ *     summary: This route is used to get all the users who have access to the doc.
+ * 
+ *     description: Will response the users who have access to the doc with the given id.
+ * 
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID of the item to get
+ *         schema:
+ *           type: string
+ * 
+ *     security:
+ *       - bearerAuth: []
+ * 
+ *     responses:
+ *       '200':
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   doc-id:
+ *                     type: integer
+ *                   account:
+ *                     type: string
+ *                   role:
+ *                     type: integer
+ *         
+ *       '401':
+ *         description: Unauthorized
+ * 
+ *       '404':
+ *         description: User not found
+ */
+router.get('/auth/:id', authenticator.getUserInfo, async (req, res) => {
+  try {
+    // check authorization
+    const user = await dbHelper.findUserByEmail(req.email);
+    const document = await dbHelper.findDocumentById(req.params.id);
+    if (!user) return res.status(404).send('User not found');
+    if (!document) return res.status(404).send('Document not found');
+
+    // only the owner can access the document
+    if (document.creator !== user.account && user.manager !== 1) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    // find the roles of the document
+    const roles = await dbHelper.findRoleByDocument(req.params.id);
+    return res.send(roles.map(role => {
+      return {
+        'doc-id': role.document,
+        'account': role.user,
+        'role': role.role
+      }
+    }));
   }
   catch (err) {
     console.log(err);
