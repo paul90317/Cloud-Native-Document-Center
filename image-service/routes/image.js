@@ -36,7 +36,7 @@ const db = require('../models');
  *       '404':
  *         description: User not found
  */
-router.get('/ids', authenticator.getUserInfo, (req, res) => {
+router.get('/ids', authenticator.getInfoFromAuthService, (req, res) => {
   const db = require('../models');
 
   // TODO: get all image ids of the user from the database
@@ -86,7 +86,7 @@ router.get('/ids', authenticator.getUserInfo, (req, res) => {
  *       '404':
  *         description: User not found
  */
-router.get('/:id', authenticator.getUserInfo, (req, res) => {
+router.get('/:id', authenticator.getInfoFromAuthService, (req, res) => {
   // find the corresponding document of the image
 
   // check if the user is the document owner
@@ -140,7 +140,7 @@ router.get('/:id', authenticator.getUserInfo, (req, res) => {
  *       '415':
  *         description: Unsupported media type
  */
-router.post('/', authenticator.getUserInfo, imageSaver.single('file'), (req, res) => {
+router.post('/', authenticator.getInfoFromAuthService, imageSaver.single('file'), (req, res) => {
   const mimetype = fileManager.getMimeType(req.file.path);
   const validMimetype = ['image/png', 'image/jpeg'];
 

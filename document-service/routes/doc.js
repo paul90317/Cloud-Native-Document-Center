@@ -48,7 +48,7 @@ const db = require('../models');
  *       '404':
  *         description: User not found
  */
-router.get('/all', authenticator.getUserInfo, async (req, res) => {
+router.get('/all', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     // find the user by email
     const user = await dbHelper.findUserByEmail(req.email);
@@ -131,7 +131,7 @@ router.get('/all', authenticator.getUserInfo, async (req, res) => {
  *       '415':
  *         description: Unsupported media type
  */
-router.post('/', authenticator.getUserInfo, async (req, res) => {
+router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     // check if the user is exist
     const user = await dbHelper.findUserByEmail(req.email);
@@ -207,7 +207,7 @@ router.post('/', authenticator.getUserInfo, async (req, res) => {
  *       '404':
  *         description: User not found
  */
-router.get('/:id', authenticator.getUserInfo, async (req, res) => {
+router.get('/:id', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     // check authorization
     const user = await dbHelper.findUserByEmail(req.email);
@@ -279,7 +279,7 @@ router.get('/:id', authenticator.getUserInfo, async (req, res) => {
  *       '404':
  *         description: User not found
  */
-router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'), async (req, res) => {
+router.put('/:id', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     const user = await dbHelper.findUserByEmail(req.email);
     const document = await dbHelper.findDocumentById(req.params.id);
@@ -337,7 +337,7 @@ router.put('/:id', authenticator.getUserInfo, documentUpdator.single('newFile'),
  *       '404':
  *         description: User not found
  */
-router.delete('/:id', authenticator.getUserInfo, async (req, res) => {
+router.delete('/:id', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     // check authorization
     const user = await dbHelper.findUserByEmail(req.email);
@@ -408,7 +408,7 @@ router.delete('/:id', authenticator.getUserInfo, async (req, res) => {
  *       '404':
  *         description: User not found
  */
-router.get('/auth/:id', authenticator.getUserInfo, async (req, res) => {
+router.get('/auth/:id', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     // check authorization
     const user = await dbHelper.findUserByEmail(req.email);

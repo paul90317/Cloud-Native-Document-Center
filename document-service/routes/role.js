@@ -54,7 +54,7 @@ const db = require('../models');
  *       '404':
  *         description: User not found or Document not found
  */
-router.post('/', authenticator.getUserInfo, async (req, res) => {
+router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     // check authorization
     const user = await dbHelper.findUserByAccount(req.body.account);
@@ -134,7 +134,7 @@ router.post('/', authenticator.getUserInfo, async (req, res) => {
  *       '404':
  *         description: User not found or Document not found
  */
-router.delete('/', authenticator.getUserInfo, async (req, res) => {
+router.delete('/', authenticator.getInfoFromAuthService, async (req, res) => {
   try {
     // check authorization
     const user = await dbHelper.findUserByAccount(req.body.account);
