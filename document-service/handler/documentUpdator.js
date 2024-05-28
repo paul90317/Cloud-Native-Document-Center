@@ -25,6 +25,13 @@ const filter = async (req, file, cb) => {
       return cb(null, false);
     }
 
+    // only the owner can update the document
+    const document = await dbHelper.findDocumentById(req.params.id);
+    if (document.creator !== user.account) {
+      req.isAuthorized = false;
+      return cb(null, false);
+    }
+
     // generate the file paths
     req.uploadDir = 'static/' + user.account + '/';
     req.filename = req.body.docname;

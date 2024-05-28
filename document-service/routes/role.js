@@ -64,8 +64,15 @@ router.post('/', authenticator.getUserInfo, async (req, res) => {
     if (!userOwner) return res.status(404).send('User not found');
     if (!document) return res.status(404).send('Document not found');
 
+    // TODO: admin can also grant the role to others
+
     // only the owner can assign the role
     if (userOwner.account !== document.creator) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    // reviewer only can be granted in the review phase
+    if (req.body.role == 2) {
       return res.status(401).send('Unauthorized');
     }
 
@@ -136,6 +143,14 @@ router.delete('/', authenticator.getUserInfo, async (req, res) => {
     if (!user) return res.status(404).send('User not found');
     if (!userOwner) return res.status(404).send('User not found');
     if (!document) return res.status(404).send('Document not found');
+
+
+    // TODO: admin can also revoke the role from others
+
+    // reviewer only can revoke in the review phase
+    if (req.body.role == 2) {
+      return res.status(401).send('Unauthorized');
+    }
 
     // only the owner or admin can delete the role
     if (userOwner.account !== document.creator) {

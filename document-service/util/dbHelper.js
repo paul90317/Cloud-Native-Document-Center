@@ -21,6 +21,10 @@ async function findDocumentByName(name) {
   return db.sequelize.models.documents.findOne({ where: { name: name } });
 }
 
+async function findAllDocuments() {
+  return db.sequelize.models.documents.findAll();
+}
+
 async function createDocument(name, creator, status) {
   return db.sequelize.models.documents.create({
     name: name,
@@ -69,6 +73,7 @@ module.exports = {
   findDocumentById,
   findDocumentByUser,
   findDocumentByName,
+  findAllDocuments,
   createDocument,
   deleteDocument,
   updateDocumentName,

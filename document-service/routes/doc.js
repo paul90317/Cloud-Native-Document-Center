@@ -54,7 +54,17 @@ router.get('/all', authenticator.getUserInfo, async (req, res) => {
     const user = await dbHelper.findUserByEmail(req.email);
     if (!user) return res.status(404).send('User not found');
 
-    console.log(user.account);
+    // admin can access all the documents
+    if (user.manager === 1) {
+      const docs = await dbHelper.findAllDocuments();
+      return res.send(docs.map(doc => {
+        return {
+          docname: doc.name,
+          id: doc.id,
+          status: doc.status
+        }
+      }));
+    }
 
     // there are 5 roles (admin, editor, owner, viewer, reviewer) can access the document
     const roles = await dbHelper.findRoleByUser(user.account);
@@ -207,7 +217,7 @@ router.get('/:id', authenticator.getUserInfo, async (req, res) => {
 
     // there are 5 roles (admin, editor, owner, viewer, reviewer) can access the document
     const role = await dbHelper.findRole(req.params.id, user.account);
-    if (!role) {
+    if (!role && user.manager !== 1) {
       return res.status(401).send('Unauthorized');
     }
 
@@ -338,9 +348,8 @@ router.delete('/:id', authenticator.getUserInfo, async (req, res) => {
     if (!user) return res.status(404).send('User not found');
     if (!document) return res.status(404).send('Document not found');
 
-    // TODO: admin also can delete the document
     // only the owner can delete the document
-    if (user.account !== document.creator) {
+    if (user.account !== document.creator && user.manager !== 1) {
       return res.status(401).send('Unauthorized');
     }
 
