@@ -9,7 +9,7 @@ services:
 
   auth:
     container_name: auth
-    build: ./api-gateway/auth
+    build: ./auth
     ports:
       - "8083:80"
 
