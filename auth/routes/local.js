@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 const { signJWT } = require('../utils/auth')
-const { sql_file } = require('../utils/mysql')
+const { sql_file, sql_query } = require('../utils/mysql')
 
 router.post('/register', (req, res) => {
   if (!req.body || !req.body.account || !req.body.passwd || !req.body.email || !req.body.name || !req.body.phone || !req.body.profile)
@@ -19,12 +19,12 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
   if (!req.body || !req.body.account || !req.body.passwd)
     return res.sendStatus(400);
-  sql_file('sql/local/login.sql', [req.body.account, req.body.passwd])
+  sql_query('select account, email from users where account = ? and passwd = ?', [req.body.account, req.body.passwd])
     .then(result => {
-      if (result[0].status_code == 200)
-        res.setHeader("Authorization", signJWT({ account: req.body.account }))
+      if (result.length)
+        return res.setHeader("Authorization", signJWT(result[0])).sendStatus(200);
 
-      return res.sendStatus(result[0].status_code);
+      res.sendStatus(401);
     })
     .catch(err => {
       console.log(err)
