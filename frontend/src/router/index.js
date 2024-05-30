@@ -26,7 +26,7 @@ const router = createRouter({
   }
 })
 
-const whiteList = ['/login', '/register', '/SignUp']
+const whiteList = ['/login', '/register', '/SignUp', '/']
 
 router.beforeEach(async (to, from, next) => {
   // Change the title of the page

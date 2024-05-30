@@ -56,31 +56,46 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from "vue-router";
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { localLogin } from "../../apis/auth.js";
 import { useUserStore } from "../../stores/user.js";
 import { setLocalToken } from "../../utils/storage.js";
 
-const { setToken } = useUserStore();
-const router = useRouter()
+const { setToken, logout } = useUserStore();
+const router = useRouter();
+const route = useRoute();
+
 const account = ref('');
 const passwd = ref('');
 
+onMounted(() => {
+  const message = route.params?.message;
+  if (message) alert(message);
+});
+
 const loginFun = async () => {
+  if (!account.value || !passwd.value) {
+    alert('請輸入帳號密碼');
+    return;
+  }
+
   try {
     const resp = await localLogin({
       account: account.value,
       passwd: passwd.value
     });
+    if (resp.status !== 200) throw new Error(resp?.data?.message);
+    
+    const token = resp.headers?.authorization?.split('Bearer ')?.[1];
+    if (!token) throw new Error('無法取得 token');
+    
+    console.log('登入成功');
 
-    console.log(resp)
-    if (resp.status === 200) {
-      const token = resp.headers.authorization.split('Bearer ')[1];
-      setToken(token);
-      setLocalToken(token);
-      router.replace('/file')
-    }
+    setToken(token);
+    setLocalToken(token);
+
+    router.push({ name: 'file.index'});
   } catch (error) {
     console.error('登入失敗，錯誤訊息：' + error.message);
     alert('登入失敗，錯誤訊息：' + error.message);

@@ -13,7 +13,7 @@ export default [
     component: () => import('@/views/file/Review.vue')
   },
   {
-    path: '/file/edit/permission/:id',
+    path: '/file/edit/:id',
     name: 'file.edit',
     title: 'Edit file',
     isHidden: true,
