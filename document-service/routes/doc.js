@@ -119,7 +119,11 @@ router.get('/all', authenticator.getInfoFromAuthService, async (req, res) => {
  *         content:
  *          text/plain:
  *           schema:
- *            type: string
+ *            type: object
+ *            properties:
+ *              id:
+ *                type: integer
+ *                description: Name of the new doc
  *         description: A successful response
  *
  *       '404':
@@ -137,8 +141,6 @@ router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
     const user = await dbHelper.findUserByEmail(req.email);
     if (!user) return res.status(404).send('User not found');
 
-    console.log(req.body);
-
     // check if the document is already exist
     const checkDoc = await dbHelper.findDocumentByName(req.body.docname);
     if (checkDoc) return res.status(409).send('Document is already exist');
@@ -150,7 +152,7 @@ router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
     const doc = await dbHelper.findDocumentByName(req.body.docname);
     await dbHelper.createRole(doc.id, user.account, 0);
 
-    return res.send("Document created");
+    return res.send({ id: doc.id });
   }
   catch (err) {
     console.log(err);
