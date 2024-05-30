@@ -141,15 +141,11 @@ router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
     const user = await dbHelper.findUserByEmail(req.email);
     if (!user) return res.status(404).send('User not found');
 
-    // check if the document is already exist
-    const checkDoc = await dbHelper.findDocumentByName(req.body.docname);
-    if (checkDoc) return res.status(409).send('Document is already exist');
-
     // create a new doc in the database
-    await dbHelper.createDocument(req.body.docname, req.body.content, user.account, 0);
+    const doc = await dbHelper.createDocument(req.body.docname, req.body.content, user.account, 0);
+    console.log("[INFO] doc: ", doc);
 
     // add the role between the creator and the document
-    const doc = await dbHelper.findDocumentByName(req.body.docname);
     await dbHelper.createRole(doc.id, user.account, 0);
 
     return res.send({ id: doc.id });
