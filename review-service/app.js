@@ -169,7 +169,8 @@ app.get('/logs', verifyJWT, (req, res) => {
   if (!req.user)
     return res.sendStatus(401);
 
-  let { document, user, type } = req.query;
+  let { document, type } = req.query;
+
   if (!document) {
     document = null;
   } else {
@@ -177,6 +178,7 @@ app.get('/logs', verifyJWT, (req, res) => {
     if (Number.isNaN(document))
       return res.sendStatus(400);
   }
+
   if (!type) {
     type = null;
   } else {
@@ -184,8 +186,8 @@ app.get('/logs', verifyJWT, (req, res) => {
     if (Number.isNaN(type))
       return res.sendStatus(400);
   }
-  user = user ? user : null;
-  sql_file('./sql/logs.sql', [req.user.account, document, user, type])
+
+  sql_file('./sql/logs.sql', [req.user.account, document, type])
     .then(result => {
       res.json(result)
     })

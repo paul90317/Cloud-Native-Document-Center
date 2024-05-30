@@ -23,7 +23,7 @@ delete from roles where user = @reviewer and document = @document and @status_co
 
 update documents set reviewer = @creator, status = 0, message = null where id = @document and @status_code = 200;
 
-insert into logs (user, document, type)
-  select @account, @document, 4 where @status_code = 200;
+insert into logs (document, type, ufrom)
+  select @document, 4, @account where @status_code = 200;
 
 SELECT @status_code AS status_code;

@@ -303,27 +303,6 @@ setTimeout(async () => {
   })
   console.log(await res.json())
 
-  res = await review_svc.get('logs?user=reviewer0', {
-    headers: {
-      authorization: paul90317
-    }
-  })
-  console.log(await res.json())
-
-  res = await review_svc.get('logs?user=paul90317', {
-    headers: {
-      authorization: paul90317
-    }
-  })
-  console.log(await res.json())
-
-  res = await review_svc.get('logs?user=admin', {
-    headers: {
-      authorization: paul90317
-    }
-  })
-  console.log(await res.json())
-
   res = await review_svc.get('logs?document=2', {
     headers: {
       authorization: paul90317

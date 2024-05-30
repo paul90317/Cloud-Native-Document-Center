@@ -25,7 +25,7 @@ insert into roles (document, user, role)
   select @document, @reviewer, 2 where @status_code = 200;
 update documents set reviewer = @reviewer, status = 1, message = @message where id = @document and @status_code = 200;
 
-insert into logs (user, document, type, message)
-  select @account, @document, 1,  @message where @status_code = 200;
+insert into logs (document, type, ufrom, uto, message)
+  select @document, 4, @account, @reviewer, @message where @status_code = 200;
 
 SELECT @status_code AS status_code;

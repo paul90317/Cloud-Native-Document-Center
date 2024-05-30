@@ -16,7 +16,7 @@ into @status_code;
 
 update documents set status = 3, message = null where id = @document and @status_code = 200;
 
-insert into logs (user, document, type)
-  select @reviewer, @document, 3 where @status_code = 200;
+insert into logs (document, type, ufrom)
+  select @document, 3, @account where @status_code = 200;
 
 SELECT @status_code AS status_code;

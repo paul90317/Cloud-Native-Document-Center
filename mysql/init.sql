@@ -47,8 +47,9 @@ CREATE TABLE `images` (
 CREATE TABLE `logs` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `document` int NOT NULL,
-  `user` varchar(255) NOT NULL,
   `type` int NOT NULL,
+  `ufrom` varchar(255) NOT NULL,
+  `uto` varchar(255),
   `message` text,
   `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -63,7 +64,8 @@ ALTER TABLE `roles` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
 ALTER TABLE `roles` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
 ALTER TABLE `images` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
 ALTER TABLE `logs` ADD FOREIGN KEY (`document`) REFERENCES `documents` (`id`);
-ALTER TABLE `logs` ADD FOREIGN KEY (`user`) REFERENCES `users` (`account`);
+ALTER TABLE `logs` ADD FOREIGN KEY (`ufrom`) REFERENCES `users` (`account`);
+ALTER TABLE `logs` ADD FOREIGN KEY (`uto`) REFERENCES `users` (`account`);
 ALTER TABLE `documents` ADD FOREIGN KEY (`creator`) REFERENCES `users` (`account`);
 ALTER TABLE `documents` ADD FOREIGN KEY (`reviewer`) REFERENCES `users` (`account`);
 

@@ -1,9 +1,8 @@
-SET @caller = ?, @document = ?, @user = ?, @type = ?;
+SET @caller = ?, @document = ?, @type = ?;
 
 select * from logs
 where 
   (@document is null or document = @document) and 
-  (@user is null or user = @user) and 
   (@type is null or type = @type) and 
   (
     (select manager from users where account = @caller) = 1 or 
