@@ -13,10 +13,10 @@ export default [
     isHidden: true,
     component: () => import('@/views/404.vue')
   },
-  // {
-  //   path: '/test',
-  //   name: 'TestEditor',
-  //   title: 'Test Editor',
-  //   component: () => import('@/views/TestEditor.vue')
-  // }
+  {
+    path: '/test',
+    name: 'Create Document',
+    title: 'Create Document',
+    component: () => import('@/views/TestEditor.vue')
+  }
 ]

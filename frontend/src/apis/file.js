@@ -33,7 +33,7 @@ export function getAllFiles() {
  */
 export function createEmptyDoc(data) {
   return request({
-    url: '/doc/create',
+    url: '/doc',
     method: 'POST',
     data,
   })

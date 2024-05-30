@@ -53,38 +53,123 @@
 
 <script setup>
 import Editor from '@/components/Editor.vue';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import { getAllUserInfo } from "../apis/auth.js"; // 導入 getAllUserInfo 函數
+import { createEmptyDoc, getFile, updateFile } from "../apis/file.js";
+import { getLocalToken } from "../utils/storage.js";
 
-const submitAndClearEditor = ref(false)
+const UserAccount = ref('');
+const document_id = ref(null)
+const submitAndClearEditor = ref('')
+
+const fetchAllUserInfo = async () => {
+  try {
+    const token = getLocalToken(); // 獲取本地存儲的 JWT 憑證
+    const resp = await getAllUserInfo(token); // 將 JWT 憑證傳遞給 getAllUserInfo 函數
+    console.log(token);
+    console.log(resp);
+    if (resp.status === 200) {
+      console.log('獲取所有用戶信息成功');
+      return resp.data;
+    }
+  } catch (error) {
+    console.error('獲取所有用戶信息失敗，錯誤訊息：' + error.message);
+    alert('獲取所有用戶信息失敗，錯誤訊息：' + error.message);
+  }
+};
+
+onMounted(async () => {
+  const UserInfo = await fetchAllUserInfo();
+  if (UserInfo && UserInfo.length > 0) {
+    UserAccount.value = UserInfo[0].account;
+    console.log(UserAccount.value);
+  }
+});
+
+const createDoc = async (docname, content) => {
+  try {
+    const resp = await createEmptyDoc({docname, content});
+
+    console.log(resp)
+    if (resp.status === 200) {
+      console.log('文件創建成功，文件 ID：' + resp.data.id);
+      document_id.value = resp.data.id;
+      return resp.data.id;
+    }
+  } catch (error) {
+    console.error('文件創建失敗，錯誤訊息：' + error.message);
+    alert('文件創建失敗，錯誤訊息：' + error.message);
+  }
+};
+
+const updateDoc = async (docname, content) => {
+  try {
+    const resp = await updateFile(document_id.value,{docname, content});
+
+    console.log(resp)
+    if (resp.status === 200) {
+      console.log('文件更新成功');
+      return resp.data.id;
+    }
+  } catch (error) {
+    console.error('文件更新失敗，錯誤訊息：' + error.message);
+    alert('文件更新失敗，錯誤訊息：' + error.message);
+  }
+};
+
+const getDoc = async () => {
+  try {
+    const resp = await getFile(document_id.value);
+    console.log(resp)
+    if (resp.status === 200) {
+      console.log('文件讀取成功');
+      return resp.data;
+    }
+  } catch (error) {
+    console.error('文件讀取失敗，錯誤訊息：' + error.message);
+    alert('文件讀取失敗，錯誤訊息：' + error.message);
+  }
+};
 
 const newsForm = reactive({
-  title: '',
-  content: '',
+    title: '',
+    content: '',
 })
 
 const handleEditorChange = async (content) => {
-  newsForm.content = await content
+    newsForm.content = await content
 }
 
 const submitForm = async () => {
-  if (window.confirm("Are you sure you want to submit the form?")) {
-    // Submit form logic here
-  }
+    if (window.confirm("Are you sure you want to submit the form?")) {
+        // Submit form logic here
+    }
 }
 
 const saveForm = async () => {
   if (window.confirm("Are you sure you want to save the form?")) {
-    // Save form logic here
+    const docname = newsForm.title; 
+    const content = newsForm.content;
+    if(document_id.value == null) {
+      await createDoc(docname, content);
+    } else {
+      await updateDoc(docname, content);
+    }
   }
 }
 
 const retrieveForm = async () => {
-  if (window.confirm("Are you sure you want to retrieve the form?")) {
-    // Retrieve form logic here
-  }
+    if (window.confirm("Are you sure you want to retrieve the form?")) {
+      const data = await getDoc(document_id.value);
+      newsForm.title = data.docname;
+      newsForm.content = data.content;
+      submitAndClearEditor.value = data.content;
+      console.log(data.content);
+      console.log(submitAndClearEditor.value);
+    }
 }
 
 const handleSubmitAndEditorClear = async (value) => {
-  submitAndClearEditor.value = await value
+    submitAndClearEditor.value = await value
 }
 </script>

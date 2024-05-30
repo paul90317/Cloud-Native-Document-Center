@@ -80,11 +80,10 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import BlotFormatter from "quill-blot-formatter/dist/BlotFormatter";
 import ImageUploader from 'quill-image-uploader';
 import { onMounted, ref, toRaw, watch } from 'vue';
-
 const TextLength = ref(0)
 const myQuillEditor = ref(null)
 const props = defineProps({
-  submitAndClearEditor: Boolean,
+  submitAndClearEditor: String,
   content: String,
 })
 const emit = defineEmits(['emitOnEditorChange', 'emitOnSubmitAndEditorClear'])
@@ -100,8 +99,13 @@ const onEditorChange = async (e) => {
 }
 
 watch(() => props.submitAndClearEditor, async (newValue) => {
-  emit('emitOnSubmitAndEditorClear', false)
-  await toRaw(myQuillEditor).value.setContents('')
+  //await toRaw(myQuillEditor).value.setContents(props.submitAndClearEditor)
+  //let delta = new Delta().insert(newValue);
+  let content = newValue.replace(/<\/?p>/g, '');
+  let jg = JSON.parse(content);
+  await myQuillEditor.value.setContents(jg);
+  console.log('content:', content);
+  emit('emitOnSubmitAndEditorClear', newValue);
 })
 
 onMounted(async () => {
