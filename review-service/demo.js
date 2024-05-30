@@ -70,7 +70,7 @@ setTimeout(async () => {
   await sql_query('insert into users (account, passwd, manager) values (?, ?, ?)', ['admin', 'admin', true])
   await sql_query('insert into users (account, passwd, manager) values (?, ?, ?)', ['reviewer0', '123456', false])
   await sql_query('insert into users (account, passwd, manager) values (?, ?, ?)', ['another', '123456', false])
-  await sql_query('insert documents (id, name, creator, reviewer) values (?, ?, ?, ?)', [1, 'hello_world', 'paul90317', 'paul90317'])
+  await sql_query('insert documents (id, name, creator, reviewer, content) values (?, ?, ?, ?, ?)', [1, 'hello_world', 'paul90317', 'paul90317', 'content'])
 
   let paul90317 = (await auth_svc.post('local/login', {
     body: {

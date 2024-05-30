@@ -18,6 +18,8 @@ select
   END
 into @status_code;
 
+select reviewer into @reviewer from documents where id = @document;
+delete from roles where user = @reviewer and document = @document and @status_code = 200;
 
 update documents set reviewer = @creator, status = 0, message = null where id = @document and @status_code = 200;
 
