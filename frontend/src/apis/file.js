@@ -13,7 +13,7 @@ import request from '@/utils/request/file'
  */
 export function getAllFiles() {
   return request({
-    url: '/docs/all',
+    url: '/doc/all',
     method: 'GET',
   })
 }
@@ -33,7 +33,7 @@ export function getAllFiles() {
  */
 export function createEmptyDoc(data) {
   return request({
-    url: '/docs/create',
+    url: '/doc/create',
     method: 'POST',
     data,
   })
@@ -55,7 +55,7 @@ export function createEmptyDoc(data) {
  */
 export function getFile(id) {
   return request({
-    url: `/docs/${id}`,
+    url: `/doc/${id}`,
     method: 'GET',
   })
 }
@@ -74,7 +74,7 @@ export function getFile(id) {
  */
 export function updateFile(id, data) {
   return request({
-    url: `/docs/${id}`,
+    url: `/doc/${id}`,
     method: 'PUT',
     data,
   })
@@ -89,7 +89,7 @@ export function updateFile(id, data) {
  */
 export function deleteFile(id) {
   return request({
-    url: `/docs/${id}`,
+    url: `/doc/${id}`,
     method: 'DELETE',
   })
 }

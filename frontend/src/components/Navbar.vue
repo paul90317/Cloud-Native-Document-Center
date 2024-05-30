@@ -1,7 +1,3 @@
-<script setup>
-import { useRouter } from 'vue-router';
-const routes = useRouter().options.routes
-</script>
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container">
@@ -60,7 +56,15 @@ const routes = useRouter().options.routes
             </li>
           </template>
         </ul>
-        <ul class="navbar-nav">
+
+        <ul v-if="isLogin" class="navbar-nav">
+          <li>
+            <button class="btn btn-outline-success my-1" @click="onLogout">
+              Logout
+            </button>
+          </li>
+        </ul>
+        <ul v-else class="navbar-nav">
           <li>
             <router-link v-slot="{href, navigate, }" to="/login">
               <a
@@ -84,5 +88,33 @@ const routes = useRouter().options.routes
     </div>
   </nav>
 </template>
+
+<script>
+import { useUserStore } from "@/stores/user.js";
+
+export default {
+  data() {
+    return {
+      routes: [],
+      userState: useUserStore()
+    }
+  },
+  computed: {
+    isLogin() {
+      return this.userState?.getAccessToken !== null
+    }
+  },
+  mounted() {
+    this.routes = this.$router.options.routes
+  },
+  methods: {
+    onLogout() {
+      this.userState?.logout()
+      this.$router.push({ name: 'Home' })
+    }
+  }
+}
+
+</script>
 
 <style></style>

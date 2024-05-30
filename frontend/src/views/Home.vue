@@ -1,22 +1,3 @@
-<script setup>
-import { localLogin, logalRegister } from '@/apis/auth';
-import { onMounted } from 'vue';
-
-onMounted(async () => {
-  const registerResponse = await logalRegister({
-    account: 'test1',
-    passwd: 'test1',
-  })
-  console.log(registerResponse)
-
-  const loginResponse = await localLogin({
-    account: 'test1',
-    passwd: 'test1',
-  })
-  console.log(loginResponse);
-});
-</script>
-
 <template>
   <div class="m-4 p-5 bg-light rounded-3">
     <div class="container py-4">
@@ -27,23 +8,35 @@ onMounted(async () => {
         <p>
           A simple document management system
         </p>
-        <router-link v-slot="{href, navigate, }" to="/login">
-          <a
-            :href="href"
-            class="btn btn-outline-primary my-1"
-            @click="navigate"
-          >Login</a>
-        </router-link>
-        <router-link v-slot="{href, navigate, }" to="/register">
-          <a
-            :href="href"
-            class="btn btn-outline-secondary my-1 ms-2"
-            @click="navigate"
-          >Register</a>
-        </router-link>
+        <template v-if="!isLogin">
+          <router-link v-slot="{ href, navigate }" to="/login">
+            <a
+              :href="href"
+              class="btn btn-outline-primary my-1"
+              @click="navigate"
+            >Login</a>
+          </router-link>
+          <router-link v-slot="{ href, navigate }" to="/register">
+            <a
+              :href="href"
+              class="btn btn-outline-secondary my-1 ms-2"
+              @click="navigate"
+            >Register</a>
+          </router-link>
+        </template>
       </div>
     </div>
   </div>
 </template>
+<script>
+import { useUserStore } from "@/stores/user.js";
 
-<style scoped></style>
+export default {
+  computed: {
+    isLogin() {
+      const userState = useUserStore()
+      return userState?.getAccessToken !== null
+    }
+  },
+}
+</script>

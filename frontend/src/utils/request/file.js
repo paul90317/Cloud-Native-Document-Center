@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 
 const service = axios.create({
@@ -5,9 +6,14 @@ const service = axios.create({
   timeout: 50000
 })
 
+
 // request interceptor
 service.interceptors.request.use(
   (config) => {
+    const store = useUserStore()
+    if (store.hasToken) {
+      config.headers['Authorization'] = `Bearer ${store.getAccessToken}`
+    }
     return config
   },
   (error) => {

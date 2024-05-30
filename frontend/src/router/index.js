@@ -26,24 +26,45 @@ const router = createRouter({
   }
 })
 
-const whiteList = ['/login', '/register', '/signup']
+const whiteList = ['/login', '/register', '/SignUp']
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+  // Change the title of the page
   if (to.meta.title) {
     document.title = to.meta.title
   }
 
+  // Check if the user is logged in
   const token = getLocalToken()
   const store = useUserStore()
 
-  if (!whiteList.includes(to.path)) {
-    if (!token || !store.getAccessToken) {
+  // Overwrite the token in the store
+  if (token) {
+    await store.setToken(token)
+  }
+
+  // Debug: can be removed
+  console.log('token exist: ', token !== null)
+  console.log('store.getAccessToken exist: ', store.getAccessToken !== null)
+
+  // isLogin condition: can be improved
+  const isLogin = token && store.getAccessToken
+
+  if (whiteList.includes(to.path)) {
+    // if the user is logged in and navigate to auth-related page (whitelist)
+    // => redirect to the home page
+    if (isLogin) {
+      next({ name: 'Home' })
+    }
+  } else {
+    // if the user is not logged in and navigate to non-auth-related page
+    // => redirect to the login page
+    if (!isLogin) {
       next({ name: 'Login' })
     }
   }
 
-  if (token) store.setToken(token)
-
+  // Default: continue to the target route
   next()
 })
 

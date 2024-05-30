@@ -4,24 +4,48 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <h1 class="text-center">Document Center</h1>
+            <h1 class="text-center">
+              Document Center
+            </h1>
             <form @submit.prevent="loginFun">
               <div class="form-group">
                 <label for="account">帳號</label>
-                <input id="account" type="text" class="form-control" v-model="account" required>
+                <input
+                  id="account"
+                  v-model="account"
+                  type="text"
+                  class="form-control"
+                  required
+                >
               </div>
               <div class="form-group mb-3">
                 <label for="passWord">密碼</label>
-                <input id="passWord" type="password" class="form-control" v-model="passwd" required>
+                <input
+                  id="passWord"
+                  v-model="passwd"
+                  type="password"
+                  class="form-control"
+                  required
+                >
               </div>
               <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-block mb-3">登入</button>
+                <button type="submit" class="btn btn-primary btn-block mb-3">
+                  登入
+                </button>
               </div>
               <div class="form-group">
-                <button type="button" class="btn btn-secondary btn-block" @click="SignInWithGoogle">使用Google登入</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-block"
+                  @click="SignInWithGoogle"
+                >
+                  使用Google登入
+                </button>
               </div>
               <div class="text-center mt-3">
-                <RouterLink to="/signup" class="btn btn-link">註冊</RouterLink>
+                <RouterLink to="/SignUp" class="btn btn-link">
+                  註冊
+                </RouterLink>
               </div>
             </form>
           </div>
@@ -32,11 +56,11 @@
 </template>
 
 <script setup>
-import {ref}  from 'vue';
-import {localLogin} from "../../apis/auth.js";
-import {useUserStore} from "../../stores/user.js";
-import {useRouter} from "vue-router";
-import {setLocalToken} from "../../utils/storage.js";
+import { ref } from 'vue';
+import { useRouter } from "vue-router";
+import { localLogin } from "../../apis/auth.js";
+import { useUserStore } from "../../stores/user.js";
+import { setLocalToken } from "../../utils/storage.js";
 
 const { setToken } = useUserStore();
 const router = useRouter()

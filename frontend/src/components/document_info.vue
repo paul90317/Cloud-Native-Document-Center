@@ -1,7 +1,9 @@
 <template>
-  <div class="modal" v-if="showModal" >
+  <div v-if="showModal" class="modal">
     <div class="container">
-    <button class="btn btn-danger" @click="hide">Close</button>
+      <button class="btn btn-danger" @click="hide">
+        Close
+      </button>
       <div class="row2">
         <div class="col">
           <div class="modal-content">
@@ -10,7 +12,11 @@
           </div>
         </div>
       </div>
-      <div class="row" v-for="message in messages" :key="message.id">
+      <div
+        v-for="message in messages"
+        :key="message.id"
+        class="row"
+      >
         <div class="col">
           <div class="modal-content">
             <h2>{{ message.title }}</h2>
@@ -48,12 +54,12 @@ export default {
       ];
     },
     show() {
-    this.showModal = true;
+      this.showModal = true;
     },
     hide() {
       this.$emit('close');
     }
-},
+  },
 };
 </script>
 

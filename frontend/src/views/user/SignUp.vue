@@ -4,34 +4,73 @@
       <div class="col-md-6">
         <div class="card shadow">
           <div class="card-body">
-            <h2 class="text-center mb-4">Account Create</h2>
+            <h2 class="text-center mb-4">
+              Account Create
+            </h2>
             <form @submit.prevent="localregister">
               <div class="form-group mb-3">
                 <label for="account">帳號</label>
-                <input id="account" type="text" class="form-control" v-model="account" required>
+                <input
+                  id="account"
+                  v-model="account"
+                  type="text"
+                  class="form-control"
+                  required
+                >
               </div>
               <div class="form-group mb-3">
                 <label for="passWord">密碼</label>
-                <input id="passWord" type="password" class="form-control" v-model="passwd" required>
+                <input
+                  id="passWord"
+                  v-model="passwd"
+                  type="password"
+                  class="form-control"
+                  required
+                >
               </div>
               <div class="form-group mb-3">
                 <label for="email">電子郵件</label>
-                <input id="email" type="email" class="form-control" v-model="email" required>
+                <input
+                  id="email"
+                  v-model="email"
+                  type="email"
+                  class="form-control"
+                  required
+                >
               </div>
               <div class="form-group mb-3">
                 <label for="name">暱稱</label>
-                <input id="name" type="text" class="form-control" v-model="name" required>
+                <input
+                  id="name"
+                  v-model="name"
+                  type="text"
+                  class="form-control"
+                  required
+                >
               </div>
               <div class="form-group mb-3">
                 <label for="phone">手機號碼</label>
-                <input id="phone" type="tel" class="form-control" v-model="phone" required>
+                <input
+                  id="phone"
+                  v-model="phone"
+                  type="tel"
+                  class="form-control"
+                  required
+                >
               </div>
               <div class="form-group mb-3">
                 <label for="profile">個性簽名</label>
-                <textarea id="profile" class="form-control" v-model="profile" required></textarea>
+                <textarea
+                  id="profile"
+                  v-model="profile"
+                  class="form-control"
+                  required
+                />
               </div>
               <div class="form-group mb-3">
-                <button type="submit" class="btn btn-primary btn-block">Register Now</button>
+                <button type="submit" class="btn btn-primary btn-block">
+                  Register Now
+                </button>
               </div>
             </form>
           </div>

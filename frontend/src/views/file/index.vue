@@ -1,10 +1,3 @@
-<script setup>
-import { ref } from 'vue';
-
-const count = ref(6)
-
-</script>
-
 <template>
   <div class="container text-center pt-4">
     <div class="row mb-4">
@@ -14,7 +7,7 @@ const count = ref(6)
     </div>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       <div
-        v-for="item in count"
+        v-for="item in data"
         :key="item"
         class="col"
       >
@@ -28,52 +21,75 @@ const count = ref(6)
               <div
                 class="btn-group"
                 role="group"
-                aria-label="First group"
+                aria-label="Edit group"
               >
-                <a class="btn btn-outline-secondary" href="#"><i class="bi bi-gear-wide-connected" /></a>
-                <a class="btn btn-outline-secondary" href="#"><i class="bi bi-person-fill-gear" /></a>
+                <!-- edit view permission -->
+                <button class="btn btn-outline-secondary" @click="onClickEditView(item.id)">
+                  <i class="bi bi-gear-wide-connected" />
+                </button>
+                <!-- edit review permission -->
+                <button class="btn btn-outline-secondary" @click="onClickEditReview(item.id)">
+                  <i class="bi bi-person-fill-gear" />
+                </button>
               </div>
               <div
                 class="btn-group"
                 role="group"
-                aria-label="First group"
+                aria-label="Operation group"
               >
-                <a class="btn btn-outline-success" href="#"><i class="bi bi-pencil-square" /></a>
-                <a class="btn btn-outline-danger" href="#"><i class="bi bi-trash3" /></a>
+                <button class="btn btn-outline-success" @click="onClickEdit(item.id)">
+                  <i class="bi bi-pencil-square" />
+                </button>
+                <button class="btn btn-outline-danger" @click="onClickDelete(item.id)">
+                  <i class="bi bi-trash3" />
+                </button>
               </div>
             </ul>
           </div>
           <div class="card-body text-start">
             <h5 class="card-title">
-              檔名
+              {{ item.docname }}
             </h5>
+            {{ `status: ${item.status}` }}
             <div
-                class="btn-group"
-                role="group"
-                aria-label="First group"
-              >
-                <button class="btn btn-outline-success" @click="showDocumentProfile"><i class="bi bi-info-square" /></button>
-                <document-profile v-if="showModal" ref="documentProfile" @close="hideDocumentProfile" />
+              class="btn-group"
+              role="group"
+              aria-label="First group"
+            >
+              <button class="btn btn-outline-success" @click="showDocumentProfile">
+                <i class="bi bi-info-square" />
+              </button>
+              <document-profile
+                v-if="showModal"
+                ref="documentProfile"
+                @close="hideDocumentProfile"
+              />
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
 </template>
 
 <script>
+import { getAllFiles } from '@/apis/file';
 import DocumentProfile from '@/components/document_info.vue';
 
 export default {
-  data() {
-    return {
-      showModal: false
-    };
-  },
   components: {
     DocumentProfile
+  },
+  data() {
+    return {
+      showModal: false,
+      data: []
+    };
+  },
+  async mounted() {
+    const response = await getAllFiles()
+    console.log(response)
+    this.data = response?.data || []
   },
   methods: {
     showDocumentProfile() {
@@ -81,8 +97,22 @@ export default {
     },
     hideDocumentProfile() {
       this.showModal = false;
+    },
+    onClickDelete(id) {
+      console.log('delete', id)
+    },
+    onClickEdit(id) {
+      console.log('edit', id)
+      this.$router.push({ name: 'file.edit' })
+    },
+    onClickEditView(id) {
+      console.log('edit view', id)
+      this.$router.push({ name: 'file.edit.reviewer' })
+    },
+    onClickEditReview(id) {
+      console.log('edit review', id)
+      this.$router.push({ name: 'file.edit.permission' })
     }
   }
-  
 };
 </script>

@@ -7,30 +7,62 @@
           <div class="col-sm-12">
             <label for="pageSize">每頁顯示筆數：</label>
             <select v-model="pageSize" @change="fetchData">
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
+              <option value="10">
+                10
+              </option>
+              <option value="20">
+                20
+              </option>
+              <option value="50">
+                50
+              </option>
+              <option value="100">
+                100
+              </option>
             </select>
           </div>
         </div>
-        <table id="table_add" class="display" style="width:100%">
+        <table
+          id="table_add"
+          class="display"
+          style="width:100%"
+        >
           <thead>
             <tr>
-              <th><input type="checkbox" name="select_all" value="1" id="addselect_all" @click="addselectall"></th>
+              <th>
+                <input
+                  id="addselect_all"
+                  type="checkbox"
+                  name="select_all"
+                  value="1"
+                  @click="addselectall"
+                >
+              </th>
               <th>name</th>
               <th>priority</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="user in users.data" :key="user.id">
-              <td><input type="checkbox" v-model="user.checked" :value="user.id"></td>
+              <td>
+                <input
+                  v-model="user.checked"
+                  type="checkbox"
+                  :value="user.id"
+                >
+              </td>
               <td>{{ user.name }}</td>
               <td>
                 <select v-model="user.priority">
-                  <option value="viewer">viewer</option>
-                  <option value="editor">editor</option>
-                  <option value="reviewer">reviewer</option>
+                  <option value="viewer">
+                    viewer
+                  </option>
+                  <option value="editor">
+                    editor
+                  </option>
+                  <option value="reviewer">
+                    reviewer
+                  </option>
                 </select>
               </td>
             </tr>
@@ -39,36 +71,72 @@
         <hr>
         <div class="row justify-content-center">
           <div class="col-sm-12 col-md-4">
-            <button type="button" class="btn btn-success" @click="addtable">新增</button>
+            <button
+              type="button"
+              class="btn btn-success"
+              @click="addtable"
+            >
+              新增
+            </button>
           </div>
         </div>
         <div class="row justify-content-center">
           <div class="col-sm-12 col-md-4">
             <div class="d-flex justify-content-between align-items-center">
-              <button class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">back</button>
+              <button
+                class="btn btn-outline-primary"
+                :disabled="currentPage === 1"
+                @click="prevPage"
+              >
+                back
+              </button>
               <span>頁數：{{ currentPage }}</span>
-              <button class="btn btn-outline-primary" @click="nextPage" :disabled="currentPage === totalPages">next</button>
+              <button
+                class="btn btn-outline-primary"
+                :disabled="currentPage === totalPages"
+                @click="nextPage"
+              >
+                next
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6">
-        <table id="table_delete" class="display" style="width:100%">
+        <table
+          id="table_delete"
+          class="display"
+          style="width:100%"
+        >
           <thead>
             <tr>
-              <th><input type="checkbox" name="select_all" value="1" id="select_all" @click="deleteselectall"></th>
+              <th>
+                <input
+                  id="select_all"
+                  type="checkbox"
+                  name="select_all"
+                  value="1"
+                  @click="deleteselectall"
+                >
+              </th>
               <th>name</th>
               <th>priority</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody />
         </table>
         <hr>
         <div class="row" style="text-align:center">
-          <div class="col-sm col-md-4"></div>
+          <div class="col-sm col-md-4" />
           <div class="col-sm col-md-4">
-            <button type="button" class="btn btn-danger" @click="deletetable">刪除</button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              @click="deletetable"
+            >
+              刪除
+            </button>
           </div>
         </div>
       </div>

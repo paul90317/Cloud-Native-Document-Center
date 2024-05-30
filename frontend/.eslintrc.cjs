@@ -2,7 +2,7 @@ module.exports = {
   env: {
     node: true
   },
-  extends: ['eslint:recommended', 'plugin:vue/vue3-recommended'],
+  extends: ['plugin:vue/vue3-recommended', 'eslint:recommended'],
   parserOptions: {
     ecmaVersion: 'latest'
   },
@@ -23,5 +23,7 @@ module.exports = {
         }
       }
     ],
+
+    'vue/script-indent': ['error', 2],
   }
 }

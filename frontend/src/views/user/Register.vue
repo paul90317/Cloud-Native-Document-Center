@@ -11,7 +11,6 @@
     >
       第三方註冊
     </a>
-              　　　
     <button
       class="mb-4 text-center btn btn-lg btn-primary w-100"
       type="submit"
@@ -25,7 +24,7 @@
 </template>
 
 <script setup>
-import {googleLogin} from "../../apis/auth.js";
+import { googleLogin } from "../../apis/auth.js";
 
 const onGoogleLogin = async () => {
   const resp = await googleLogin()
