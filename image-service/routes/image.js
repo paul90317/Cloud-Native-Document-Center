@@ -58,8 +58,12 @@ router.post('/public', authenticator.getInfoFromAuthService, publicImageSaver.si
 
     const filePath = 'static/public/' + req.filename;
     const urlPath = 'image/public/' + req.filename;
+
     // Determine the base URL based on the request origin
-    const baseUrl = req.headers.host.includes(['127.0.0.1']) ? 'http://127.0.0.1:8082' : 'http://image-service:8082';
+    const host = req.headers.host;
+    const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
+    const baseUrl = isLocalHost ? 'http://localhost:8082' : 'http://image-service:8082';
+
     const fileUrl = `${baseUrl}/${urlPath}`;
     const mimetype = fileManager.getMimeType(filePath);
     const validMimetype = ['image/png', 'image/jpeg'];
