@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       primaryKey: true,
     },
-    role: DataTypes.INTEGER,
+    role: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    }
   }, {
     timestamps: true,
     tableName: 'roles'

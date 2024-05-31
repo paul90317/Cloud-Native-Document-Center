@@ -21,6 +21,10 @@ async function findDocumentByName(name) {
   return db.sequelize.models.documents.findOne({ where: { name: name } });
 }
 
+async function findDocumentByUserAndName(account, name) {
+  return db.sequelize.models.documents.findOne({ where: { creator: account, name: name } });
+}
+
 async function findAllDocuments() {
   return db.sequelize.models.documents.findAll();
 }
@@ -78,6 +82,7 @@ module.exports = {
   findDocumentById,
   findDocumentByUser,
   findDocumentByName,
+  findDocumentByUserAndName,
   findAllDocuments,
   createDocument,
   updateDocument,

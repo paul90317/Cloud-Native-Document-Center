@@ -45,10 +45,10 @@ Authenticator.prototype.getUserInfo = function (req, res, next) {
 }
 
 Authenticator.prototype.getInfoFromAuthService = async function (req, res, next) {
-  // Get auth header value, and trim the redundant string
-  const token = req.header('Authorization').replace("Bearer ", "");
-
   try {
+    // Get auth header value, and trim the redundant string
+    const token = req.header('Authorization').replace("Bearer ", "");
+
     const response = await axios.get('http://auth:80/auth', {
       headers: {
         Authorization: `Bearer ${token}`

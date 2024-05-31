@@ -26,6 +26,8 @@ services:
       - "3306:3306"
 
   image-service:
+    environment:
+      - SERVICE_HOSTNAME=image-service
     container_name: image-service
     build: ./image-service
     ports:
