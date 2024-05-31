@@ -80,6 +80,8 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import BlotFormatter from "quill-blot-formatter/dist/BlotFormatter";
 import ImageUploader from 'quill-image-uploader';
 import { onMounted, ref, toRaw, watch } from 'vue';
+import { uploadImage } from "../apis/image.js";
+
 const TextLength = ref(0)
 const myQuillEditor = ref(null)
 const props = defineProps({
@@ -138,19 +140,20 @@ const modules = ref([
     name: 'imageUploader',
     module: ImageUploader,
     options: {
-      upload: file => {
-        return new Promise((resolve, reject) => {
-          const formData = new FormData()
-          formData.append("file", file)
-          adminApi.news.postContentImg(formData)
-            .then(res => {
-              resolve(res.data.imgUrl)
-            })
-            .catch(err => {
-              reject("Upload failed")
-              console.error("Error:", err)
-            })
-        })
+      upload: async file => {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          const resp = await uploadImage(file);
+          console.log(resp)
+          if (resp.status === 200) {
+            console.log('圖片上傳成功，圖片 URL' + resp.data.id);
+            return resp.data.imgUrl;
+          }
+        } catch (error) {
+          console.error('圖片上傳失敗，錯誤訊息：' + error.message);
+          alert('圖片上傳失敗，錯誤訊息：' + error.message);
+        }
       }
     }
   }
