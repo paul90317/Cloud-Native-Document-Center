@@ -55,7 +55,7 @@ router.get('/all', authenticator.getInfoFromAuthService, async (req, res) => {
     if (!user) return res.status(404).send('User not found');
 
     // admin can access all the documents
-    if (user.manager === 1) {
+    if (user.manager === true) {
       const docs = await dbHelper.findAllDocuments();
       return res.send(docs.map(doc => {
         return {
@@ -66,7 +66,7 @@ router.get('/all', authenticator.getInfoFromAuthService, async (req, res) => {
       }));
     }
 
-    // there are 5 roles (admin, editor, owner, viewer, reviewer) can access the document
+    // there are other 4 roles (editor, owner, viewer, reviewer) can access the document
     const roles = await dbHelper.findRoleByUser(user.account);
     let docs = [];
     for (const role of roles) {
@@ -143,10 +143,10 @@ router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
 
     // create a new doc in the database
     const doc = await dbHelper.createDocument(req.body.docname, req.body.content, user.account, 0);
-    console.log("[INFO] doc: ", doc);
 
-    // add the role between the creator and the document
+    // add the viewer and editor roles between the creator and the document
     await dbHelper.createRole(doc.id, user.account, 0);
+    await dbHelper.createRole(doc.id, user.account, 1);
 
     return res.send({ id: doc.id });
   }
@@ -183,8 +183,6 @@ router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 review-id:
- *                   type: string
  *                 docname:
  *                   type: string
  *                 content:
@@ -215,13 +213,12 @@ router.get('/:id', authenticator.getInfoFromAuthService, async (req, res) => {
 
     // there are 5 roles (admin, editor, owner, viewer, reviewer) can access the document
     const role = await dbHelper.findRole(req.params.id, user.account);
-    if (!role && user.manager !== 1) {
+    if (!role && user.manager !== true) {
       return res.status(401).send('Unauthorized');
     }
 
     // return the document
     return res.send({
-      'review-id': role.id,
       'docname': document.name,
       'content': document.content,
       'doc-id': document.id,
@@ -344,7 +341,7 @@ router.delete('/:id', authenticator.getInfoFromAuthService, async (req, res) => 
     if (!document) return res.status(404).send('Document not found');
 
     // only the owner can delete the document
-    if (user.account !== document.creator && user.manager !== 1) {
+    if (user.account !== document.creator && user.manager !== true) {
       return res.status(401).send('Unauthorized');
     }
 
@@ -414,8 +411,10 @@ router.get('/auth/:id', authenticator.getInfoFromAuthService, async (req, res) =
     if (!user) return res.status(404).send('User not found');
     if (!document) return res.status(404).send('Document not found');
 
+    console.log("[INFO] user: ", user);
+
     // only the owner can access the document
-    if (document.creator !== user.account && user.manager !== 1) {
+    if (document.creator !== user.account && user.manager !== true) {
       return res.status(401).send('Unauthorized');
     }
 

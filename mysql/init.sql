@@ -34,7 +34,7 @@ CREATE TABLE `roles` (
   `role` int NOT NULL,
   `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`document`, `user`)
+  PRIMARY KEY (`document`, `user`, `role`)
 );
 
 CREATE TABLE `images` (
@@ -84,4 +84,6 @@ INSERT INTO `documents` (`name`, `content`, `creator`, `reviewer`, `status`) VAL
 
 -- Insert the test roles
 INSERT INTO `roles` (`document`, `user`, `role`) VALUES (1, 'test', 0);
+INSERT INTO `roles` (`document`, `user`, `role`) VALUES (1, 'test', 1);
 INSERT INTO `roles` (`document`, `user`, `role`) VALUES (2, 'test', 0);
+INSERT INTO `roles` (`document`, `user`, `role`) VALUES (2, 'test', 1);

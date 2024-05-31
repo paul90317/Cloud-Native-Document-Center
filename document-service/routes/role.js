@@ -35,7 +35,7 @@ const db = require('../models');
  *                description: account of the user to be assigned the role
  *              role:
  *                type: integer
- *                description: 0 - owner, 1 - admin, 2 - viewer, 3 - editor, 4 - reviewer
+ *                description: 0 - viewer, 1 - editor, 2 - reviewer, 3 - owner
  * 
  *     security:
  *       - bearerAuth: []
@@ -73,11 +73,6 @@ router.post('/', authenticator.getInfoFromAuthService, async (req, res) => {
 
     // reviewer only can be granted in the review phase
     if (req.body.role == 2) {
-      return res.status(401).send('Unauthorized');
-    }
-
-    // only the admin can assign others as admin
-    if (req.body.role === 1 && userOwner.role !== 1) {
       return res.status(401).send('Unauthorized');
     }
 
