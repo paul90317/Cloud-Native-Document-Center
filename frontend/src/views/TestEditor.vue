@@ -54,13 +54,28 @@
 <script setup>
 import Editor from '@/components/Editor.vue';
 import { onMounted, reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { getAllUserInfo } from "../apis/auth.js"; // 導入 getAllUserInfo 函數
 import { createEmptyDoc, getFile, updateFile } from "../apis/file.js";
 import { getLocalToken } from "../utils/storage.js";
 
+const route = useRoute();
+
+const file_id = ref(null);
 const UserAccount = ref('');
 const document_id = ref(null)
 const submitAndClearEditor = ref('')
+
+onMounted(async () => {
+  // * Can use "file_id.value" to get the value of "file_id
+  file_id.value = route?.params?.id;
+
+  const UserInfo = await fetchAllUserInfo();
+  if (UserInfo && UserInfo.length > 0) {
+    UserAccount.value = UserInfo[0].account;
+    console.log(UserAccount.value);
+  }
+});
 
 const fetchAllUserInfo = async () => {
   try {
@@ -77,14 +92,6 @@ const fetchAllUserInfo = async () => {
     alert('獲取所有用戶信息失敗，錯誤訊息：' + error.message);
   }
 };
-
-onMounted(async () => {
-  const UserInfo = await fetchAllUserInfo();
-  if (UserInfo && UserInfo.length > 0) {
-    UserAccount.value = UserInfo[0].account;
-    console.log(UserAccount.value);
-  }
-});
 
 const createDoc = async (docname, content) => {
   try {
@@ -132,18 +139,18 @@ const getDoc = async () => {
 };
 
 const newsForm = reactive({
-    title: '',
-    content: '',
+  title: '',
+  content: '',
 })
 
 const handleEditorChange = async (content) => {
-    newsForm.content = await content
+  newsForm.content = await content
 }
 
 const submitForm = async () => {
-    if (window.confirm("Are you sure you want to submit the form?")) {
-        // Submit form logic here
-    }
+  if (window.confirm("Are you sure you want to submit the form?")) {
+    // Submit form logic here
+  }
 }
 
 const saveForm = async () => {
@@ -159,15 +166,15 @@ const saveForm = async () => {
 }
 
 const retrieveForm = async () => {
-    if (window.confirm("Are you sure you want to retrieve the form?")) {
-      const data = await getDoc(document_id.value);
-      newsForm.title = data.docname;
-      newsForm.content = data.content;
-      submitAndClearEditor.value = data.content;
-    }
+  if (window.confirm("Are you sure you want to retrieve the form?")) {
+    const data = await getDoc(document_id.value);
+    newsForm.title = data.docname;
+    newsForm.content = data.content;
+    submitAndClearEditor.value = data.content;
+  }
 }
 
 const handleSubmitAndEditorClear = async (value) => {
-    submitAndClearEditor.value = await value
+  submitAndClearEditor.value = await value
 }
 </script>
