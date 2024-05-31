@@ -164,8 +164,6 @@ const retrieveForm = async () => {
       newsForm.title = data.docname;
       newsForm.content = data.content;
       submitAndClearEditor.value = data.content;
-      console.log(data.content);
-      console.log(submitAndClearEditor.value);
     }
 }
 

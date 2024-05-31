@@ -99,13 +99,11 @@ const onEditorChange = async (e) => {
 }
 
 watch(() => props.submitAndClearEditor, async (newValue) => {
-  //await toRaw(myQuillEditor).value.setContents(props.submitAndClearEditor)
-  //let delta = new Delta().insert(newValue);
-  let content = newValue.replace(/<\/?p>/g, '');
-  let jg = JSON.parse(content);
-  await myQuillEditor.value.setContents(jg);
-  console.log('content:', content);
-  emit('emitOnSubmitAndEditorClear', newValue);
+  if (newValue) {
+    await myQuillEditor.value.setContents(newValue)
+    console.log('content:', newValue);
+  }
+  emit('emitOnSubmitAndEditorClear', '');
 })
 
 onMounted(async () => {
