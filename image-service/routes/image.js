@@ -50,7 +50,7 @@ const db = require('../models');
  *       '415':
  *         description: Unsupported media type
  */
-router.post('/public', authenticator.getInfoFromAuthService, publicImageSaver.single('file'), (req, res) => {
+router.post('/public', publicImageSaver.single('file'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).send('No file uploaded');
@@ -62,7 +62,8 @@ router.post('/public', authenticator.getInfoFromAuthService, publicImageSaver.si
     // Determine the base URL based on the request origin
     const host = req.headers.host;
     const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
-    const baseUrl = isLocalHost ? 'http://localhost:8082' : 'http://image-service:8082';
+    // const baseUrl = isLocalHost ? 'http://localhost:8082' : 'http://image-service:8082';
+    const baseUrl = 'http://localhost:8082';
 
     const fileUrl = `${baseUrl}/${urlPath}`;
     const mimetype = fileManager.getMimeType(filePath);
@@ -115,7 +116,7 @@ router.post('/public', authenticator.getInfoFromAuthService, publicImageSaver.si
  *       '404':
  *         description: User not found
  */
-router.get('/public/:id', authenticator.getInfoFromAuthService, (req, res) => {
+router.get('/public/:id', (req, res) => {
   try {
     // return the image file
     const filePath = 'static/public/' + req.params.id;
