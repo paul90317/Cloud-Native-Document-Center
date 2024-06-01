@@ -293,6 +293,9 @@ router.put('/:id', authenticator.getInfoFromAuthService, async (req, res) => {
     // update document in database
     await dbHelper.updateDocument(req.params.id, req.body.content, req.body.docname);
 
+    // add the log to the database
+    await dbHelper.createLog(document.id, 0, user.account, 'Document updated');
+
     return res.send('File updated');
   }
   catch (err) {

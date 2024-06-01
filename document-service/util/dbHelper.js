@@ -76,6 +76,15 @@ async function findRoleByUser(user) {
   return db.sequelize.models.roles.findAll({ where: { user: user } });
 }
 
+async function createLog(document, type, ufrom, message) {
+  return db.sequelize.models.logs.create({
+    document: document,
+    type: type,
+    ufrom: ufrom,
+    message: message
+  });
+}
+
 module.exports = {
   findUserByEmail,
   findUserByAccount,
@@ -92,5 +101,6 @@ module.exports = {
   deleteRole,
   findRole,
   findRoleByDocument,
-  findRoleByUser
+  findRoleByUser,
+  createLog
 };
