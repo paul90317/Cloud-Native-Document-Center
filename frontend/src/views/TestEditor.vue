@@ -53,7 +53,6 @@ import { getLocalToken } from "../utils/storage.js";
 
 const route = useRoute();
 
-const file_id = ref(null);
 const UserAccount = ref('');
 const document_id = ref(null)
 const submitAndClearEditor = ref('')

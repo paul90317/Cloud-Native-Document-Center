@@ -54,18 +54,6 @@ export function overrideFileReviewer(file_id, account, data) {
   })
 }
 
-/**
- * 當 JWT 擁有者是檔案擁有者或管理者時，刪除目標文件的指定審核人員，指定審核人員不存在則跳過。
- * @param {int} file_id 
- * @param {string} account 
- * @returns 
- */
-export function deleteFileReviewer(file_id, account) {
-  return request({
-    url: `/file/${file_id}/reviewer/${account}`,
-    method: 'DELETE',
-  })
-}
 
 /**
  * 
@@ -83,5 +71,20 @@ export function reviewFile(file_id, data) {
     url: `/review/${file_id}`,
     method: 'POST',
     data
+  })
+}
+
+export function submitFile(file_id, data) {
+  return request({
+    url: `/submit/${file_id}`,
+    method: 'POST',
+    data
+  })
+}
+
+export function deleteFileReviewer(file_id) {
+  return request({
+    url: `/submit/${file_id}`,
+    method: 'DELETE',
   })
 }

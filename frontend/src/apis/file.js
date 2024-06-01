@@ -94,3 +94,24 @@ export function deleteFile(id) {
   })
 }
 
+export function getfilemembers(id) {
+  return request({
+    url: `/doc/auth/${id}`,
+    method: 'GET',
+  })
+}
+
+export function addfilemember(id, data) {
+  return request({
+    url: `/role`,
+    method: 'POST',
+    data,
+  })
+}
+
+export function deletefilemember(id) {
+  return request({
+    url: `/role`,
+    method: 'DELETE',
+  })
+}
