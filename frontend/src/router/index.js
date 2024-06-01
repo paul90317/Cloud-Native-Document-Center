@@ -41,6 +41,8 @@ router.beforeEach(async (to, from, next) => {
   // Overwrite the token in the store
   if (token) {
     await store.setToken(token)
+  } else {
+    store.setToken(null)
   }
 
   // Debug: can be removed
@@ -54,14 +56,14 @@ router.beforeEach(async (to, from, next) => {
     // if the user is logged in and navigate to auth-related page (whitelist)
     // => redirect to the home page
     if (isLogin && to.path !== '/') {
-      next({ name: 'Home' })
+      router.push({ name: 'Home' })
       return
     }
   } else {
     // if the user is not logged in and navigate to non-auth-related page
     // => redirect to the login page
     if (!isLogin && to.path !== '/login') {
-      next({ name: 'Login' })
+      router.push({ name: 'Login' })
       return
     }
   }
