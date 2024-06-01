@@ -1,7 +1,6 @@
+import router from '@/router'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
-
 
 const service = axios.create({
   baseURL: import.meta.env.DEV ? "/api" : "/api/file",
@@ -28,12 +27,10 @@ service.interceptors.response.use(
     return response
   },
   (error) => {
-    if (error?.response?.status === 400) {
-      const router = useRouter()
+    if (error?.response?.status === 400 || error?.response?.status === 401) {
       const store = useUserStore()
-
       store.logout()
-      console.log(router)
+
       router.push({ name: 'Login', params: { message: "token 過期，請重新登入" } })
     }
     return Promise.reject(error)

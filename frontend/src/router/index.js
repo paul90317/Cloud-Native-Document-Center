@@ -50,7 +50,10 @@ router.beforeEach(async (to, from, next) => {
   console.log('store.getAccessToken exist: ', store.getAccessToken !== null)
 
   // isLogin condition: can be improved
-  const isLogin = token && store.getAccessToken
+  const isLogin = token !== null && store.getAccessToken !== null
+
+  // Logout if token expired
+  if (!isLogin) store.logout()
 
   if (whiteList.includes(to.path)) {
     // if the user is logged in and navigate to auth-related page (whitelist)

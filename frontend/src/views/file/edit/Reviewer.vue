@@ -1,218 +1,286 @@
 <template>
   <hr>
   <div id="selectstudent" class="container">
-    <div class="row">
-      <div class="col-sm-12 col-md-6">
+    <div class="row row-cols-1 row-cols-md-2 g-3 g-md-4 mb-md-0">
+      <div class="col my-4">
         <div class="row">
-          <div class="col-sm-12">
-            <input
-              v-model="searchTerm"
-              type="text"
-              placeholder="搜尋..."
-            >
-            <button @click="search">
-              搜尋
-            </button>
-          </div>
-        </div>
-        <table
-          id="table_add"
-          class="display"
-          style="width:100%"
-        >
-          <thead>
-            <tr>
-              <th>
-                <input
-                  id="addselect_all"
-                  type="checkbox"
-                  name="select_all"
-                  value="1"
-                  @click="leftselectall"
-                >
-              </th>
-              <th>name</th>
-              <th>priority</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in users.data" :key="user.id">
-              <td>
-                <input
-                  v-model="user.checked"
-                  type="checkbox"
-                  :value="user.id"
-                  @click="handleCheckboxClick(user)"
-                >
-              </td>
-              <td>{{ user.name }}</td>
-              <td>
-                <select v-model="user.priority">
-                  <option value="0">
-                    viewer
-                  </option>
-                  <option value="1">
-                    editor
-                  </option>
-                  <option value="2">
-                    reviewer
-                  </option>
-                </select>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <hr>
-        <div class="row justify-content-center">
-          <div class="col-sm-12 col-md-4">
-            <button
-              type="button"
-              class="btn btn-success"
-              @click="addtable"
-            >
-              新增
-            </button>
-          </div>
-        </div>
-        <div class="row justify-content-center">
-          <div class="col-sm-12 col-md-4">
-            <div class="d-flex justify-content-between align-items-center">
+          <div class="col-12">
+            <div class="input-group mb-3">
+              <input
+                v-model="searchTerm"
+                type="text"
+                placeholder="搜尋..."
+                class="form-control"
+              >
               <button
                 class="btn btn-outline-primary"
-                :disabled="leftcurrentPage === 1"
-                @click="leftprevPage"
+                type="button"
+                @click="search"
               >
-                back
+                搜尋
               </button>
-              <span>頁數：{{ leftcurrentPage }}</span>
               <button
-                class="btn btn-outline-primary"
-                :disabled="leftcurrentPage === lefttotalPages"
-                @click="leftnextPage"
+                type="button"
+                class="btn btn-success text-center"
+                @click="addtable"
               >
-                next
+                新增
               </button>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <label for="leftpageSize">每頁顯示筆數：</label>
-            <select v-model="leftpageSize" @change="fetchData">
-              <option value="10">
-                10
-              </option>
-              <option value="20">
-                20
-              </option>
-              <option value="50">
-                50
-              </option>
-              <option value="100">
-                100
-              </option>
-            </select>
+    
+          <div class="col-12">
+            <table
+              v-if="users?.data?.length > 0"
+              id="table_add"
+              class="display table table-striped"
+              style="width:100%"
+            >
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <input
+                      id="addselect_all"
+                      class="form-check-input"
+                      type="checkbox"
+                      name="select_all"
+                      value="1"
+                      @click="leftselectall"
+                    >
+                  </th>
+                  <th scope="col">
+                    name
+                  </th>
+                  <th scope="col">
+                    priority
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="user in users.data" :key="user.id">
+                  <td>
+                    <input
+                      v-model="user.checked"
+                      class="form-check-input"
+                      type="checkbox"
+                      :value="user.id"
+                      @click="handleCheckboxClick(user)"
+                    >
+                  </td>
+                  <td>{{ user.name }}</td>
+                  <td>
+                    <select v-model="user.priority" class="form-select">
+                      <option value="0">
+                        viewer
+                      </option>
+                      <option value="1">
+                        editor
+                      </option>
+                      <option value="2">
+                        reviewer
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else class="text-center">
+              <p>尚無資料</p>
+            </div>
+          </div>
+    
+          <div class="col-12">
+            <nav class="w-full">
+              <ul class="pagination justify-content-center">
+                <li
+                  :class="{'page-item':true, 'disabled':leftcurrentPage === 1}"
+                >
+                  <button
+                    class="btn btn-outline-primary"
+                    :disabled="leftcurrentPage === 1"
+                    @click="leftprevPage"
+                  >
+                    back
+                  </button>
+                </li>
+                <li class="page-item d-flex align-items-center">
+                  <span class="mx-2">頁數：{{ leftcurrentPage ?? 0 }}</span>
+                </li>
+                <li
+                  :class="{'page-item':true, 'disabled':leftcurrentPage === lefttotalPages}"
+                >
+                  <button
+                    class="btn btn-outline-primary"
+                    :disabled="leftcurrentPage === lefttotalPages"
+                    @click="leftnextPage"
+                  >
+                    next
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+    
+          <div class="col-12 row">
+            <div class="col d-flex align-items-center justify-content-end">
+              <label for="leftpageSize" class="form-label mb-0">每頁顯示筆數：</label>
+            </div>
+            <div class="col">
+              <select
+                v-model="leftpageSize"
+                class="form-select"
+                @change="fetchData"
+              >
+                <option value="10">
+                  10
+                </option>
+                <option value="20">
+                  20
+                </option>
+                <option value="50">
+                  50
+                </option>
+                <option value="100">
+                  100
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="col-sm-12 col-md-6">
+      <hr class="d-block d-md-none mx-auto w-75">
+
+      <div class="col my-4">
         <div class="row">
-          <div class="col-sm-12">
-            <input
-              v-model="searchTerm"
-              type="text"
-              placeholder="搜尋..."
-            >
-            <button @click="searchright">
-              搜尋
-            </button>
-          </div>
-        </div>
-        <table
-          id="table_delete"
-          class="display"
-          style="width:100%"
-        >
-          <thead>
-            <tr>
-              <th>
-                <input
-                  id="select_all"
-                  type="checkbox"
-                  name="select_all"
-                  value="1"
-                  @click="deleteselectall"
-                >
-              </th>
-              <th>name</th>
-              <th>priority</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in filteredUsersRight" :key="user.id">
-              <td>
-                <input
-                  v-model="user.checked"
-                  type="checkbox"
-                  :value="user.id"
-                >
-              </td>
-              <td>{{ user.name }}</td>
-              <td>{{ user.role }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <hr>
-        <div class="row justify-content-center">
-          <div class="col-sm-12 col-md-4">
-            <button
-              type="button"
-              class="btn btn-danger"
-              @click="deletetable"
-            >
-              刪除
-            </button>
-          </div>
-        </div>
-        <div class="row justify-content-center">
-          <div class="col-sm-12 col-md-4">
-            <div class="d-flex justify-content-between align-items-center">
+          <div class="col-12">
+            <div class="input-group mb-3">
+              <input
+                v-model="searchTerm"
+                type="text"
+                placeholder="搜尋..."
+                class="form-control"
+              >
               <button
                 class="btn btn-outline-primary"
-                :disabled="currentPageRight === 1"
-                @click="prevPageRight"
+                type="button"
+                @click="search"
               >
-                back
+                搜尋
               </button>
-              <span>頁數：{{ currentPageRight }}</span>
               <button
-                class="btn btn-outline-primary"
-                :disabled="currentPageRight === totalPagesRight"
-                @click="nextPageRight"
+                type="button"
+                class="btn btn-danger text-center"
+                @click="deletetable"
               >
-                next
+                刪除
               </button>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <label for="pageSizeRight">每頁顯示筆數：</label>
-            <select v-model="pageSizeRight" @change="fetchDataRight">
-              <option value="10">
-                10
-              </option>
-              <option value="20">
-                20
-              </option>
-              <option value="50">
-                50
-              </option>
-              <option value="100">
-                100
-              </option>
-            </select>
+
+          <div class="col-12">
+            <table
+              v-if="filteredUsersRight?.length > 0"
+              id="table_delete"
+              class="display table table-striped"
+              style="width:100%"
+            >
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <input
+                      id="select_all"
+                      class="form-check-input"
+                      type="checkbox"
+                      name="select_all"
+                      value="1"
+                      @click="deleteselectall"
+                    >
+                  </th>
+                  <th scope="col">
+                    name
+                  </th>
+                  <th scope="col">
+                    priority
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="user in filteredUsersRight" :key="user.id">
+                  <td>
+                    <input
+                      v-model="user.checked"
+                      class="form-check-input"
+                      type="checkbox"
+                      :value="user.id"
+                    >
+                  </td>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.role }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else class="text-center">
+              <p>尚無資料</p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <nav class="w-full">
+              <ul class="pagination justify-content-center">
+                <li
+                  :class="{'page-item':true, 'disabled':currentPageRight === 1}"
+                >
+                  <button
+                    class="btn btn-outline-primary"
+                    :disabled="currentPageRight === 1"
+                    @click="prevPageRight"
+                  >
+                    back
+                  </button>
+                </li>
+                <li class="page-item d-flex align-items-center">
+                  <span class="mx-2">頁數：{{ currentPageRight ?? 0 }}</span>
+                </li>
+                <li
+                  :class="{'page-item':true, 'disabled':currentPageRight === totalPagesRight}"
+                >
+                  <button
+                    class="btn btn-outline-primary"
+                    :disabled="currentPageRight === totalPagesRight"
+                    @click="nextPageRight"
+                  >
+                    next
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          <div class="col-12 row">
+            <div class="col d-flex align-items-center justify-content-end">
+              <label for="pageSizeRight" class="form-label mb-0">每頁顯示筆數：</label>
+            </div>
+            <div class="col">
+              <select
+                v-model="pageSizeRight"
+                class="form-select"
+                @change="fetchDataRight"
+              >
+                <option value="10">
+                  10
+                </option>
+                <option value="20">
+                  20
+                </option>
+                <option value="50">
+                  50
+                </option>
+                <option value="100">
+                  100
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -222,11 +290,11 @@
 
 <script setup>
 
+import { getAllUserInfo } from "@/apis/auth.js";
+import { addfilemember, getfilemembers } from "@/apis/file.js";
+import { submitFile } from "@/apis/review.js";
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAllUserInfo } from "../../../apis/auth.js";
-import { addfilemember, getfilemembers } from "../../../apis/file.js";
-import { submitFile } from "../../../apis/review.js";
 
 const leftpageSize = ref(10); 
 const leftcurrentPage = ref(1); 
