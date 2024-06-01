@@ -5,8 +5,14 @@
       <div class="col-sm-12 col-md-6">
         <div class="row">
           <div class="col-sm-12">
-            <input v-model="searchTerm" type="text" placeholder="搜尋...">
-            <button @click="search">搜尋</button>
+            <input
+              v-model="searchTerm"
+              type="text"
+              placeholder="搜尋..."
+            >
+            <button @click="search">
+              搜尋
+            </button>
           </div>
         </div>
         <table
@@ -113,8 +119,14 @@
       <div class="col-sm-12 col-md-6">
         <div class="row">
           <div class="col-sm-12">
-            <input v-model="searchTerm" type="text" placeholder="搜尋...">
-            <button @click="searchright">搜尋</button>
+            <input
+              v-model="searchTerm"
+              type="text"
+              placeholder="搜尋..."
+            >
+            <button @click="searchright">
+              搜尋
+            </button>
           </div>
         </div>
         <table
@@ -210,11 +222,11 @@
 
 <script setup>
 
-import { addfilemember, deletefilemember, getfilemembers } from "../../../apis/file.js";
-import { submitFile,deleteFileReviewer } from "../../../apis/review.js";
-import {reactive,computed,ref, onMounted}  from 'vue'; 
-import {getAllUserInfo} from "../../../apis/auth.js";
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { getAllUserInfo } from "../../../apis/auth.js";
+import { addfilemember, getfilemembers } from "../../../apis/file.js";
+import { submitFile } from "../../../apis/review.js";
 
 const leftpageSize = ref(10); 
 const leftcurrentPage = ref(1); 
@@ -303,15 +315,19 @@ async function addtable() {
 const addmember = async (account,role) => {
   try {
     const ID = document_id.value;
+    let resp
     if(role != 2) {
-      const resp = await addfilemember({ID, account, role});
+      resp = await addfilemember({ID, account, role});
     } else {
       let message = "Please review the document!";
       const userInput = prompt('請輸入給審核者的通知');
       if (userInput !== null) {
         message = userInput;
       }
-      const resp = await submitFile(ID, {account, message});
+      resp = await submitFile(ID, {
+        "reviewer": account,
+        message
+      });
     }
     console.log(resp)
     if (resp.status === 200) {
