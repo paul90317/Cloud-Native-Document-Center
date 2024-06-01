@@ -385,7 +385,12 @@ const addmember = async (account,role) => {
     const ID = document_id.value;
     let resp
     if(role != 2) {
-      resp = await addfilemember({ID, account, role});
+      // resp = await addfilemember({ID, account, role});
+      resp = await addfilemember({
+        'doc-id': ID,
+        account, 
+        role
+      });
     } else {
       let message = "Please review the document!";
       const userInput = prompt('請輸入給審核者的通知');

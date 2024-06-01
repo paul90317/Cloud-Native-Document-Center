@@ -101,7 +101,7 @@ export function getfilemembers(id) {
   })
 }
 
-export function addfilemember(id, data) {
+export function addfilemember(data) {
   return request({
     url: `/role`,
     method: 'POST',
