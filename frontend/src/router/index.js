@@ -53,14 +53,16 @@ router.beforeEach(async (to, from, next) => {
   if (whiteList.includes(to.path)) {
     // if the user is logged in and navigate to auth-related page (whitelist)
     // => redirect to the home page
-    if (isLogin) {
+    if (isLogin && to.path !== '/') {
       next({ name: 'Home' })
+      return
     }
   } else {
     // if the user is not logged in and navigate to non-auth-related page
     // => redirect to the login page
-    if (!isLogin) {
+    if (!isLogin && to.path !== '/login') {
       next({ name: 'Login' })
+      return
     }
   }
 
