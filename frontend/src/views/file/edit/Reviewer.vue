@@ -3,6 +3,12 @@
   <div id="selectstudent" class="container">
     <div class="row">
       <div class="col-sm-12 col-md-6">
+        <div class="row">
+          <div class="col-sm-12">
+            <input v-model="searchTerm" type="text" placeholder="搜尋...">
+            <button @click="search">搜尋</button>
+          </div>
+        </div>
         <table
           id="table_add"
           class="display"
