@@ -15,10 +15,10 @@
       >
         <span class="navbar-toggler-icon" />
       </button>
-      <div id="navbarNav" class="navbar-collapse justify-content-between text-end">
+      <div id="navbarNav" class="collapse navbar-collapse justify-content-between text-end">
         <ul class="navbar-nav">
           <template
-            v-for="route in routes.filter(route => !route?.isHidden)"
+            v-for="route in routes"
             :key="route.path"
           >
             <li v-if="route?.children" class="nav-item dropdown">
@@ -105,7 +105,7 @@ export default {
     }
   },
   mounted() {
-    this.routes = this.$router.options.routes
+    this.routes = this.$router.options.routes.filter(route => !route?.isHidden) ?? []
   },
   methods: {
     onLogout() {
