@@ -178,8 +178,7 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="row">
+        <div class="row">
           <div class="col-sm-12">
             <label for="pageSizeRight">每頁顯示筆數：</label>
             <select v-model="pageSizeRight" @change="fetchDataRight">
@@ -198,6 +197,7 @@
             </select>
           </div>
         </div>
+      </div>
     </div>
   </div>
 </template>
