@@ -21,14 +21,6 @@
           />
         </div>
         <div class="form-group d-flex justify-content-between">
-          <!-- Submit Button -->
-          <button
-            type="button"
-            class="btn btn-outline-primary"
-            @click="submitForm"
-          >
-            <i class="bi bi-check-circle" /> Submit
-          </button>
           <!-- Save Button -->
           <button
             type="button"
@@ -68,8 +60,13 @@ const submitAndClearEditor = ref('')
 
 onMounted(async () => {
   // * Can use "file_id.value" to get the value of "file_id
-  file_id.value = route?.params?.id;
-
+  document_id.value = route?.params?.id;
+  if (document_id.value) {
+    const data = await getDoc(document_id.value);
+    newsForm.title = data.docname;
+    newsForm.content = data.content;
+    submitAndClearEditor.value = data.content;
+  }
   const UserInfo = await fetchAllUserInfo();
   if (UserInfo && UserInfo.length > 0) {
     UserAccount.value = UserInfo[0].account;
@@ -145,12 +142,6 @@ const newsForm = reactive({
 
 const handleEditorChange = async (content) => {
   newsForm.content = await content
-}
-
-const submitForm = async () => {
-  if (window.confirm("Are you sure you want to submit the form?")) {
-    // Submit form logic here
-  }
 }
 
 const saveForm = async () => {

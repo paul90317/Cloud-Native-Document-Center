@@ -45,7 +45,7 @@ export function getImage(id) {
  */
 export function uploadImage(data) {
   return request({
-    url: '/image',
+    url: 'image/public',
     method: 'POST',
     data,
   })

@@ -142,17 +142,17 @@ const modules = ref([
     options: {
       upload: async file => {
         try {
-          const formData = new FormData();
-          formData.append("file", file);
-          const resp = await uploadImage(file);
+          const formData = new FormData()
+          formData.append("file", file)
+          const resp = await uploadImage(formData);
           console.log(resp)
           if (resp.status === 200) {
-            console.log('圖片上傳成功，圖片 URL' + resp.data.id);
-            return resp.data.imgUrl;
+            console.log('圖片上傳成功，圖片 URL' + resp.data.url);
+            return resp.url;
           }
-        } catch (error) {
-          console.error('圖片上傳失敗，錯誤訊息：' + error.message);
-          alert('圖片上傳失敗，錯誤訊息：' + error.message);
+        } catch (err) {
+          console.error("Upload failed")
+          console.error("Error:", err)
         }
       }
     }
