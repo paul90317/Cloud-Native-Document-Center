@@ -34,13 +34,10 @@
                 </button>
               </div>
               <div class="form-group">
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-block"
-                  @click="SignInWithGoogle"
-                >
-                  使用Google登入
-                </button>
+                <GoogleSignInButton
+                  @success="handleLoginSuccess"
+                  @error="handleLoginError"
+                />
               </div>
               <div class="text-center mt-3">
                 <RouterLink to="/SignUp" class="btn btn-link">
@@ -58,6 +55,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { GoogleSignInButton } from "vue3-google-signin";
 import { localLogin } from "../../apis/auth.js";
 import { useUserStore } from "../../stores/user.js";
 import { setLocalToken } from "../../utils/storage.js";
@@ -102,8 +100,15 @@ const loginFun = async () => {
   }
 };
 
-const SignInWithGoogle = () => {
-  // 你的 Google 登入邏輯
+// handle success event
+const handleLoginSuccess = (response) => {
+  const { credential } = response;
+  console.log("Access Token", response);
+};
+
+// handle an error event
+const handleLoginError = () => {
+  console.error("Login failed");
 };
 
 </script>

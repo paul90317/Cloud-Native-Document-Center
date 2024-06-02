@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import GoogleSignInPlugin from "vue3-google-signin"
 import App from './App.vue'
 import './style.css'
 
@@ -13,6 +14,12 @@ if (import.meta.env.MODE === 'development') {
   worker.start({ onUnhandledRequest: 'bypass' })
 }
 
-createApp(App).use(router)
+console.log("GOOGLE_CLIENT     =====================>  ", import.meta.env.VITE_GOOGLE_CLIENT_ID)
+
+createApp(App)
+  .use(router)
   .use(createPinia())
+  .use(GoogleSignInPlugin, {
+    clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID
+  })
   .component('QuillEditor', QuillEditor).mount('#app')
