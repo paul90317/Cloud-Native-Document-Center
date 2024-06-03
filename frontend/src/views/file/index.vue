@@ -35,10 +35,6 @@
                 <button class="btn btn-outline-secondary" @click="onEditPermission(item.id)">
                   <i class="bi bi-gear-wide-connected" />
                 </button>
-                <!-- edit review permission
-        <button class="btn btn-outline-secondary" @click="onEditReview(item.id)">
-          <i class="bi bi-person-fill-gear" />
-        </button> -->
                 <!-- review history -->
                 <button class="btn btn-outline-success" @click="showModal = true">
                   <i class="bi bi-info-square" />
@@ -78,7 +74,7 @@
     </div>
     <document-profile
       v-if="showModal"
-      ref="documentProfile"
+      ref="documentProfileRef"
       @close="showModal = false"
     />
   </div>

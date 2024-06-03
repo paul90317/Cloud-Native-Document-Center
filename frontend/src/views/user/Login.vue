@@ -43,7 +43,7 @@
                 </button>
               </div>
               <div class="text-center mt-3">
-                <RouterLink to="/SignUp" class="btn btn-link">
+                <RouterLink :to="{name: 'SignUp'}" class="btn btn-link">
                   註冊
                 </RouterLink>
               </div>

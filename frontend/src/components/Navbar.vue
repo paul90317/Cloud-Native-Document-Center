@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container">
-      <router-link to="/" class="navbar-brand">
+      <router-link :to="{name: 'Home'}" class="navbar-brand">
         Document Center
       </router-link>
       <button
@@ -72,7 +72,7 @@
           </template>
           <template v-else>
             <li class="nav-item">
-              <router-link v-slot="{href, navigate, }" to="/login">
+              <router-link v-slot="{href, navigate, }" :to="{name: 'Login'}">
                 <a
                   :href="href"
                   class="btn btn-outline-primary my-1"
@@ -81,7 +81,7 @@
               </router-link>
             </li>
             <li>
-              <router-link v-slot="{href, navigate, }" to="/SignUp">
+              <router-link v-slot="{href, navigate, }" :to="{name: 'SignUp'}">
                 <a
                   :href="href"
                   class="btn btn-outline-secondary my-1 ms-2"

@@ -7,7 +7,7 @@
             <h2 class="text-center mb-4">
               帳號資料
             </h2>
-            <form>
+            <form class="text-start">
               <div class="form-group mb-3">
                 <label for="account">帳號</label>
                 <input
@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { getInfo } from '@/apis/auth';
+import { getInfo } from '@/apis/user';
 import { onMounted, reactive } from 'vue';
 
 const info = reactive({

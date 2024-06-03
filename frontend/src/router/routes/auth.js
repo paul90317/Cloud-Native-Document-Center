@@ -7,7 +7,7 @@ export default [
     component: () => import('@/views/user/Login.vue')
   },
   {
-    path: '/signup',
+    path: '/SignUp',
     name: 'SignUp',
     title: 'SignUp',
     isHidden: true,

@@ -47,8 +47,8 @@
 import Editor from '@/components/Editor.vue';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAllUserInfo } from "../apis/auth.js"; // 導入 getAllUserInfo 函數
 import { createEmptyDoc, getFile, updateFile } from "../apis/file.js";
+import { getAllUserInfo } from "../apis/user.js"; // 導入 getAllUserInfo 函數
 import { getLocalToken } from "../utils/storage.js";
 
 const route = useRoute();

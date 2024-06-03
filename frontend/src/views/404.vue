@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
-    <h1 class="text-center">
+  <div class="container pt-4 text-center">
+    <h1>
       404 Page Not Found
     </h1>
-    <p class="text-center">
+    <p>
       Oops! The page you are looking for does not exist.
     </p>
   </div>

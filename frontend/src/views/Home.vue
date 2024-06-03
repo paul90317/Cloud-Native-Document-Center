@@ -9,14 +9,14 @@
           A simple document management system
         </p>
         <template v-if="!isLogin">
-          <router-link v-slot="{ href, navigate }" to="/login">
+          <router-link v-slot="{ href, navigate }" :to="{name: 'Login'}">
             <a
               :href="href"
               class="btn btn-outline-primary my-1"
               @click="navigate"
             >Login</a>
           </router-link>
-          <router-link v-slot="{ href, navigate }" to="/register">
+          <router-link v-slot="{ href, navigate }" :to="{name: 'SignUp'}">
             <a
               :href="href"
               class="btn btn-outline-secondary my-1 ms-2"

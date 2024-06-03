@@ -290,9 +290,9 @@
 
 <script setup>
 
-import { getAllUserInfo } from "@/apis/auth.js";
 import { addfilemember, getfilemembers } from "@/apis/file.js";
 import { submitFile } from "@/apis/review.js";
+import { getAllUserInfo } from "@/apis/user.js";
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
