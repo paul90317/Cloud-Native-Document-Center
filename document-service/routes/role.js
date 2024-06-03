@@ -5,8 +5,6 @@ const fs = require('fs');
 
 // handlers modules
 const authenticator = require('../handler/authenticator');
-const documentSaver = require('../handler/documentSaver');
-const documentUpdator = require('../handler/documentUpdator');
 
 // utils modules
 const dbHelper = require('../util/dbHelper');

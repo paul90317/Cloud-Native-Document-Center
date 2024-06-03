@@ -9,3 +9,5 @@ __MACOSX
 .idea
 
 /image-service/static/**
+
+coverage
