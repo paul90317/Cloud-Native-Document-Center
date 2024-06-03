@@ -2,7 +2,7 @@ export default [
   {
     path: '/file',
     name: 'file.index',
-    title: 'FileList',
+    title: 'File List',
     component: () => import('@/views/file/index.vue')
   },
   {

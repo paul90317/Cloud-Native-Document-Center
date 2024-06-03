@@ -1,11 +1,19 @@
 <template>
-  <div class="container text-center pt-4">
+  <div class="container pt-4">
     <div class="row mb-4">
       <div class="col">
-        <h3>檔案列表</h3>
+        <h3 class="text-center">
+          文件列表
+        </h3>
+        <button
+          type="button"
+          class="btn btn-outline-success float-end"
+        >
+          創建文件
+        </button>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-xs-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div v-if="data?.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-2 g-lg-4">
       <div
         v-for="item in data"
         :key="item"
@@ -28,11 +36,11 @@
                   <i class="bi bi-gear-wide-connected" />
                 </button>
                 <!-- edit review permission
-                <button class="btn btn-outline-secondary" @click="onEditReview(item.id)">
-                  <i class="bi bi-person-fill-gear" />
-                </button> -->
+        <button class="btn btn-outline-secondary" @click="onEditReview(item.id)">
+          <i class="bi bi-person-fill-gear" />
+        </button> -->
                 <!-- review history -->
-                <button class="btn btn-outline-success" @click="showDocumentProfile(item.id)">
+                <button class="btn btn-outline-success" @click="showModal = true">
                   <i class="bi bi-info-square" />
                 </button>
               </div>
@@ -54,25 +62,39 @@
             <h5 class="card-title">
               {{ item.docname }}
             </h5>
-            <p v-if="'status' in item">
-              {{ `status: ${parseStatus(item.status)}` }}
-            </p>
+            <span v-if="item?.status" :class="['badge rounded-pill', FILE_STATUS_BADGE[item.status] ?? 'bg-secondary']">
+              {{ FILE_STATUS[item.status] ?? '未知狀態' }}
+            </span>
           </div>
         </div>
+      </div>
+    </div>
+    <div v-else class="row">
+      <div class="col">
+        <p class="text-center">
+          尚無檔案
+        </p>
       </div>
     </div>
     <document-profile
       v-if="showModal"
       ref="documentProfile"
-      @close="hideDocumentProfile"
+      @close="showModal = false"
     />
   </div>
 </template>
 
 <script>
-import { getAllFiles } from '@/apis/file';
+import { deleteFile, getAllFiles } from '@/apis/file';
 import DocumentProfile from '@/components/document_info.vue';
 import { FILE_STATUS } from '@/utils/fileStatus';
+
+const FILE_STATUS_BADGE = {
+  0: 'bg-secondary',
+  1: 'bg-primary',
+  2: 'bg-danger',
+  3: 'bg-success',
+}
 
 export default {
   components: {
@@ -81,7 +103,9 @@ export default {
   data() {
     return {
       showModal: false,
-      data: []
+      data: [],
+      FILE_STATUS,
+      FILE_STATUS_BADGE
     };
   },
   mounted() {
@@ -97,14 +121,23 @@ export default {
         console.error(error)
       }
     },
-    showDocumentProfile() {
-      this.showModal = !this.showModal;
-    },
-    hideDocumentProfile() {
-      this.showModal = false;
-    },
-    onDelete(id) {
+    async onDelete(id) {
       console.log('delete', id)
+      if (!id) return
+
+      const yes = confirm('確定刪除？')
+      if (!yes) return
+      
+      try {
+        const response = await deleteFile(id)
+        if (response?.status !== 200) throw new Error(response)
+
+        alert('刪除成功')
+        this.fetchFileList()
+      } catch (error) {
+        console.error(error)
+        alert('刪除失敗')
+      }
     },
     onEdit(id) {
       console.log('edit', id)
@@ -116,12 +149,9 @@ export default {
       if (!id) return
       this.$router.push({ name: 'file.edit.reviewer', params: { id }})
     },
-    parseStatus(status) {
-      if (status in FILE_STATUS) {
-        return FILE_STATUS[status]
-      }
-      return '未知狀態'
-    },
+    onCreateFile() {
+      this.$router.push({ name: 'file.create' })
+    }
   }
 };
 </script>

@@ -28,5 +28,6 @@
   "[vue]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   },
-  "javascript.validate.enable": false
+  "javascript.validate.enable": false,
+  "typescript.validate.enable": false,
 }

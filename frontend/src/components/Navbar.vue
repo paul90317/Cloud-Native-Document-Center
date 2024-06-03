@@ -57,32 +57,39 @@
           </template>
         </ul>
 
-        <ul v-if="isLogin" class="navbar-nav">
-          <li>
-            <button class="btn btn-outline-success my-1" @click="onLogout">
-              Logout
-            </button>
-          </li>
-        </ul>
-        <ul v-else class="navbar-nav">
-          <li>
-            <router-link v-slot="{href, navigate, }" to="/login">
-              <a
-                :href="href"
-                class="btn btn-outline-primary my-1"
-                @click="navigate"
-              >Login</a>
-            </router-link>
-          </li>
-          <li>
-            <router-link v-slot="{href, navigate, }" to="/SignUp">
-              <a
-                :href="href"
-                class="btn btn-outline-secondary my-1 ms-2"
-                @click="navigate"
-              >Register</a>
-            </router-link>
-          </li>
+        <ul class="navbar-nav">
+          <template v-if="isLogin">
+            <li class="nav-item">
+              <button class="btn btn-outline-secondary my-1" @click="onInfo">
+                Info
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-outline-success my-1 ms-2" @click="onLogout">
+                Logout
+              </button>
+            </li>
+          </template>
+          <template v-else>
+            <li class="nav-item">
+              <router-link v-slot="{href, navigate, }" to="/login">
+                <a
+                  :href="href"
+                  class="btn btn-outline-primary my-1"
+                  @click="navigate"
+                >Login</a>
+              </router-link>
+            </li>
+            <li>
+              <router-link v-slot="{href, navigate, }" to="/SignUp">
+                <a
+                  :href="href"
+                  class="btn btn-outline-secondary my-1 ms-2"
+                  @click="navigate"
+                >Register</a>
+              </router-link>
+            </li>
+          </template>
         </ul>
       </div>
     </div>
@@ -111,6 +118,9 @@ export default {
     onLogout() {
       this.userState?.logout()
       this.$router.push({ name: 'Home' })
+    },
+    onInfo() {
+      this.$router.push({ name: 'Info' })
     }
   }
 }

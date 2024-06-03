@@ -5,74 +5,77 @@
         <div class="card shadow">
           <div class="card-body">
             <h2 class="text-center mb-4">
-              Account Create
+              帳號資料
             </h2>
-            <form @submit.prevent="localregister">
+            <form>
               <div class="form-group mb-3">
                 <label for="account">帳號</label>
                 <input
                   id="account"
-                  v-model="account"
+                  v-model="info.account"
                   type="text"
                   class="form-control"
-                  required
-                >
-              </div>
-              <div class="form-group mb-3">
-                <label for="passWord">密碼</label>
-                <input
-                  id="passWord"
-                  v-model="passwd"
-                  type="password"
-                  class="form-control"
-                  required
+                  disabled
                 >
               </div>
               <div class="form-group mb-3">
                 <label for="email">電子郵件</label>
                 <input
                   id="email"
-                  v-model="email"
+                  v-model="info.email"
+                  disabled
                   type="email"
                   class="form-control"
-                  required
                 >
               </div>
               <div class="form-group mb-3">
                 <label for="name">暱稱</label>
                 <input
                   id="name"
-                  v-model="name"
+                  v-model="info.name"
                   type="text"
                   class="form-control"
-                  required
+                  disabled
                 >
               </div>
               <div class="form-group mb-3">
                 <label for="phone">手機號碼</label>
                 <input
                   id="phone"
-                  v-model="phone"
+                  v-model="info.phone"
                   type="tel"
                   class="form-control"
-                  required
+                  disabled
                 >
               </div>
               <div class="form-group mb-3">
                 <label for="profile">自我介紹</label>
                 <textarea
                   id="profile"
-                  v-model="profile"
+                  v-model="info.profile"
                   class="form-control"
-                  required
+                  disabled
                 />
               </div>
               <div class="form-group mb-3">
-                <button type="submit" class="btn btn-primary btn-block">
-                  Register Now
-                </button>
+                <label for="manager">管理者身分</label>
+                <input
+                  id="manager"
+                  v-model="info.manager"
+                  type="text"
+                  class="form-control"
+                  disabled
+                >
               </div>
             </form>
+            <div class="text-center">
+              <button
+                class="btn btn-primary"
+                @click="$router.go(-1)"
+              >
+                返回
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -81,35 +84,32 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { logalRegister } from "../../apis/auth.js";
+import { getInfo } from '@/apis/auth';
+import { onMounted, reactive } from 'vue';
 
-const router = useRouter();
-const account = ref('');
-const passwd = ref('');
-const email = ref('');
-const name = ref('');
-const phone = ref('');
-const profile = ref('');
+const info = reactive({
+  account: '',
+  email: '',
+  name: '',
+  phone: '',
+  profile: '',
+  manager: '否',
+})
 
-const localregister = async () => {
+onMounted(async () => {
   try {
-    const resp = await logalRegister({
-      account: account.value,
-      passwd: passwd.value,
-      email: email.value,
-      name: name.value,
-      phone: phone.value,
-      profile: profile.value
-    });
-
-    if (resp.status === 200) {
-      router.replace('/file')
+    const response = await getInfo()
+    if (response?.status === 200) {
+      info.account = response.data.account
+      info.email = response.data.email
+      info.name = response.data.name
+      info.phone = response.data.phone
+      info.profile = response.data.profile
+      info.manager = response.data.manager ? '是' : '否'
     }
   } catch (error) {
-    console.error('註冊失敗，錯誤訊息：' + error.message);
-    alert('註冊失敗，錯誤訊息：' + error.message);
+    console.error(error)
+    // handle error
   }
-}
+})
 </script>

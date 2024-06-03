@@ -88,3 +88,11 @@ export function deleteFileReviewer(file_id) {
     method: 'DELETE',
   })
 }
+
+export function getLogs(params) {
+  return request({
+    url: `/logs`,
+    method: 'GET',
+    params
+  })
+}
