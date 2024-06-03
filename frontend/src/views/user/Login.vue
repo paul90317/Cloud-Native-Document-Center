@@ -7,7 +7,7 @@
             <h1 class="text-center">
               Document Center
             </h1>
-            <form @submit.prevent="loginFun">
+            <form @submit.prevent="submitLocalLogin">
               <div class="form-group">
                 <label for="account">帳號</label>
                 <input
@@ -56,13 +56,13 @@
 </template>
 
 <script setup>
+import { localLogin } from "@/apis/auth.js";
+import { useUserStore } from "@/stores/user.js";
+import { setLocalToken } from "@/utils/storage.js";
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { localLogin } from "../../apis/auth.js";
-import { useUserStore } from "../../stores/user.js";
-import { setLocalToken } from "../../utils/storage.js";
 
-const { setToken, logout } = useUserStore();
+const { setToken, logout, login } = useUserStore();
 const router = useRouter();
 const route = useRoute();
 
@@ -72,9 +72,17 @@ const passwd = ref('');
 onMounted(() => {
   const message = route.params?.message;
   if (message) alert(message);
+
+  if (route?.query?.status_code === '401') {
+    alert('登入失敗');
+  }else if (route?.query?.status_code === '200' && route?.query?.token) {
+    const token = route.query.token
+    login(token)
+    alert('登入成功')
+  }
 });
 
-const loginFun = async () => {
+const submitLocalLogin = async () => {
   if (!account.value || !passwd.value) {
     alert('請輸入帳號密碼');
     return;
@@ -104,6 +112,8 @@ const loginFun = async () => {
 
 const SignInWithGoogle = () => {
   // 你的 Google 登入邏輯
+  // const response = googleLogin()
+  window.location.href = 'http://localhost/api/auth/google/login';
 };
 
 </script>
