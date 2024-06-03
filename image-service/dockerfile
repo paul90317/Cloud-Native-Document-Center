@@ -1,4 +1,12 @@
-FROM node:lts-alpine3.19
+FROM node:lts
+
+# https://cloud.google.com/storage/docs/gcsfuse-install#ubuntu-or-debian
+# Install gcsfuse
+RUN apt-get update && apt-get install -y curl gnupg lsb-release
+RUN export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s` && \
+  echo "deb [signed-by=/usr/share/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt $GCSFUSE_REPO main" | tee /etc/apt/sources.list.d/gcsfuse.list && \
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.asc && \
+  apt-get update && apt-get install -y gcsfuse
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -7,7 +15,12 @@ WORKDIR /usr/src/app
 COPY . .
 RUN npm install
 
+# set up the gcp credentials
+ENV GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/gcs_key.json
+
 EXPOSE 8082
 
 ENV DEBUG=myapp:*
-CMD [ "npm", "start" ]
+
+RUN chmod +x /usr/src/app/entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

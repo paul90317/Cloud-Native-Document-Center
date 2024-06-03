@@ -11,3 +11,5 @@ __MACOSX
 /image-service/static/**
 
 coverage
+
+*key.json
