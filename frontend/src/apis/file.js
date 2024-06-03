@@ -109,9 +109,10 @@ export function addfilemember(data) {
   })
 }
 
-export function deletefilemember(id) {
+export function deletefilemember(data) {
   return request({
     url: `/role`,
     method: 'DELETE',
+    data,
   })
 }

@@ -7,7 +7,7 @@
           <div class="col-12">
             <div class="input-group mb-3">
               <input
-                v-model="searchTerm"
+                v-model="add_search_form"
                 type="text"
                 placeholder="搜尋..."
                 class="form-control"
@@ -15,14 +15,14 @@
               <button
                 class="btn btn-outline-primary"
                 type="button"
-                @click="search"
+                @click="add_search_button"
               >
                 搜尋
               </button>
               <button
                 type="button"
                 class="btn btn-success text-center"
-                @click="addtable"
+                @click="add_button_click"
               >
                 新增
               </button>
@@ -31,7 +31,7 @@
     
           <div class="col-12">
             <table
-              v-if="users?.data?.length > 0"
+              v-if="addusers?.data?.length > 0"
               id="table_add"
               class="display table table-striped"
               style="width:100%"
@@ -45,7 +45,7 @@
                       type="checkbox"
                       name="select_all"
                       value="1"
-                      @click="leftselectall"
+                      @click="add_selectall"
                     >
                   </th>
                   <th scope="col">
@@ -57,7 +57,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="user in users.data" :key="user.id">
+                <tr v-for="user in addusers.data" :key="user.id">
                   <td>
                     <input
                       v-model="user.checked"
@@ -93,26 +93,26 @@
             <nav class="w-full">
               <ul class="pagination justify-content-center">
                 <li
-                  :class="{'page-item':true, 'disabled':leftcurrentPage === 1}"
+                  :class="{'page-item':true, 'disabled':add_currentPage === 1}"
                 >
                   <button
                     class="btn btn-outline-primary"
-                    :disabled="leftcurrentPage === 1"
-                    @click="leftprevPage"
+                    :disabled="add_currentPage === 1"
+                    @click="add_prevpage"
                   >
                     back
                   </button>
                 </li>
                 <li class="page-item d-flex align-items-center">
-                  <span class="mx-2">頁數：{{ leftcurrentPage ?? 0 }}</span>
+                  <span class="mx-2">頁數：{{ add_currentPage ?? 0 }}</span>
                 </li>
                 <li
-                  :class="{'page-item':true, 'disabled':leftcurrentPage === lefttotalPages}"
+                  :class="{'page-item':true, 'disabled':add_currentPage === add_totalPages}"
                 >
                   <button
                     class="btn btn-outline-primary"
-                    :disabled="leftcurrentPage === lefttotalPages"
-                    @click="leftnextPage"
+                    :disabled="add_currentPage === add_totalPages"
+                    @click="add_nextpage"
                   >
                     next
                   </button>
@@ -123,11 +123,11 @@
     
           <div class="col-12 row">
             <div class="col d-flex align-items-center justify-content-end">
-              <label for="leftpageSize" class="form-label mb-0">每頁顯示筆數：</label>
+              <label for="add_pageSize" class="form-label mb-0">每頁顯示筆數：</label>
             </div>
             <div class="col">
               <select
-                v-model="leftpageSize"
+                v-model="add_pageSize"
                 class="form-select"
                 @change="fetchData"
               >
@@ -156,7 +156,7 @@
           <div class="col-12">
             <div class="input-group mb-3">
               <input
-                v-model="searchTerm"
+                v-model="delete_search_form"
                 type="text"
                 placeholder="搜尋..."
                 class="form-control"
@@ -164,14 +164,14 @@
               <button
                 class="btn btn-outline-primary"
                 type="button"
-                @click="search"
+                @click="delete_search_button"
               >
                 搜尋
               </button>
               <button
                 type="button"
                 class="btn btn-danger text-center"
-                @click="deletetable"
+                @click="delete_button_click"
               >
                 刪除
               </button>
@@ -180,7 +180,7 @@
 
           <div class="col-12">
             <table
-              v-if="filteredUsersRight?.length > 0"
+              v-if="deleteusers?.data?.length > 0"
               id="table_delete"
               class="display table table-striped"
               style="width:100%"
@@ -194,11 +194,11 @@
                       type="checkbox"
                       name="select_all"
                       value="1"
-                      @click="deleteselectall"
+                      @click="delete_selectall"
                     >
                   </th>
                   <th scope="col">
-                    name
+                    account
                   </th>
                   <th scope="col">
                     priority
@@ -206,17 +206,21 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="user in filteredUsersRight" :key="user.id">
+                <tr v-for="user in deleteusers.data" :key="user.id">
                   <td>
                     <input
                       v-model="user.checked"
                       class="form-check-input"
                       type="checkbox"
                       :value="user.id"
+                      @click="handleCheckboxClick(user)"
                     >
                   </td>
-                  <td>{{ user.name }}</td>
-                  <td>{{ user.role }}</td>
+                  <td>{{ user.account }}</td>
+                  <td>
+                    <span v-if="user.role === 0">viewer</span>
+                    <span v-else-if="user.role === 1">editor</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -229,26 +233,26 @@
             <nav class="w-full">
               <ul class="pagination justify-content-center">
                 <li
-                  :class="{'page-item':true, 'disabled':currentPageRight === 1}"
+                  :class="{'page-item':true, 'disabled':delete_currentPage === 1}"
                 >
                   <button
                     class="btn btn-outline-primary"
-                    :disabled="currentPageRight === 1"
-                    @click="prevPageRight"
+                    :disabled="delete_currentPage === 1"
+                    @click="delete_prevpage"
                   >
                     back
                   </button>
                 </li>
                 <li class="page-item d-flex align-items-center">
-                  <span class="mx-2">頁數：{{ currentPageRight ?? 0 }}</span>
+                  <span class="mx-2">頁數：{{ delete_currentPage ?? 0 }}</span>
                 </li>
                 <li
-                  :class="{'page-item':true, 'disabled':currentPageRight === totalPagesRight}"
+                  :class="{'page-item':true, 'disabled':delete_currentPage === delete_totalPages}"
                 >
                   <button
                     class="btn btn-outline-primary"
-                    :disabled="currentPageRight === totalPagesRight"
-                    @click="nextPageRight"
+                    :disabled="delete_currentPage === delete_totalPages"
+                    @click="delete_nextpage"
                   >
                     next
                   </button>
@@ -259,13 +263,13 @@
 
           <div class="col-12 row">
             <div class="col d-flex align-items-center justify-content-end">
-              <label for="pageSizeRight" class="form-label mb-0">每頁顯示筆數：</label>
+              <label for="delete_pageSize" class="form-label mb-0">每頁顯示筆數：</label>
             </div>
             <div class="col">
               <select
-                v-model="pageSizeRight"
+                v-model="delete_pageSize"
                 class="form-select"
-                @change="fetchDataRight"
+                @change="fetchData"
               >
                 <option value="10">
                   10
@@ -290,58 +294,100 @@
 
 <script setup>
 
-import { addfilemember, getfilemembers } from "@/apis/file.js";
-import { submitFile } from "@/apis/review.js";
+import { addfilemember, deletefilemember, getfilemembers } from "@/apis/file.js";
+import { deleteFileReviewer, submitFile } from "@/apis/review.js";
 import { getAllUserInfo } from "@/apis/user.js";
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-const leftpageSize = ref(10); 
-const leftcurrentPage = ref(1); 
-const lefttotalPages = ref(0); 
-const leftuser = ref([]); 
-let searchTerm = ref('')
-const document_id = ref(null)
+const add_pageSize = ref(10); 
+const add_currentPage = ref(1); 
+const add_totalPages = ref(0); 
+const delete_pageSize = ref(10); 
+const delete_currentPage = ref(1); 
+const delete_totalPages = ref(0); 
+const add_table_user = ref([]); 
+const delete_table_user = ref([]);
+let add_search_form = ref('');
+let delete_search_form = ref('');
+const document_id = ref(null);
+const route = useRoute();
+const addusers = reactive({ data: [] });
+const deleteusers = reactive({ data: [] });
 
-const displayedleftData = computed(() => { 
-  const start = (leftcurrentPage.value - 1) * leftpageSize.value;
-  const end = start + leftpageSize.value;
-  return leftuser.value.slice(start, end);
+
+const display_add_page = computed(() => { 
+  const start = (add_currentPage.value - 1) * add_pageSize.value;
+  const end = start + add_pageSize.value;
+  return add_table_user.value.slice(start, end);
 });
 
-const route = useRoute();
-const users = reactive({ data: [] });
+const display_delete_page = computed(() => { 
+  const start = (delete_currentPage.value - 1) * delete_pageSize.value;
+  const end = start + delete_pageSize.value;
+  return delete_table_user.value.slice(start, end);
+});
+
 
 onMounted(fetchData); 
 async function fetchData() {
+  let members = [];
   document_id.value = route?.params?.id;
   try {
-    const usersData = await getAllUserInfo();
-    const usersData2 = await getmembers();
-    // 假設每個用戶都有一個唯一的 id
-    const usersData2accounts = new Set(usersData2.map(user => user.account));
-    leftuser.value = usersData.data.filter(user => !usersData2accounts.has(user.account));
-    lefttotalPages.value = Math.ceil(leftuser.value.length / leftpageSize.value); 
-    users.data = displayedleftData.value; // assign displayed data to users.data
-    console.log('User data fetched successfully:', usersData.data); 
+    const alluser = await getAllUserInfo();
+    members = await getmembers();
+    const membersaccount = new Set(members.map(user => user.account));
+    add_table_user.value = alluser.data.filter(user => !membersaccount.has(user.account));
+    add_totalPages.value = Math.ceil(add_table_user.value.length / add_pageSize.value); 
+    addusers.data = display_add_page.value; 
+    console.log('User data fetched successfully:', alluser.data); 
   } catch (error) {
-    console.error('Error fetching user data:', error); // print the error message
+    console.error('Error fetching user data:', error); 
   }
+  try {
+    delete_table_user.value = members;
+    delete_totalPages.value = Math.ceil(delete_table_user.value.length / delete_pageSize.value); 
+    deleteusers.data = display_delete_page.value;
+    console.log('member data fetched successfully:', members.data); 
+  } catch (error) {
+    console.error('Error fetching members data:', error); 
+  }
+  console.log(deleteusers);
+  console.log(addusers);
 }
-const leftselectall = () => {
-  const areAllSelected = users.data.every(user => user.checked);
-  users.data.forEach(user => user.checked = !areAllSelected);
+const add_selectall = () => {
+  const areAllSelected = addusers.data.every(user => user.checked);
+  addusers.data.forEach(user => user.checked = !areAllSelected);
 };
-function leftnextPage() {
-  if (leftcurrentPage.value < lefttotalPages.value) {
-    leftcurrentPage.value++;
-    users.data = displayedleftData.value; // update users.data when page changes
+
+const delete_selectall = () => {
+  const areAllSelected = deleteusers.data.every(user => user.checked);
+  deleteusers.data.forEach(user => user.checked = !areAllSelected);
+};
+
+function add_nextpage() {
+  if (add_currentPage.value < add_totalPages.value) {
+    add_currentPage.value++;
+    addusers.data = display_add_page.value; 
   }
 }
-function leftprevPage() {
-  if (leftcurrentPage.value > 1) {
-    leftcurrentPage.value--;
-    users.data = displayedleftData.value; // update users.data when page changes
+function add_prevpage() {
+  if (add_currentPage.value > 1) {
+    add_currentPage.value--;
+    addusers.data = display_add_page.value; 
+  }
+}
+
+function delete_nextpage() {
+  if (delete_currentPage.value < delete_totalPages.value) {
+    delete_currentPage.value++;
+    deleteusers.data = display_delete_page.value; 
+  }
+}
+function delete_prevpage() {
+  if (delete_currentPage.value > 1) {
+    delete_currentPage.value--;
+    deleteusers.data = display_delete_page.value; 
   }
 }
 
@@ -360,32 +406,43 @@ const getmembers = async () => {
   }
 };
 
-const search = () => {
-  if (searchTerm.value === '') {
-    users.data = displayedleftData.value;
-    return;
-  }
-  users.data = users.data.filter(user => user.name.includes(searchTerm.value))
+const add_search_button = () => {
+  addusers.data = add_table_user.value.filter(user => user.name.includes(add_search_form.value))
 }
 
-async function addtable() {
-  const checkedUsers = users.data.filter(user => user.checked);
+const delete_search_button = () => {
+  deleteusers.data = delete_table_user.value.filter(user => user.name.includes(delete_search_form.value))
+}
+
+async function add_button_click() {
+  const checkedUsers = addusers.data.filter(user => user.checked);
   console.log(checkedUsers);
   for (const user of checkedUsers) {
     try {
-      await addmember(user.account, user.priority);
+      await add_member(user.account, user.priority);
     } catch (error) {
       console.error(`Error adding user ${user.account}:`, error);
     }
   }
 }
 
-const addmember = async (account,role) => {
+async function delete_button_click() {
+  const checkedUsers = deleteusers.data.filter(user => user.checked);
+  console.log(checkedUsers);
+  for (const user of checkedUsers) {
+    try {
+      await delete_member(user.account, user.role);
+    } catch (error) {
+      console.error(`Error deleting user ${user.account}:`, error);
+    }
+  }
+}
+
+const add_member = async (account,role) => {
   try {
     const ID = document_id.value;
     let resp
     if(role != 2) {
-      // resp = await addfilemember({ID, account, role});
       resp = await addfilemember({
         'doc-id': ID,
         account, 
@@ -405,11 +462,38 @@ const addmember = async (account,role) => {
     console.log(resp)
     if (resp.status === 200) {
       console.log('文件權限創建成功!' );
+      fetchData();
+      location.reload();
       return ;
     }
   } catch (error) {
     console.error('文件權限創建失敗，錯誤訊息：' + error.message);
     alert('文件權限創建失敗，錯誤訊息：' + error.message);
+  }
+};
+
+const delete_member = async (account,role) => {
+  try {
+    const ID = document_id.value;
+    let resp
+    if(role != 2) {
+      resp = await deletefilemember({
+        'doc-id': ID,
+        account
+      });
+    } else {
+      resp = await deleteFileReviewer(ID);
+    }
+    console.log(resp)
+    if (resp.status === 200) {
+      console.log('文件成員刪除成功!' );
+      fetchData();
+      location.reload();
+      return ;
+    }
+  } catch (error) {
+    console.error('文件成員刪除失敗，錯誤訊息：' + error.message);
+    alert('文件成員刪除失敗，錯誤訊息：' + error.message);
   }
 };
 

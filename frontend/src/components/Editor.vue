@@ -90,7 +90,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['emitOnEditorChange', 'emitOnSubmitAndEditorClear'])
 
-// ↓ 清空按鈕的回調，使用 setContents 方法清空編輯器的內容
 const clearContent = async () => {
   await myQuillEditor.value.setContents('')
 }
@@ -148,7 +147,7 @@ const modules = ref([
           console.log(resp)
           if (resp.status === 200) {
             console.log('圖片上傳成功，圖片 URL' + resp.data.url);
-            return resp.url;
+            return resp.data.url;
           }
         } catch (err) {
           console.error("Upload failed")
