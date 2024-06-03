@@ -1,49 +1,65 @@
 const fs = require('fs');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
+const { Connector } = require('@google-cloud/cloud-sql-connector');
 
-const db_config = {
-  host: 'mysql',
-  user: 'root',
-  password: 'root',
-  database: 'doc_center'
-};
+let pool, connector;
 
-function sql_query(sql, paras = [], conn = undefined) {
-  return new Promise((resolve, reject) => {
-    try {
-      if (!conn)
-        conn = mysql.createConnection(db_config);
-      conn.execute(sql, paras, (err, result) => {
-        if (err)
-          reject(err);
-        else
-          resolve(result);
-      })
-    } catch (err) {
-      reject(err)
-    }
-  })
+async function initializePool() {
+  connector = new Connector();
+  const clientOpts = await connector.getOptions({
+    instanceConnectionName: process.env.CLOUD_SQL_INSTANCE_CONNECTION_NAME,
+    ipType: 'PUBLIC',
+  });
+
+  pool = await mysql.createPool({
+    ...clientOpts,
+    user: process.env.CLOUD_SQL_USER,
+    password: process.env.CLOUD_SQL_PASSWORD,
+    database: process.env.CLOUD_SQL_DATABASE_NAME,
+  });
 }
 
-function sql_file(sql_fn, paras = []) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const conn = mysql.createConnection(db_config);
-      let sql = fs.readFileSync(sql_fn, 'utf-8')
-      let sqls = sql.split(';')
-      let transactions = []
-      for (var s of sqls)
-        if (s.trim().length > 0)
-          transactions.push(s)
-
-      let result = null
-      for (let t of transactions)
-        result = await sql_query(t, paras, conn)
-      resolve(result)
-    } catch (err) {
-      reject(err)
-    }
-  })
+async function sql_query(sql, paras = [], conn = undefined) {
+  if (!pool) {
+    await initializePool();
+  }
+  if (!conn) {
+    conn = await pool.getConnection();
+  }
+  try {
+    const [result] = await conn.execute(sql, paras);
+    return result;
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
 }
 
-module.exports = { sql_query, sql_file }
+async function sql_file(sql_fn, paras = []) {
+  if (!pool) {
+    await initializePool();
+  }
+  const conn = await pool.getConnection();
+  try {
+    const sql = fs.readFileSync(sql_fn, 'utf-8');
+    const sqls = sql.split(';').filter(s => s.trim().length > 0);
+
+    let result = null;
+    for (let t of sqls) {
+      result = await sql_query(t, paras, conn);
+    }
+    return result;
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+}
+
+async function closeConnection() {
+  await pool.end();
+  connector.close();
+}
+
+module.exports = { sql_query, sql_file, closeConnection };

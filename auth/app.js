@@ -3,6 +3,9 @@ const path = require('path')
 const { verifyJWT, verifyCookie } = require('./utils/auth')
 const { sql_file, sql_query } = require('./utils/mysql')
 
+// dotenv
+require('dotenv').config()
+
 app.use(require('body-parser').json())
 app.use(require('cookie-parser')())
 
