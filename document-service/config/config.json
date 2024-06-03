@@ -5,5 +5,19 @@
     "database": "doc_center",
     "host": "mysql",
     "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "root",
+    "database": "doc_center",
+    "host": "mysql",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "root",
+    "database": "doc_center",
+    "host": "mysql",
+    "dialect": "mysql"
   }
 }
