@@ -116,7 +116,7 @@ const submitLocalLogin = async () => {
 const SignInWithGoogle = () => {
   // 你的 Google 登入邏輯
   // const response = googleLogin()
-  window.location.href = 'http://localhost/api/auth/google/login';
+  window.location.href = `${window.location.origin}/api/auth/google/login`;
 };
 
 </script>

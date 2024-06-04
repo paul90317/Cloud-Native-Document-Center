@@ -8,6 +8,7 @@
         <button
           type="button"
           class="btn btn-outline-success float-end"
+          @click="onCreateFile"
         >
           創建文件
         </button>

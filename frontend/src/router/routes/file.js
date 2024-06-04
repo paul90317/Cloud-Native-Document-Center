@@ -35,7 +35,7 @@ export default [
   },
   {
     path: '/file/create',
-    name: 'Create Document',
+    name: 'file.create',
     title: 'Create Document',
     component: () => import('@/views/TestEditor.vue')
   }
