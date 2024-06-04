@@ -123,6 +123,12 @@ export default {
     },
     async onReject() {
       console.log(this.fileId, this.comment)
+
+      if (!this.comment || this.comment.trim() === "") {
+        alert("請填寫拒絕原因");
+        return;
+      }
+      
       const yes = confirm("確定拒絕？");
       if (!yes) return;
 
