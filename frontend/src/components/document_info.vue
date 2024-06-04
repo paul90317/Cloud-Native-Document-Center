@@ -1,112 +1,95 @@
 <template>
-  <div v-if="showModal" class="modal">
-    <div class="container">
-      <button class="btn btn-danger" @click="hide">
-        Close
-      </button>
-      <div class="row2">
-        <div class="col">
-          <div class="modal-content">
-            <h2>{{ info.title }}</h2>
-            <p>{{ info.content }}</p>
-          </div>
+  <div  class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" ref="exampleModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Document details</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
-      </div>
-      <div
-        v-for="message in messages"
-        :key="message.id"
-        class="row"
-      >
-        <div class="col">
-          <div class="modal-content">
-            <h2>{{ message.title }}</h2>
-            <p>{{ message.content }}</p>
-          </div>
+        <div v-for="message in messages" :key="message.id" class="modal-message">
+          <h5>{{ message.message }}</h5>
+          <p>From : {{ message.ufrom }}</p>
+          <p v-if="message.uto">To : {{ message.uto }}</p>
+          <p>{{ formatDateTime(message.updatedAt) }}</p>
+        </div>
+        <div class="modal-footer">
+          <!--  data-bs-dismiss="modal" -->
+          <button type="button" class="btn btn-secondary" @click="hideModal()">
+            Close
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
+import Modal from 'bootstrap/js/dist/modal';
+import { getLogs } from "../apis/review.js";
 
 export default {
+  props: {
+    numberParam: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
-      messages: [],
-      showModal: true,
+      modal: {},
     };
   },
-  created() {
-    this.fetchMessages();
-    this.fetchInfo();
-  },
   methods: {
-    fetchInfo() {
-      this.info = { id: 1, title: 'document information', content: ' some information about the document' }
+    async fetch_data() {
+      try {
+        const response = await getLogs({ document: this.numberParam })
+        this.messages = response.data;
+        if (response?.status !== 200) throw new Error(response)
+        this.data = response?.data || []
+        console.log(response)
+        console.log(this.messages)
+      } catch (error) {
+        console.error(error)
+      }
     },
-    fetchMessages() {
-      this.messages = [
-        { id: 1, title: '審核情形1', content: '這是第一份送審記錄的內容...' },
-        { id: 2, title: '審核情形1', content: '這是第一份送審記錄的內容...' },
-        { id: 3, title: '審核情形1', content: '這是第一份送審記錄的內容...' },
-        { id: 4, title: '審核情形1', content: '這是第一份送審記錄的內容...' },
-        { id: 5, title: '審核情形2', content: '這是第二份送審記錄的內容...' }
-      ];
+    showModal() {
+      this.modal.show();
     },
-    show() {
-      this.showModal = true;
+    hideModal() {
+      this.modal.hide();
     },
-    hide() {
-      this.$emit('close');
-    }
+    formatDateTime(dateTime) {
+      let date = new Date(dateTime);
+      return date.toLocaleDateString('zh-TW', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
+    },
+  },
+  mounted() {
+    this.fetch_data()
+    this.modal = new Modal(this.$refs.exampleModal);
   },
 };
 </script>
 
 <style scoped>
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  width: 80%;
-  max-width: 500px;
-  max-height: 80vh; /* Set a max height */
-  overflow-y: auto; /* Add scroll if content overflows */
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.row {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
-.row2 {
-  background-color: #ff6347; /* Tomato color */
-  border: 1px solid #000; /* Black border */
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
-.modal-content h2 {
-  text-align: center;
-  color: #333;
-}
-
-.modal-content p {
-  text-align: justify;
-  color: #666;
+.modal-message {
+  background-color: #f0f0f0; /* 淺灰色背景 */
+  border: 5px solid #17a2b8; /* Bootstrap 的 info 顏色 */
+  padding: 2rem; /* Bootstrap 的 p-3 對應的大小 */
+  margin-bottom: 2rem; /* Bootstrap 的 mb-3 對應的大小 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加淡淡的陰影效果 */
+  border-radius: 8px; /* 圓角 */
 }
 </style>

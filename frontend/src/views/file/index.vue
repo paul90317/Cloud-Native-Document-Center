@@ -38,9 +38,14 @@
                 <button class="btn btn-outline-secondary" @click="onEditPermission(item.id)">
                   <i class="bi bi-gear-wide-connected" />
                 </button>
-                <!-- review history -->
-                <button class="btn btn-outline-success" @click="showModal = true">
-                  <i class="bi bi-info-square" />
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  data-bs-target="#exampleModal"
+                  @click="launchModal(item.id)"
+                  
+                >
+                <i class="bi bi-info-square" />
                 </button>
               </div>
               <div
@@ -75,18 +80,19 @@
         </p>
       </div>
     </div>
-    <document-profile
-      v-if="showModal"
-      ref="documentProfileRef"
-      @close="showModal = false"
-    />
+    <DocumentProfile ref="exampleModal" :numberParam="currentId"></DocumentProfile>
+    
   </div>
+  
 </template>
 
 <script>
 import { deleteFile, getAllFiles } from '@/apis/file';
 import DocumentProfile from '@/components/document_info.vue';
 import { FILE_STATUS } from '@/utils/fileStatus';
+import { ref } from 'vue';
+
+let thisModal= ref(null);
 
 const FILE_STATUS_BADGE = {
   0: 'bg-secondary',
@@ -104,7 +110,8 @@ export default {
       showModal: false,
       data: [],
       FILE_STATUS,
-      FILE_STATUS_BADGE
+      FILE_STATUS_BADGE,
+      currentId: null,
     };
   },
   mounted() {
@@ -150,7 +157,11 @@ export default {
     },
     onCreateFile() {
       this.$router.push({ name: 'file.create' })
-    }
+    },
+    launchModal(id) {
+      this.currentId = id;
+      this.$refs.exampleModal.showModal();
+    },
   }
 };
 </script>
