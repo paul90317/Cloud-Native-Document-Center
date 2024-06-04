@@ -13,6 +13,9 @@
         </button>
       </div>
     </div>
+
+    <hr class="row mx-auto w-75">
+
     <div v-if="data?.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-2 g-lg-4">
       <div
         v-for="item in data"

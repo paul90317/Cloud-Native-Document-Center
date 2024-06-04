@@ -78,6 +78,9 @@ onMounted(() => {
   }else if (route?.query?.status_code === '200' && route?.query?.token) {
     const token = route.query.token
     login(token)
+    
+    router.push({ name: 'file.index' });
+
     alert('登入成功')
   }
 });
