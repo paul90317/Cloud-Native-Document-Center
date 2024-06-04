@@ -17,7 +17,7 @@ export default [
     name: 'file.edit',
     title: 'Edit file',
     isHidden: true,
-    component: () => import('@/views/TestEditor.vue')
+    component: () => import('@/views/file/Edit.vue')
   },
   {
     path: '/file/edit/permission/:id',
@@ -33,4 +33,10 @@ export default [
     isHidden: true,
     component: () => import('@/views/file/edit/Reviewer.vue')
   },
+  {
+    path: '/file/create',
+    name: 'Create Document',
+    title: 'Create Document',
+    component: () => import('@/views/TestEditor.vue')
+  }
 ]

@@ -21,14 +21,6 @@
           />
         </div>
         <div class="form-group d-flex justify-content-between">
-          <!-- Submit Button -->
-          <button
-            type="button"
-            class="btn btn-outline-primary"
-            @click="submitForm"
-          >
-            <i class="bi bi-check-circle" /> Submit
-          </button>
           <!-- Save Button -->
           <button
             type="button"
@@ -52,23 +44,33 @@
 </template>
 
 <script setup>
+import { createEmptyDoc, getFile, updateFile } from "@/apis/file.js";
+import { getAllUserInfo } from "@/apis/user.js"; // 導入 getAllUserInfo 函數
 import Editor from '@/components/Editor.vue';
+import { getLocalToken } from "@/utils/storage.js";
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { createEmptyDoc, getFile, updateFile } from "../apis/file.js";
-import { getAllUserInfo } from "../apis/user.js"; // 導入 getAllUserInfo 函數
-import { getLocalToken } from "../utils/storage.js";
 
 const route = useRoute();
 
-const file_id = ref(null);
 const UserAccount = ref('');
 const document_id = ref(null)
 const submitAndClearEditor = ref('')
 
 onMounted(async () => {
   // * Can use "file_id.value" to get the value of "file_id
-  file_id.value = route?.params?.id;
+  document_id.value = route?.params?.id;
+
+  if (document_id.value) {
+    const data = await getDoc(document_id.value);
+    newsForm.title = data.docname;
+    newsForm.content = data.content;
+    submitAndClearEditor.value = data.content;
+  }else {
+    newsForm.title = '';
+    newsForm.content = '';
+    submitAndClearEditor.value = '';
+  }
 
   const UserInfo = await fetchAllUserInfo();
   if (UserInfo && UserInfo.length > 0) {
@@ -145,12 +147,6 @@ const newsForm = reactive({
 
 const handleEditorChange = async (content) => {
   newsForm.content = await content
-}
-
-const submitForm = async () => {
-  if (window.confirm("Are you sure you want to submit the form?")) {
-    // Submit form logic here
-  }
 }
 
 const saveForm = async () => {

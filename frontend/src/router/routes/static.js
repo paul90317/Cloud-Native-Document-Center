@@ -12,11 +12,5 @@ export default [
     title: '404',
     isHidden: true,
     component: () => import('@/views/404.vue')
-  },
-  {
-    path: '/test',
-    name: 'Create Document',
-    title: 'Create Document',
-    component: () => import('@/views/TestEditor.vue')
   }
 ]

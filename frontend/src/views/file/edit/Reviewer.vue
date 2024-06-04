@@ -220,6 +220,7 @@
                   <td>
                     <span v-if="user.role === 0">viewer</span>
                     <span v-else-if="user.role === 1">editor</span>
+                    <span v-else>reviewer</span>
                   </td>
                 </tr>
               </tbody>
@@ -314,7 +315,6 @@ const document_id = ref(null);
 const route = useRoute();
 const addusers = reactive({ data: [] });
 const deleteusers = reactive({ data: [] });
-
 
 const display_add_page = computed(() => { 
   const start = (add_currentPage.value - 1) * add_pageSize.value;

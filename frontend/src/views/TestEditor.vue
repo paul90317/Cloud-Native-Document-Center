@@ -44,12 +44,12 @@
 </template>
 
 <script setup>
+import { createEmptyDoc, getFile, updateFile } from "@/apis/file.js";
+import { getAllUserInfo } from "@/apis/user.js"; // 導入 getAllUserInfo 函數
 import Editor from '@/components/Editor.vue';
+import { getLocalToken } from "@/utils/storage.js";
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { createEmptyDoc, getFile, updateFile } from "../apis/file.js";
-import { getAllUserInfo } from "../apis/user.js"; // 導入 getAllUserInfo 函數
-import { getLocalToken } from "../utils/storage.js";
 
 const route = useRoute();
 
@@ -60,12 +60,18 @@ const submitAndClearEditor = ref('')
 onMounted(async () => {
   // * Can use "file_id.value" to get the value of "file_id
   document_id.value = route?.params?.id;
+
   if (document_id.value) {
     const data = await getDoc(document_id.value);
     newsForm.title = data.docname;
     newsForm.content = data.content;
     submitAndClearEditor.value = data.content;
+  }else {
+    newsForm.title = '';
+    newsForm.content = '';
+    submitAndClearEditor.value = '';
   }
+
   const UserInfo = await fetchAllUserInfo();
   if (UserInfo && UserInfo.length > 0) {
     UserAccount.value = UserInfo[0].account;

@@ -43,9 +43,8 @@
                   class="btn btn-outline-success"
                   data-bs-target="#exampleModal"
                   @click="launchModal(item.id)"
-                  
                 >
-                <i class="bi bi-info-square" />
+                  <i class="bi bi-info-square" />
                 </button>
               </div>
               <div
@@ -80,10 +79,8 @@
         </p>
       </div>
     </div>
-    <DocumentProfile ref="exampleModal" :numberParam="currentId"></DocumentProfile>
-    
+    <DocumentProfile ref="exampleModal" :number-param="currentId" />
   </div>
-  
 </template>
 
 <script>

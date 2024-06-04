@@ -1,28 +1,33 @@
 <template>
   <div class="container text-center pt-4">
     <div class="row mb-4">
-      <div class="col-4 col-sm-3 col-lg-2">
-        <h3>通知列表</h3>
-      </div>
-      <div class="col-8 col-sm-9 col-lg-10">
-        <select
-          v-model="type"
-          class="form-select"
-          @change="fetchData"
-        >
-          <option value="">
-            全選
-          </option>
-          <option
-            v-for="(value, key) in FILE_STATUS"
-            :key="key"
-            :value="key"
+      <div class="col-12 col-md-8 mx-auto row">
+        <div class="col-12 col-sm-4">
+          <h3>通知列表</h3>
+        </div>
+        <div class="col-12 col-sm-8">
+          <select
+            v-model="type"
+            class="form-select"
+            @change="fetchData"
           >
-            {{ value }}
-          </option>
-        </select>
+            <option value="">
+              全選
+            </option>
+            <option
+              v-for="(value, key) in FILE_STATUS"
+              :key="key"
+              :value="key"
+            >
+              {{ value }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
+
+    <hr class="row mx-auto w-75">
+
     <div class="row">
       <div v-if="data.length > 0" class="col-12 col-sm-10 col-md-8 mx-auto list-group text-start">
         <div
@@ -36,15 +41,15 @@
               {{ FILE_STATUS[item.type] }}
             </span>
             <span v-if="item?.ufrom" class="badge bg-secondary rounded-pill me-2">
-              {{ item.ufrom }}
+              {{ `from: ${item.ufrom}` }}
             </span>
             <span v-if="item?.uto" class="badge bg-primary rounded-pill me-2">
-              {{ item.uto }}
+              {{ `to: ${item.uto}` }}
             </span>
             {{ item?.message ?? '' }}
           </div>
           <div>
-            {{ item.time }}
+            {{ formatDateTime(item.createdAt) }}
           </div>
         </div>
       </div>
@@ -65,7 +70,7 @@ export default {
     return {
       data: [],
       count: 0,
-      type: null,
+      type: '',
       FILE_STATUS
     }
   },
@@ -84,6 +89,20 @@ export default {
       } catch (error) {
         console.error(error)
       }
+    },
+    formatDateTime(dateTime) {
+      if (!dateTime) return '';
+
+      let date = new Date(dateTime);
+      return date.toLocaleDateString('zh-TW', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
     },
   }
 }

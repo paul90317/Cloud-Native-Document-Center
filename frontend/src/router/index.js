@@ -46,8 +46,8 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // Debug: can be removed
-  console.log('token exist: ', token !== null)
-  console.log('store.getAccessToken exist: ', store.getAccessToken !== null)
+  // console.log('token exist: ', token !== null)
+  // console.log('store.getAccessToken exist: ', store.getAccessToken !== null)
 
   // isLogin condition: can be improved
   const isLogin = token !== null && store.getAccessToken !== null
