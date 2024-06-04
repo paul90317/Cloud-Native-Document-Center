@@ -75,7 +75,6 @@ export default {
     };
   },
   mounted() {
-    this.fetch_data()
     this.modal = new Modal(this.$refs.exampleModal);
   },
   methods: {
@@ -92,6 +91,7 @@ export default {
       }
     },
     showModal() {
+      this.fetch_data()
       this.modal.show();
     },
     hideModal() {
