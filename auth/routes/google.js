@@ -54,23 +54,39 @@ router.get('/login/callback', async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    return res.sendStatus(401);
+    return res.redirect(`/login?status_code=401`);
   }
 
   // get login information
-  sql_query('SELECT account, email FROM users WHERE email = ?', [userInfo.data.email])
-    .then(result => {
-      if (result.length) {
-        const token = signJWT(result[0]).split(' ')[1]; // result[0] = { account : ... }
-        res.redirect(`/login?status_code=200&token=${token}`)
-      } else {
-        res.redirect(`/login?status_code=401`)
-      }
-    })
-    .catch(err => {
-      console.log(err)
-      res.sendStatus(500)
-    })
+  try {
+    let result = await sql_query('SELECT account, email FROM users WHERE email = ?', [userInfo.data.email]);
+    if (result.length) {
+      const token = signJWT(result[0]).split(' ')[1];
+      return res.redirect(`/login?status_code=200&token=${token}`)
+    } else {
+      var userdata = JSON.stringify({
+        account: userInfo.data.email.split('@')[0] + '-' + Math.random().toString(36).substr(2, 9),
+        email: userInfo.data.email,
+        passwd: Math.random().toString(36).substr(2, 9),
+        name: userInfo.data.name,
+        profile: 'Hello',
+        phone: '*',
+      })
+      var res2 = await fetch('http://auth/local/register', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: userdata
+      })
+      let result = await sql_query('SELECT account, email FROM users WHERE email = ?', [userInfo.data.email]);
+      const token = signJWT(result[0]).split(' ')[1]; // result[0] = { account : ... }
+      res.redirect(`/login?status_code=200&token=${token}`)
+    }
+  } catch (err) {
+    console.log(err);
+    res.redirect(`/login?status_code=401`)
+  }
 });
 
 module.exports = router;
