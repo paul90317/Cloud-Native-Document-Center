@@ -6,15 +6,22 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+// const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+const sequelize = new Sequelize(
+  process.env.CLOUD_SQL_DATABASE_NAME,
+  process.env.CLOUD_SQL_USER,
+  process.env.CLOUD_SQL_PASSWORD,
+  {
+    dialect: 'mysql',
+    host: process.env.CLOUD_SQL_SOCKET_NAME,
+    timestamps: false,
+    dialectOptions: {
+      socketPath: process.env.CLOUD_SQL_SOCKET_NAME
+    },
+  }
+);
 
 fs
   .readdirSync(__dirname)

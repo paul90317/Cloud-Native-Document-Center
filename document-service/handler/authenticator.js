@@ -49,7 +49,7 @@ Authenticator.prototype.getInfoFromAuthService = async function (req, res, next)
   const token = req.header('Authorization').replace("Bearer ", "");
 
   try {
-    const response = await axios.get('http://auth:80/auth', {
+    const response = await axios.get('https://gcp-auth-service-5hia7fk4na-uc.a.run.app/auth', {
       headers: {
         Authorization: `Bearer ${token}`
       }
