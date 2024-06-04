@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = Math.random().toString(36).substr(2, 9)
+// const JWT_SECRET = Math.random().toString(36).substr(2, 9)
+const JWT_SECRET = "CLOUD_RUN_STATIC_SECRET"
 
 // express callback function
 function verifyJWT(req, res, next) {
