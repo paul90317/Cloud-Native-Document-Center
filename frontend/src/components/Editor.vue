@@ -7,6 +7,7 @@
       </div>
       <!-- Clear Button Triggering Modal -->
       <button
+        v-if="!disabled"
         type="button"
         class="btn btn-outline-danger"
         data-bs-toggle="modal"
@@ -20,9 +21,11 @@
       theme="snow"
       class="mx-auto"
       content-type="html"
-      placeholder="write something down..."
+      :placeholder="disabled ? '' : 'write something down...'"
       :toolbar="toolbarOptions"
       :modules="modules"
+      :enabled="!disabled"
+      :read-only="disabled"
       @update:content="onEditorChange($event)"
     />
   </div>
@@ -85,8 +88,18 @@ import { uploadImage } from "../apis/image.js";
 const TextLength = ref(0)
 const myQuillEditor = ref(null)
 const props = defineProps({
-  submitAndClearEditor: String,
-  content: String,
+  submitAndClearEditor: {
+    type: String,
+    default: ''
+  },
+  content: {
+    type: String,
+    default: ''
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  }
 })
 const emit = defineEmits(['emitOnEditorChange', 'emitOnSubmitAndEditorClear'])
 

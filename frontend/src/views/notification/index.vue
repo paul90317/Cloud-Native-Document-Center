@@ -34,6 +34,7 @@
           v-for="item in data"
           :key="item"
           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+          @click="goToReview(item)"
         >
           <div class="d-flex align-items-center">
             <i class="bi bi-bell-fill me-2" />
@@ -63,6 +64,7 @@
 </template>
 <script>
 import { getLogs } from '@/apis/review';
+import { getInfo } from '@/apis/user';
 import { FILE_STATUS } from '@/utils/fileStatus';
 
 export default {
@@ -71,20 +73,30 @@ export default {
       data: [],
       count: 0,
       type: '',
+      username: '',
       FILE_STATUS
     }
   },
-  mounted() {
-    this.fetchData()
+  async mounted() {
+    await this.fetchInfo()
+    await this.fetchData()
   },
   methods: {
+    async fetchInfo() {
+      try {
+        const res = await getInfo()
+        this.username = res?.data?.account
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async fetchData() {
       try {
         const res = await getLogs({
           type: this.type?.trim() !== "" ? this.type : undefined
         })
 
-        this.data = res?.data ?? []
+        this.data = res?.data?.filter(item => item?.type === 1 && item?.uto === this.username) ?? []
         this.count = this.data?.length ?? 0
       } catch (error) {
         console.error(error)
@@ -104,6 +116,15 @@ export default {
         hour12: false,
       });
     },
+    goToReview(item) {
+      console.log('notification: ', item)
+      this.$router.push({
+        name: 'file.review',
+        params: {
+          id: item?.document
+        }
+      })
+    }
   }
 }
 </script>

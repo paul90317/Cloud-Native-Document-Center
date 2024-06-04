@@ -27,7 +27,15 @@
             :key="message.id"
             class="modal-message"
           >
-            <h4>{{ message.message }}</h4>
+            <h3 v-if="message.type === 2" class="mb-1">
+              拒絕
+            </h3>
+            <h3 v-if="message.type === 3" class="mb-1">
+              通過
+            </h3>
+            <h4 class="my-2">
+              {{ `message: ${message.message}` }}
+            </h4>
             <p class="mb-1">
               From : {{ message.ufrom }}
             </p>

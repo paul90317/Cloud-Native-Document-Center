@@ -101,7 +101,7 @@ const createDoc = async (docname, content) => {
 
     console.log(resp)
     if (resp.status === 200) {
-      console.log('文件創建成功，文件 ID：' + resp.data.id);
+      alert('文件創建成功，文件 ID：' + resp.data.id);
       document_id.value = resp.data.id;
       return resp.data.id;
     }
@@ -117,7 +117,7 @@ const updateDoc = async (docname, content) => {
 
     console.log(resp)
     if (resp.status === 200) {
-      console.log('文件更新成功');
+      alert('文件更新成功');
       return resp.data.id;
     }
   } catch (error) {
