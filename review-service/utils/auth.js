@@ -18,7 +18,6 @@ function verifyJWT(req, res, next) {
       next();
     })
     .catch(err => {
-      console.error(error);
       next();
     });
 }
