@@ -34,7 +34,7 @@
               通過
             </h3>
             <h4 class="my-2">
-              {{ `message: ${message.message}` }}
+              {{ `Message: ${message.message}` }}
             </h4>
             <p class="mb-1">
               From : {{ message.ufrom }}
@@ -92,8 +92,6 @@ export default {
         if (response?.status !== 200) throw new Error(response)
 
         this.messages = response?.data ?? [];
-        console.log(response)
-        console.log(this.messages)
       } catch (error) {
         console.error(error)
       }

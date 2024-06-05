@@ -340,7 +340,6 @@ async function fetchData() {
     add_table_user.value = alluser.data.filter(user => !membersaccount.has(user.account));
     add_totalPages.value = Math.ceil(add_table_user.value.length / add_pageSize.value); 
     addusers.data = display_add_page.value; 
-    console.log('User data fetched successfully:', alluser.data); 
   } catch (error) {
     console.error('Error fetching user data:', error); 
   }
@@ -348,12 +347,9 @@ async function fetchData() {
     delete_table_user.value = members;
     delete_totalPages.value = Math.ceil(delete_table_user.value.length / delete_pageSize.value); 
     deleteusers.data = display_delete_page.value;
-    console.log('member data fetched successfully:', members.data); 
   } catch (error) {
     console.error('Error fetching members data:', error); 
   }
-  console.log(deleteusers);
-  console.log(addusers);
 }
 const add_selectall = () => {
   const areAllSelected = addusers.data.every(user => user.checked);
@@ -395,14 +391,13 @@ const getmembers = async () => {
   try {
     const ID = document_id.value;
     const resp = await getfilemembers(ID);
-    console.log(resp)
     if (resp.status === 200) {
       console.log('文件權限讀取成功');
       return resp.data;
     }
   } catch (error) {
-    console.error('文件權限讀取失敗，錯誤訊息：' + error.message);
-    alert('文件權限讀取失敗，錯誤訊息：' + error.message);
+    console.error('文件權限讀取失敗');
+    alert('文件權限讀取失敗');
   }
 };
 
@@ -416,7 +411,6 @@ const delete_search_button = () => {
 
 async function add_button_click() {
   const checkedUsers = addusers.data.filter(user => user.checked);
-  console.log(checkedUsers);
   for (const user of checkedUsers) {
     try {
       await add_member(user.account, user.priority);
@@ -428,7 +422,6 @@ async function add_button_click() {
 
 async function delete_button_click() {
   const checkedUsers = deleteusers.data.filter(user => user.checked);
-  console.log(checkedUsers);
   for (const user of checkedUsers) {
     try {
       await delete_member(user.account, user.role);
@@ -459,7 +452,6 @@ const add_member = async (account,role) => {
         message
       });
     }
-    console.log(resp)
     if (resp.status === 200) {
       console.log('文件權限創建成功!' );
       fetchData();
@@ -468,7 +460,7 @@ const add_member = async (account,role) => {
     }
   } catch (error) {
     console.error('文件權限創建失敗，錯誤訊息：' + error.message);
-    alert('文件權限創建失敗，錯誤訊息：' + error.message);
+    alert('文件權限創建失敗');
   }
 };
 
@@ -484,7 +476,6 @@ const delete_member = async (account,role) => {
     } else {
       resp = await deleteFileReviewer(ID);
     }
-    console.log(resp)
     if (resp.status === 200) {
       console.log('文件成員刪除成功!' );
       fetchData();
@@ -493,7 +484,7 @@ const delete_member = async (account,role) => {
     }
   } catch (error) {
     console.error('文件成員刪除失敗，錯誤訊息：' + error.message);
-    alert('文件成員刪除失敗，錯誤訊息：' + error.message);
+    alert('文件成員刪除失敗');
   }
 };
 

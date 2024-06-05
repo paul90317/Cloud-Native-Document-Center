@@ -156,7 +156,7 @@ const modules = ref([
           const formData = new FormData()
           formData.append("file", file)
           const resp = await uploadImage(formData);
-          if (resp.status == 200) {
+          if (resp.status === 200) {
             return resp.data.url;
           }
         } catch (err) {

@@ -107,7 +107,7 @@ const updateDoc = async (docname, content) => {
   try {
     const resp = await updateFile(document_id.value,{docname, content});
 
-    if (resp.status == 200) {
+    if (resp.status === 200) {
       alert('文件更新成功');
       return resp.data.id;
     }
