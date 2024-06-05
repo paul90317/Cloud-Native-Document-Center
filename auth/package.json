@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "demo": "node demo.js",
     "test": "jest --verbose --silent=false --coverage"
   },
   "dependencies": {
