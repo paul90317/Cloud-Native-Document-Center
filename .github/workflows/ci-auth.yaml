@@ -1,0 +1,27 @@
+name: Run Tests on Commit
+
+on:
+  push:
+    branches:
+      - '**' # This ensures the workflow runs on every branch
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '19'
+
+      - name: Install dependencies
+        run: npm install --include=dev
+        working-directory: ./auth
+
+      - name: Run tests
+        run: npm test
+        working-directory: ./auth

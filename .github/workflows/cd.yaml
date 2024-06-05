@@ -1,0 +1,42 @@
+name: CD to GCP
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to GitHub Container Registry
+        run: echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Deploy Docker image to GCP
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/document-service:latest ./document-service
+          docker push ghcr.io/${{ github.repository }}/document-service:latest
+
+          docker build -t ghcr.io/${{ github.repository }}/review-service:latest ./review-service
+          docker push ghcr.io/${{ github.repository }}/review-service:latest
+
+          docker build -t ghcr.io/${{ github.repository }}/image-service:latest ./image-service
+          docker push ghcr.io/${{ github.repository }}/image-service:latest
+
+          docker build -t ghcr.io/${{ github.repository }}/frontend:latest ./frontend
+          docker push ghcr.io/${{ github.repository }}/frontend:latest
+
+          docker build -t ghcr.io/${{ github.repository }}/auth:latest ./auth
+          docker push ghcr.io/${{ github.repository }}/auth:latest
+
+          docker build -t ghcr.io/${{ github.repository }}/mysql:latest ./mysql
+          docker push ghcr.io/${{ github.repository }}/mysql:latest
