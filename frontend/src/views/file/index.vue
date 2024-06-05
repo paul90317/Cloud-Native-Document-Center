@@ -79,7 +79,7 @@
             <h5 class="card-title">
               {{ item.docname }}
             </h5>
-            <span v-if="item?.status" :class="['badge rounded-pill', FILE_STATUS_BADGE[item.status] ?? 'bg-secondary']">
+            <span v-if="item?.status in FILE_STATUS" :class="['badge rounded-pill', FILE_STATUS_BADGE[item.status] ?? 'bg-secondary']">
               {{ FILE_STATUS[item.status] ?? '未知狀態' }}
             </span>
           </div>
