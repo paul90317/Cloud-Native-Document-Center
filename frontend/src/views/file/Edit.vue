@@ -25,8 +25,8 @@
           <button
             type="button"
             class="btn btn-outline-success"
-            @click="saveForm"
             :disabled="!member"
+            @click="saveForm"
           >
             <i class="bi bi-save" /> Save
           </button>
@@ -34,8 +34,8 @@
           <button
             type="button"
             class="btn btn-outline-info"
-            @click="retrieveForm"
             :disabled="!member"
+            @click="retrieveForm"
           >
             <i class="bi bi-upload" /> Retrieve
           </button>

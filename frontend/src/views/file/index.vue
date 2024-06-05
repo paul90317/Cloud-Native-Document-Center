@@ -36,13 +36,18 @@
                 aria-label="Edit group"
               >
                 <!-- edit view permission -->
-                <button class="btn btn-outline-secondary" @click="onEditPermission(item.id)">
+                <button
+                  class="btn btn-outline-secondary"
+                  :disabled="disabledEditPermission"
+                  @click="onEditPermission(item.id)"
+                >
                   <i class="bi bi-gear-wide-connected" />
                 </button>
                 <button
                   type="button"
                   class="btn btn-outline-success"
                   data-bs-target="#exampleModal"
+                  :disalbed="disabledReviewHistory"
                   @click="launchModal(item.id)"
                 >
                   <i class="bi bi-info-square" />
@@ -53,10 +58,18 @@
                 role="group"
                 aria-label="Operation group"
               >
-                <button class="btn btn-outline-success" @click="onEdit(item.id)">
+                <button
+                  class="btn btn-outline-success"
+                  :disabled="disabledEdit"
+                  @click="onEdit(item.id)"
+                >
                   <i class="bi bi-pencil-square" />
                 </button>
-                <button class="btn btn-outline-danger" @click="onDelete(item.id)">
+                <button
+                  class="btn btn-outline-danger"
+                  :disabled="disabledDelete"
+                  @click="onDelete(item.id)"
+                >
                   <i class="bi bi-trash3" />
                 </button>
               </div>
@@ -85,7 +98,8 @@
 </template>
 
 <script>
-import { deleteFile, getAllFiles } from '@/apis/file';
+import { deleteFile, getAllFiles, getfilemembers } from '@/apis/file';
+import { getInfo } from '@/apis/user';
 import DocumentProfile from '@/components/document_info.vue';
 import { FILE_STATUS } from '@/utils/fileStatus';
 import { ref } from 'vue';
@@ -107,15 +121,44 @@ export default {
     return {
       showModal: false,
       data: [],
+      account: '',
+      manager: false,
       FILE_STATUS,
       FILE_STATUS_BADGE,
       currentId: null,
     };
   },
-  mounted() {
-    this.fetchFileList()
+  computed: {
+    disabledEditPermission() {
+      return false
+    },
+    disabledReviewHistory() {
+      return false
+    },
+    disabledEdit() {
+      return false
+    },
+    disabledDelete() {
+      return false
+    },
+  },
+  async mounted() {
+    await this.fetchInfo()
+    await this.fetchFileList()
+    await this.fetchFileMember()
   },
   methods: {
+    async fetchInfo() {
+      try {
+        const response = await getInfo()
+        if (response?.status !== 200) throw new Error(response)
+        this.account = response?.data?.account || ''
+        this.manager = response?.data?.manager || false
+      } catch (error) {
+        console.error(error)
+      }
+      console.log(this.account)
+    },
     async fetchFileList() {
       try {
         const response = await getAllFiles()
@@ -123,6 +166,17 @@ export default {
         this.data = response?.data || []
       } catch (error) {
         console.error(error)
+      }
+    },
+    async fetchFileMember() {
+      for (const item of this.data) {
+        try {
+          const response = await getfilemembers(item.id)
+          if (response?.status !== 200) throw new Error(response)
+          item.members = response?.data || []
+        } catch (error) {
+          console.error(error)
+        }
       }
     },
     async onDelete(id) {

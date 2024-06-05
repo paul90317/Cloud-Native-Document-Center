@@ -1,29 +1,26 @@
 version: '3.8'
 
 services:
-  # nginx:
-  #   container_name: nginx
-  #   build: ./api-gateway/nginx
-  #   ports:
-  #     - "80:80"
-
   auth:
     container_name: auth
     build: ./auth
     ports:
       - "8083:80"
+    restart: always
 
   review-service:
     container_name: review-service
     build: ./review-service
     ports:
       - "8084:80"
+    restart: always
 
   mysql:
     container_name: mysql
     build: ./mysql
     ports:
       - "3306:3306"
+    restart: always
 
   image-service:
     environment:
@@ -32,12 +29,14 @@ services:
     build: ./image-service
     ports:
       - "8082:8082"
+    restart: always
 
   document-service:
     container_name: document-service
     build: ./document-service
     ports:
       - "8081:8081"
+    restart: always
 
   frontend:
     container_name: frontend
@@ -48,3 +47,4 @@ services:
       - auth
       - image-service
       - document-service
+    restart: always
