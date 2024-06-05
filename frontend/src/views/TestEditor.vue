@@ -45,15 +45,12 @@
 
 <script setup>
 import { createEmptyDoc, getFile, updateFile } from "@/apis/file.js";
-import { getAllUserInfo } from "@/apis/user.js"; // 導入 getAllUserInfo 函數
 import Editor from '@/components/Editor.vue';
-import { getLocalToken } from "@/utils/storage.js";
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-const UserAccount = ref('');
 const document_id = ref(null)
 const submitAndClearEditor = ref('')
 
@@ -71,43 +68,20 @@ onMounted(async () => {
     newsForm.content = '';
     submitAndClearEditor.value = '';
   }
-
-  const UserInfo = await fetchAllUserInfo();
-  if (UserInfo && UserInfo.length > 0) {
-    UserAccount.value = UserInfo[0].account;
-    console.log(UserAccount.value);
-  }
+ 
 });
-
-const fetchAllUserInfo = async () => {
-  try {
-    const token = getLocalToken(); // 獲取本地存儲的 JWT 憑證
-    const resp = await getAllUserInfo(token); // 將 JWT 憑證傳遞給 getAllUserInfo 函數
-    console.log(token);
-    console.log(resp);
-    if (resp.status === 200) {
-      console.log('獲取所有用戶信息成功');
-      return resp.data;
-    }
-  } catch (error) {
-    console.error('獲取所有用戶信息失敗，錯誤訊息：' + error.message);
-    alert('獲取所有用戶信息失敗，錯誤訊息：' + error.message);
-  }
-};
 
 const createDoc = async (docname, content) => {
   try {
     const resp = await createEmptyDoc({docname, content});
 
-    console.log(resp)
     if (resp.status === 200) {
-      alert('文件創建成功，文件 ID：' + resp.data.id);
+      alert('文件創建成功');
       document_id.value = resp.data.id;
       return resp.data.id;
     }
   } catch (error) {
-    console.error('文件創建失敗，錯誤訊息：' + error.message);
-    alert('文件創建失敗，錯誤訊息：' + error.message);
+    console.error(error)
   }
 };
 
@@ -115,28 +89,25 @@ const updateDoc = async (docname, content) => {
   try {
     const resp = await updateFile(document_id.value,{docname, content});
 
-    console.log(resp)
     if (resp.status === 200) {
       alert('文件更新成功');
       return resp.data.id;
     }
   } catch (error) {
-    console.error('文件更新失敗，錯誤訊息：' + error.message);
-    alert('文件更新失敗，錯誤訊息：' + error.message);
+    console.error(error)
   }
 };
 
 const getDoc = async () => {
   try {
     const resp = await getFile(document_id.value);
-    console.log(resp)
+
     if (resp.status === 200) {
       console.log('文件讀取成功');
       return resp.data;
     }
   } catch (error) {
-    console.error('文件讀取失敗，錯誤訊息：' + error.message);
-    alert('文件讀取失敗，錯誤訊息：' + error.message);
+    console.error(error)
   }
 };
 

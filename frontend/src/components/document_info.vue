@@ -48,7 +48,7 @@
           </div>
         </template>
         <div v-else class="w-100 text-center">
-          <p>尚無審核紀錄</p>
+          <p>尚無紀錄</p>
         </div>
         <div class="modal-footer">
           <!--  data-bs-dismiss="modal" -->

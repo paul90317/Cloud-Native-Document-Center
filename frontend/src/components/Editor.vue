@@ -115,7 +115,6 @@ const onEditorChange = async (e) => {
 watch(() => props.submitAndClearEditor, async (newValue) => {
   if (newValue) {
     await myQuillEditor.value.setContents(newValue)
-    console.log('content:', newValue);
   }
   emit('emitOnSubmitAndEditorClear', '');
 })
@@ -157,13 +156,11 @@ const modules = ref([
           const formData = new FormData()
           formData.append("file", file)
           const resp = await uploadImage(formData);
-          console.log(resp)
-          if (resp.status === 200) {
-            console.log('圖片上傳成功，圖片 URL' + resp.data.url);
+          if (resp.status == 200) {
             return resp.data.url;
           }
         } catch (err) {
-          console.error("Upload failed")
+          console.error("Image Upload failed")
           console.error("Error:", err)
         }
       }
