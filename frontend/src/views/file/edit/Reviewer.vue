@@ -45,6 +45,7 @@
                       type="checkbox"
                       name="select_all"
                       value="1"
+                      v-model="areAlladdUsersSelected"
                       @click="add_selectall"
                     >
                   </th>
@@ -70,13 +71,13 @@
                   <td>{{ user.name }}</td>
                   <td>
                     <select v-model="user.priority" class="form-select">
-                      <option value="0">
+                      <option value="0" :disabled="!user_role">
                         viewer
                       </option>
-                      <option value="1">
+                      <option value="1" :disabled="!user_role">
                         editor
                       </option>
-                      <option value="2">
+                      <option value="2" >
                         reviewer
                       </option>
                     </select>
@@ -131,17 +132,17 @@
                 class="form-select"
                 @change="fetchData"
               >
+                <option value="1">
+                  1
+                </option>
+                <option value="2">
+                  2
+                </option>
                 <option value="10">
                   10
                 </option>
                 <option value="20">
                   20
-                </option>
-                <option value="50">
-                  50
-                </option>
-                <option value="100">
-                  100
                 </option>
               </select>
             </div>
@@ -194,6 +195,7 @@
                       type="checkbox"
                       name="select_all"
                       value="1"
+                      v-model="areAlldeleteUsersSelected"
                       @click="delete_selectall"
                     >
                   </th>
@@ -272,17 +274,17 @@
                 class="form-select"
                 @change="fetchData"
               >
+                <option value="1">
+                  1
+                </option>
+                <option value="2">
+                  2
+                </option>
                 <option value="10">
                   10
                 </option>
                 <option value="20">
                   20
-                </option>
-                <option value="50">
-                  50
-                </option>
-                <option value="100">
-                  100
                 </option>
               </select>
             </div>
@@ -297,14 +299,15 @@
 
 import { addfilemember, deletefilemember, getfilemembers } from "@/apis/file.js";
 import { deleteFileReviewer, submitFile } from "@/apis/review.js";
+import { getInfo } from '@/apis/user';
 import { getAllUserInfo } from "@/apis/user.js";
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-const add_pageSize = ref(10); 
+const add_pageSize = ref(1); 
 const add_currentPage = ref(1); 
 const add_totalPages = ref(0); 
-const delete_pageSize = ref(10); 
+const delete_pageSize = ref(1); 
 const delete_currentPage = ref(1); 
 const delete_totalPages = ref(0); 
 const add_table_user = ref([]); 
@@ -328,17 +331,24 @@ const display_delete_page = computed(() => {
   return delete_table_user.value.slice(start, end);
 });
 
-
+const areAlldeleteUsersSelected = computed(() => deleteusers.data.every(user => user.checked));
+const areAlladdUsersSelected = computed(() => addusers.data.every(user => user.checked));
+const UserAccount = ref('');
+const user_role = ref('');
 onMounted(fetchData); 
+
 async function fetchData() {
   let members = [];
   document_id.value = route?.params?.id;
   try {
     const alluser = await getAllUserInfo();
+    await fetchUserInfo();
     members = await getmembers();
+    user_role.value = members.some(m => m.account == UserAccount.value && m.role == 1) ? 1 : 0;
     const membersaccount = new Set(members.map(user => user.account));
     add_table_user.value = alluser.data.filter(user => !membersaccount.has(user.account));
     add_totalPages.value = Math.ceil(add_table_user.value.length / add_pageSize.value); 
+    add_currentPage.value = 1;
     addusers.data = display_add_page.value; 
   } catch (error) {
     console.error('Error fetching user data:', error); 
@@ -346,6 +356,7 @@ async function fetchData() {
   try {
     delete_table_user.value = members;
     delete_totalPages.value = Math.ceil(delete_table_user.value.length / delete_pageSize.value); 
+    delete_currentPage.value = 1;
     deleteusers.data = display_delete_page.value;
   } catch (error) {
     console.error('Error fetching members data:', error); 
@@ -492,4 +503,14 @@ function handleCheckboxClick(user) {
   user.checked = !user.checked;
   console.log(user.checked);
 }
+const fetchUserInfo = async () => {
+  try {
+    const response = await getInfo()
+    if (response?.status === 200) {
+      UserAccount.value = response.data.account
+    }
+  } catch (error) {
+    console.error(error)
+  }
+};
 </script>
