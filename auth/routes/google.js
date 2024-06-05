@@ -6,7 +6,7 @@ const { sql_file, sql_query } = require('../utils/mysql')
 const { OAuth2Client } = require('google-auth-library');
 
 require('dotenv').config();
-const { GOOGLE_CLIENT_ID, GOOGLE_SECRET_KEY } = process.env;
+const { GOOGLE_CLIENT_ID, GOOGLE_SECRET_KEY, OAUTH_HOST } = process.env;
 
 function get_client(callback_url) {
   return new OAuth2Client({
@@ -32,7 +32,7 @@ function auth_url(callback_url) {
   return authorizeUrl;
 }
 
-const login_redirect_url = 'http://localhost/api/auth/google/login/callback'
+const login_redirect_url = `http://${OAUTH_HOST}/api/auth/google/login/callback`
 
 router.get('/login', (req, res) => {
   res.redirect(auth_url(login_redirect_url))
