@@ -41,11 +41,11 @@
                   <th scope="col">
                     <input
                       id="addselect_all"
+                      v-model="areAlladdUsersSelected"
                       class="form-check-input"
                       type="checkbox"
                       name="select_all"
                       value="1"
-                      v-model="areAlladdUsersSelected"
                       @click="add_selectall"
                     >
                   </th>
@@ -77,7 +77,7 @@
                       <option value="1" :disabled="!user_role">
                         editor
                       </option>
-                      <option value="2" >
+                      <option value="2">
                         reviewer
                       </option>
                     </select>
@@ -191,11 +191,11 @@
                   <th scope="col">
                     <input
                       id="select_all"
+                      v-model="areAlldeleteUsersSelected"
                       class="form-check-input"
                       type="checkbox"
                       name="select_all"
                       value="1"
-                      v-model="areAlldeleteUsersSelected"
                       @click="delete_selectall"
                     >
                   </th>
@@ -304,10 +304,10 @@ import { getAllUserInfo } from "@/apis/user.js";
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-const add_pageSize = ref(1); 
+const add_pageSize = ref(10); 
 const add_currentPage = ref(1); 
 const add_totalPages = ref(0); 
-const delete_pageSize = ref(1); 
+const delete_pageSize = ref(10); 
 const delete_currentPage = ref(1); 
 const delete_totalPages = ref(0); 
 const add_table_user = ref([]); 

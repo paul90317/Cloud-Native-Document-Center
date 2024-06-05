@@ -163,7 +163,9 @@ export default {
       try {
         const response = await getAllFiles()
         if (response?.status !== 200) throw new Error(response)
-        this.data = response?.data || []
+        this.data = response?.data.reduce((unique, item) => {
+          return unique.some(doc => doc['doc-id'] === item['doc-id']) ? unique : [...unique, item];
+        }, []) || [];     
       } catch (error) {
         console.error(error)
       }
